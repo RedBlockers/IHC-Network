@@ -5,7 +5,7 @@ const socketIo = require('socket.io');
 const path = require('path');
 const bcrypt = require('bcrypt'); // Assurez-vous d'importer bcrypt pour le hachage des mots de passe
 const jtw = require('jsonwebtoken');
-
+const dotenv = require('dotenv').config()
 
 const app = express();
 const server = http.createServer(app);
@@ -13,10 +13,10 @@ const io = socketIo(server);
 
 // Configuration de la base de données MySQL
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // Changez cela en fonction de votre configuration
-  password: '', // Ajoutez le mot de passe si nécessaire
-  database: 'chat_app_db' // Nom de votre base de données
+  host: process.env.HOST,
+  user: process.env.USER, // Changez cela en fonction de votre configuration
+  password: process.env.PASSWORD, // Ajoutez le mot de passe si nécessaire
+  database: process.env.DATABASE // Nom de votre base de données
 });
 
 // Connexion à la base de données
@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
 });
 
 // Démarrer le serveur
-const PORT = 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
-  console.log(`Serveur démarré sur http://localhost:${PORT}`);
+  console.log(`Serveur démarré sur ${process.env.HOSTNAME}:${PORT}`);
 });
