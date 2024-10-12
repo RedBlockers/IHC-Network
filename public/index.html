@@ -108,7 +108,7 @@
     function displayMessage(message) {
       const messageList = document.getElementById('messageList');
       const messageElement = document.createElement('li');
-      messageElement.classList.add('list-group-item', 'text-wrap', 'text-break');
+      messageElement.classList.add('list-group-item', 'text-wrap', 'text-break','bg-dark', 'text-white');
       messageElement.innerHTML = `
         <div class="message-actions bg-dark text-white">
           <div class="message-content bg-dark text-white">${marked.parse(message.content.replace(/\n/g,'<span><br></span>'))}</div>
