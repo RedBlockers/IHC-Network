@@ -13,10 +13,10 @@ const io = socketIo(server);
 
 // Configuration de la base de données MySQL
 const db = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER, // Changez cela en fonction de votre configuration
-  password: process.env.PASSWORD, // Ajoutez le mot de passe si nécessaire
-  database: process.env.DATABASE // Nom de votre base de données
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER, // Changez cela en fonction de votre configuration
+  password: process.env.DB_PASSWORD, // Ajoutez le mot de passe si nécessaire
+  database: process.env.DB_DATABASE // Nom de votre base de données
 });
 
 // Connexion à la base de données
