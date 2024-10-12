@@ -110,8 +110,8 @@
       const messageElement = document.createElement('li');
       messageElement.classList.add('list-group-item', 'text-wrap', 'text-break');
       messageElement.innerHTML = `
-        <div class="message-actions">
-          <div class="message-content">${marked.parse(message.content.replace(/\n/g,'<span><br></span>'))}</div>
+        <div class="message-actions bg-dark text-white">
+          <div class="message-content bg-dark text-white">${marked.parse(message.content.replace(/\n/g,'<span><br></span>'))}</div>
           <div>
             <button class="btn-edit" onclick="editMessage(${message.id})">Modifier</button>
             <button class="btn-delete" onclick="deleteMessage(${message.id})">Supprimer</button>
