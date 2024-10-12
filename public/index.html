@@ -9,16 +9,27 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 
+    ::-webkit-scrollbar {
+      width: 12px; /* Largeur de la scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: transparent; /* Fond transparent de la piste */
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3); /* Couleur du curseur de la scrollbar */
+      border-radius: 6px;
+    }
+
     .input-group {
       margin-bottom: 15px;
     }
     #messageBox {
-      height: 400px;
+      height: 70vh; 
       overflow-y: scroll;
       background-color: #1e1e1e;
       padding: 10px;
-    }
-    .message-content {
     }
     .btn-edit, .btn-delete {
       margin-left: 10px;
@@ -29,17 +40,6 @@
     .btn-edit:hover, .btn-delete:hover {
       color: #cccccc;
     }
-    .btn-primary {
-      background-color: #6200ee;
-      border-color: #6200ee;
-    }
-    .btn-primary:hover {
-      background-color: #3700b3;
-      border-color: #3700b3;
-    }
-    .form-control:focus, .btn-primary:focus {
-      box-shadow: 0 0 8px #6200ee;
-    }
     .account-info {
       text-align: right;
       margin-bottom: 10px;
@@ -48,6 +48,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+    p {
+      margin: 0;
     }
   </style>
 </head>
@@ -58,16 +61,16 @@
       <button id="logout" class="btn btn-secondary btn-sm">Se déconnecter</button>
     </div>
     
-    <h1 class="text-center">Chat Anonyme</h1>
+    <h1 class="text-center">NoScord</h1>
     
-    <div id="messageBox" class="border rounded mb-3 bg-dark text-white">
+    <div id="messageBox" class="rounded mb-3 bg-dark text-white">
       <ul id="messageList" class="list-group bg-dark text-white">
-        <!-- Messages apparaîtront ici -->
+
       </ul>
     </div>
 
     <div class="input-group">
-      <textarea id="messageInput" class="form-control bg-dark text-white" placeholder="Tapez votre message en Markdown..." rows="2" maxlength="1024"></textarea>
+      <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="1024"></textarea>
       <button id="sendMessage" class="btn btn-primary">Envoyer</button>
     </div>
   </div>
@@ -75,6 +78,12 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
+    marked.use({
+      async: false,
+      pedantic: false,
+      gfm: true,
+      breaks:true,
+    });
 
     if (!localStorage.getItem('username')) {
       window.location.href = 'pages/login.html'; // Rediriger si non connecté
@@ -84,12 +93,27 @@
 
     const socket = io();
 
+    const textarea = document.getElementById('messageInput');
+
     document.getElementById('messageInput').addEventListener('keyup', function(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       // Si "Entrée" est appuyé sans "Shift", on envoie le message
       event.preventDefault();  // Empêche d'ajouter un retour à la ligne
       sendMessage();
     }
+          // Réinitialise la hauteur avant de recalculer
+    this.style.height = 'auto';
+    // Ajuste la hauteur en fonction du contenu
+    this.style.height = (this.scrollHeight) + 'px';
+    // Limite la hauteur à 200px (vous pouvez ajuster)
+    if (this.scrollHeight > 200) {
+      this.style.height = '200px';
+      this.style.overflowY = 'scroll'; // Active le défilement
+    } else {
+      this.style.overflowY = 'hidden'; // Désactive le défilement
+    }
+    const messageBox = document.getElementById('messageBox');
+    messageBox.scrollTop = messageBox.scrollHeight;
   });
 
     // Charger les messages existants
@@ -110,12 +134,18 @@
       const messageList = document.getElementById('messageList');
       const messageElement = document.createElement('li');
       messageElement.classList.add('list-group-item', 'text-wrap', 'text-break','bg-dark', 'text-white');
+
       messageElement.innerHTML = `
         <div class="message-actions bg-dark text-white">
-          <div class="message-content bg-dark text-white">${marked.parse(message.content.replace(/\n/g,'<span><br></span>'))}</div>
+          <div class="message-content bg-dark text-white">${marked.parse(message.content.replace(/\n/g, '<br>\n\n'))}</div>
           <div>
-            <button class="btn-edit" onclick="editMessage(${message.id})">Modifier</button>
-            <button class="btn-delete" onclick="deleteMessage(${message.id})">Supprimer</button>
+            <button class="btn-edit p-0" onclick="editMessage(${message.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+</svg></button>
+            <button class="btn-delete p-0" onclick="deleteMessage(${message.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+</svg></button>
           </div>
         </div>
         <small class="text-muted">Envoyé à : ${new Date(message.created_at).toLocaleTimeString()}</small>
