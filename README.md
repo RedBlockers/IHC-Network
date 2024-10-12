@@ -64,7 +64,6 @@ NoScord est une application de chat anonyme développée avec Node.js, Express, 
     ```bash
     npm start server.js
     ```
-    L'application sera disponible par défaut sur http://localhost:[Le port renseigné dans `.env`].
 ## Configuration SSL
 Pour activer SSL pour des connexions sécurisées :
 
