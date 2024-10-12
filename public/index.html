@@ -26,10 +26,13 @@
       margin-bottom: 15px;
     }
     #messageBox {
-      height: 70vh; 
+      height: calc(70vh - 24px); /* Ajustez cette valeur en fonction de la hauteur de votre zone de texte */
       overflow-y: scroll;
-      background-color: #1e1e1e;
       padding: 10px;
+    }
+    #messageContainer {
+      height: 80vh; 
+      overflow-y: scroll;
     }
     .btn-edit, .btn-delete {
       margin-left: 10px;
@@ -60,21 +63,20 @@
       <span id="usernameDisplay">Nom d'utilisateur: Anonyme</span>
       <button id="logout" class="btn btn-secondary btn-sm">Se déconnecter</button>
     </div>
-    
+
     <h1 class="text-center">NoScord</h1>
+    <div id="messageContainer">
+      <div id="messageBox" class="rounded mb-3 bg-dark text-white">
+        <ul id="messageList" class="list-group bg-dark text-white">
+        </ul>
+      </div>
     
-    <div id="messageBox" class="rounded mb-3 bg-dark text-white">
-      <ul id="messageList" class="list-group bg-dark text-white">
-
-      </ul>
-    </div>
-
-    <div class="input-group">
-      <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="1024"></textarea>
-      <button id="sendMessage" class="btn btn-primary">Envoyer</button>
-    </div>
+      <div class="input-group">
+        <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="1024"></textarea>
+        <button id="sendMessage" class="btn btn-primary">Envoyer</button>
+      </div>
   </div>
-
+</div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
@@ -96,24 +98,32 @@
     const textarea = document.getElementById('messageInput');
 
     document.getElementById('messageInput').addEventListener('keyup', function(event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      // Si "Entrée" est appuyé sans "Shift", on envoie le message
-      event.preventDefault();  // Empêche d'ajouter un retour à la ligne
-      sendMessage();
-    }
-          // Réinitialise la hauteur avant de recalculer
-    this.style.height = 'auto';
-    // Ajuste la hauteur en fonction du contenu
-    this.style.height = (this.scrollHeight) + 'px';
-    // Limite la hauteur à 200px (vous pouvez ajuster)
-    if (this.scrollHeight > 200) {
-      this.style.height = '200px';
-      this.style.overflowY = 'scroll'; // Active le défilement
-    } else {
-      this.style.overflowY = 'hidden'; // Désactive le défilement
-    }
-    const messageBox = document.getElementById('messageBox');
-    messageBox.scrollTop = messageBox.scrollHeight;
+      if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault(); // Empêche d'ajouter un retour à la ligne
+          sendMessage();
+      }
+
+      // Réinitialise la hauteur avant de recalculer
+      this.style.height = 'auto';
+      // Ajuste la hauteur en fonction du contenu
+      this.style.height = (this.scrollHeight) + 'px';
+
+      // Limite la hauteur à 40vh (40% de la hauteur de la fenêtre)
+      const maxHeight = window.innerHeight * .40;
+      if (this.scrollHeight > maxHeight) {
+          this.style.height = maxHeight + 'px';
+          this.style.overflowY = 'scroll'; // Active le défilement si la taille max est atteinte
+      } else {
+          this.style.overflowY = 'hidden'; // Désactive le défilement sinon
+      }
+
+      // Ajuster la hauteur de messageBox
+      const messageBox = document.getElementById('messageBox');
+      const newHeight = window.innerHeight * 0.7 - this.scrollHeight + 12; // 20 pour le padding et autres marges
+      messageBox.style.height = newHeight + 'px';
+
+      // Scroller le messageBox à la fin pour voir les nouveaux messages
+      messageBox.scrollTop = messageBox.scrollHeight;
   });
 
     // Charger les messages existants
