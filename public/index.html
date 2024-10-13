@@ -31,8 +31,8 @@
       padding: 10px;
     }
     #messageContainer {
-      height: 80vh; 
-      overflow-y: scroll;
+      height: 85vh; 
+      overflow-y: none;
     }
     .btn-edit, .btn-delete {
       margin-left: 10px;
@@ -109,21 +109,26 @@
       this.style.height = (this.scrollHeight) + 'px';
 
       // Limite la hauteur à 40vh (40% de la hauteur de la fenêtre)
-      const maxHeight = window.innerHeight * .40;
+      const maxHeight = window.innerHeight * 0.15;
+      const messageBox = document.getElementById('messageBox');
+      const isAtBottom = this.scrollTop + this.clientHeight >= this.scrollHeight - 1;
       if (this.scrollHeight > maxHeight) {
           this.style.height = maxHeight + 'px';
           this.style.overflowY = 'scroll'; // Active le défilement si la taille max est atteinte
+          // Scroller le messageBox à la fin pour voir les nouveaux messages
+          messageBox.scrollTop = messageBox.scrollHeight;
+          if(isAtBottom){
+            textarea.scrollTop = textarea.scrollHeight;
+          }
       } else {
           this.style.overflowY = 'hidden'; // Désactive le défilement sinon
+                  
+          // Ajuster la hauteur de messageBox
+          const newHeight = window.innerHeight * 0.7 - this.scrollHeight + 12; // 20 pour le padding et autres marges
+          messageBox.style.height = newHeight + 'px';
       }
 
-      // Ajuster la hauteur de messageBox
-      const messageBox = document.getElementById('messageBox');
-      const newHeight = window.innerHeight * 0.7 - this.scrollHeight + 12; // 20 pour le padding et autres marges
-      messageBox.style.height = newHeight + 'px';
 
-      // Scroller le messageBox à la fin pour voir les nouveaux messages
-      messageBox.scrollTop = messageBox.scrollHeight;
   });
 
     // Charger les messages existants
@@ -146,19 +151,24 @@
       messageElement.classList.add('list-group-item', 'text-wrap', 'text-break','bg-dark', 'text-white');
 
       messageElement.innerHTML = `
-        <div class="message-actions bg-dark text-white">
-          <div class="message-content bg-dark text-white">${marked.parse(message.content.replace(/\n/g, '<br>\n\n'))}</div>
-          <div>
-            <button class="btn-edit p-0" onclick="editMessage(${message.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-</svg></button>
-            <button class="btn-delete p-0" onclick="deleteMessage(${message.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-</svg></button>
+        <div class="message-actions bg-dark text-white position-relative">
+          <div class="message-content bg-dark text-white">
+            ${marked.parse(message.content.replace(/\n/g, '<br>\n\n'))}
+          </div>
+          <div class="btn-group position-absolute top-0 end-0">
+            <button class="btn-edit p-0" onclick="editMessage(${message.id})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+              </svg>
+            </button>
+            <button class="btn-delete p-0" onclick="deleteMessage(${message.id})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+              </svg>
+            </button>
           </div>
         </div>
-        <small class="text-muted">Envoyé à : ${new Date(message.created_at).toLocaleTimeString()}</small>
       `;
       messageList.appendChild(messageElement);
     }
