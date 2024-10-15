@@ -6,6 +6,7 @@ const path = require('path');
 const bcrypt = require('bcrypt'); // Assurez-vous d'importer bcrypt pour le hachage des mots de passe
 const jtw = require('jsonwebtoken');
 const dotenv = require('dotenv').config()
+const fs = require('fs')
 
 const app = express();
 const server = http.createServer(app);
@@ -27,7 +28,12 @@ db.connect((err) => {
 
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/js')));
+app.use(express.json({ limit: '10mb' }));  // Augmente la limite à 10MB pour les requêtes JSON
+app.use(express.urlencoded({ limit: '10mb', extended: true }));  // Pour les formulaires encodés URL
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Route pour obtenir les messages de la base de données
 app.get('/messages', (req, res) => {
@@ -56,27 +62,12 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Vérifier si l'utilisateur existe
-        const [rows] = await db.promise().execute('SELECT * FROM users WHERE username = ?', [username]);
-
-        if (rows.length === 0) {
-            return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
-        }
-
-        const user = rows[0];
-
-        // Comparer le mot de passe avec le mot de passe haché dans la base de données
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = ConnectUser(username,password,res)
 
         if (!isMatch) {
             return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
         }
-
-        // Authentification réussie
-        // Créer un token JWT
-        const token = jwt.sign({ id: user.id, username: user.username }, 'votre_secret_key', { expiresIn: '1h' }); // Utilisez une clé secrète forte ici
-
-        res.json({ success: true, token }); // Renvoie le token au client
+        res.json({ success: true}); // Renvoie le token au client
     } catch (error) {
         console.error('Erreur lors de la connexion :', error);
         res.json({ success: false, message: 'Erreur lors de la connexion.' });
@@ -85,11 +76,11 @@ app.post('/login', async (req, res) => {
 
 // Route pour l'inscription
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-
+  const { username, password, profileImage } = req.body;
+  console.log(req.body);
   try {
     // Vérifier si l'utilisateur existe déjà
-    const [rows] = await db.promise().execute('SELECT * FROM users WHERE username = ?', [username]); // Utilisation de db.promise()
+    const [rows] = await db.promise().execute('SELECT * FROM users WHERE username = ?', [username]);
     if (rows.length > 0) {
       return res.json({ success: false, message: 'Cet utilisateur existe déjà.' });
     }
@@ -98,8 +89,23 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insertion dans la base de données
-    await db.promise().execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]); // Utilisation de db.promise()
-    res.json({ success: true });
+    const [result] = await db.promise().execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]);
+
+    // Récupérer l'ID de la dernière insertion
+    const lastInsertId = result.insertId;
+
+    // Écriture de la photo de profil
+    // Décoder l'image base64
+    const base64Data = profileImage.replace(/^data:image\/png;base64,/, "");
+    const buffer = Buffer.from(base64Data, 'base64');
+    fs.writeFile(`./public/images/profiles/${lastInsertId}.png`, buffer, (err) => {
+      if (err) {
+        console.error('Erreur lors de l\'écriture de l\'image:', err);
+        return res.json({ success: false, message: 'Erreur lors de l\'écriture de l\'image.' });
+      }
+      ConnectUser(username,password,res)
+      res.json({ success: true });
+    });
   } catch (error) {
     console.error('Erreur lors de l\'inscription:', error);
     res.json({ success: false, message: 'Erreur lors de l\'inscription.' });
@@ -114,6 +120,21 @@ io.on('connection', (socket) => {
     console.log('Un utilisateur est déconnecté');
   });
 });
+
+async function ConnectUser(username, password,res){
+  // Vérifier si l'utilisateur existe
+  const [rows] = await db.promise().execute('SELECT * FROM users WHERE username = ?', [username]);
+
+  if (rows.length === 0) {
+      return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
+  }
+
+  const user = rows[0];
+
+  // Comparer le mot de passe avec le mot de passe haché dans la base de données
+  return await bcrypt.compare(password, user.password_hash);
+}
+
 
 // Démarrer le serveur
 const PORT = process.env.PORT;

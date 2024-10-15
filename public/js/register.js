@@ -66,11 +66,6 @@ document.getElementById('cropAccept').addEventListener('click', function() {
   // (Vous pouvez également l'envoyer à une balise img pour la prévisualisation)
   const imagePreviewBox = document.getElementById('dropcontainer')
   imagePreviewBox.style.backgroundImage = `url('${croppedImage}')`
-  //const imagePreview = document.createElement('img');
-  //imagePreview.src = croppedImage;
-  //imagePreview.classList.add('mt-3');
-  //document.getElementById('registerForm').appendChild(imagePreview);
-
   // Fermer la modale
   cropModal.hide();
 });
@@ -78,25 +73,30 @@ document.getElementById('cropAccept').addEventListener('click', function() {
 document.getElementById('registerForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // Récupérer les données du formulaire
-  const formData = new FormData();
-  formData.append('username', document.getElementById('username').value);
-  formData.append('password', document.getElementById('password').value);
-
+  let formData = new FormData();
+  username = document.getElementById('username').value;
+  password = document.getElementById('password').value;
+  let croppedImage;
   // Récupérer l'image recadrée si elle existe
   if (cropper) {
     const canvas = cropper.getCroppedCanvas({
       width: 300,
       height: 300,
     });
-    const croppedImage = canvas.toDataURL('image/png');
-    formData.append('profileImage', croppedImage); // Image recadrée
+    croppedImage = canvas.toDataURL('image/png');
   }
 
   // Envoyer les données au serveur via axios
-  axios.post('/register', formData)
+  axios.post('/register', {username: username, password: password, profileImage: croppedImage})
     .then(response => {
-      console.log('Inscription réussie !', response.data);
+      console.log(response.data.success);
+      if(response.data.success){
+        console.log('Inscription réussie !', response.data);
+        localStorage.setItem('username', username);
+        window.location.href = "../../index.html"
+      }else{
+        console.error('Erreur lors de l\'inscription :', response.data);
+      }
     })
     .catch(error => {
       console.error('Erreur lors de l\'inscription :', error);
