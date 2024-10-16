@@ -76,6 +76,13 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   let formData = new FormData();
   username = document.getElementById('username').value;
   password = document.getElementById('password').value;
+  password2 = document.getElementById('confirmPassword').value;
+
+  if (password != password2){
+    alert('Les deux mots de passe doivent être identique !');
+    return;
+  }
+
   let croppedImage;
   // Récupérer l'image recadrée si elle existe
   if (cropper) {
@@ -89,7 +96,6 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   // Envoyer les données au serveur via axios
   axios.post('/register', {username: username, password: password, profileImage: croppedImage})
     .then(response => {
-      console.log(response.data.success);
       if(response.data.success){
         console.log('Inscription réussie !', response.data);
         localStorage.setItem('token', response.data.token);

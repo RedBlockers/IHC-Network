@@ -49,7 +49,7 @@ app.get('/messages', (req, res) => {
 // Route pour poster un nouveau message
 app.post('/messages', (req, res) => {
   const messageContent = req.body.content;
-  const sql = 'INSERT INTO messages (content) VALUES (?)';
+  const sql = 'INSERT INTO messages (contenu) VALUES (?)';
   db.query(sql, [messageContent], (err, result) => {
     if (err) throw err;
     const newMessage = { id: result.insertId, content: messageContent, created_at: new Date() };
@@ -63,21 +63,60 @@ app.post('/messages', (req, res) => {
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const isMatch = ConnectUser(username,password,res)
+        const {isMatch, user} = await ConnectUser(username,password,res)
         if (!isMatch) {
             return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
         }
-        res.json({ success: true}); // Renvoie le token au client
+
+        token = CreateToken(username,user.passwordUpdatedAt)
+
+        res.json({ success: true,token: token}); // Renvoie le token au client
     } catch (error) {
         console.error('Erreur lors de la connexion :', error);
         res.json({ success: false, message: 'Erreur lors de la connexion.' });
     }
 });
 
+app.post('/authenticateToken', async (req, res) => {
+  const token = req.body.token
+  if (!token) {
+    return res.json({ success: false, message: 'Token manquant' });
+  }
+  try {
+    // Vérifier et décoder le token
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+
+    // Récupérer l'utilisateur correspondant depuis la base de données
+    const [rows] = await db.promise().execute(
+      'SELECT passwordUpdatedAt FROM users WHERE userPseudo = ?', 
+      [decodedToken.username]
+    );
+
+    if (rows.length === 0) {
+      return res.json({ success: false, message: 'Utilisateur non trouvé' });
+    }
+
+    const user = rows[0];
+
+    // Comparer les dates de `passwordUpdatedAt`
+    if (new Date(user.passwordUpdatedAt).getTime() === new Date(decodedToken.passwordUpdatedAt).getTime()) {
+      // Token valide
+      res.json({ success: true, message: 'Token valide'});
+    } else {
+      // Le mot de passe a été modifié, donc le token est invalide
+      res.json({ success: false, message: 'Le token est invalide, le mot de passe a été changé.' });
+    }
+
+  } catch (err) {
+    // Si le token n'est pas valide (expiré, incorrect, etc.)
+    console.error(err)
+    return res.json({ success: false, message: 'Token invalide ou expiré' });
+  }
+})
+
 // Route pour l'inscription
 app.post('/register', async (req, res) => {
   const { username, password, profileImage } = req.body;
-  console.log(req.body);
   try {
     // Vérifier si l'utilisateur existe déjà
     const [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
@@ -108,9 +147,7 @@ app.post('/register', async (req, res) => {
 
       ConnectUser(username, password, res);
 
-      const token = jwt.sign(
-        { username: username, passwordUpdatedAt: currentDateTime }, // Inclure passwordUpdatedAt dans le token
-        crypto.randomBytes(64).toString('hex'));
+      token = CreateToken(username,currentDateTime)
 
       res.json({ success: true, token: token });
     });
@@ -131,8 +168,10 @@ io.on('connection', async (socket) => {
   });
 });
 
-function GenerateConnectionToken(username){
-  return jtw.sign(username,crypto.randomBytes(255).toString('hex'),)
+function CreateToken(username,passwordUpdatedAt){
+  return jwt.sign(
+    { username: username, passwordUpdatedAt: passwordUpdatedAt },
+    process.env.SECRET_KEY);
 }
 
 async function ConnectUser(username, password,res){
@@ -140,13 +179,13 @@ async function ConnectUser(username, password,res){
   const [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
 
   if (rows.length === 0) {
-      return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
+    return { isMatch: false, user: null };
   }
 
   const user = rows[0];
-
+  const success = await bcrypt.compare(password, user.userMdp)
   // Comparer le mot de passe avec le mot de passe haché dans la base de données
-  return await bcrypt.compare(password, user.userMdp);
+  return {isMatch: success, user};
 }
 
 
