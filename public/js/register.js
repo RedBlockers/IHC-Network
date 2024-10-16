@@ -92,7 +92,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
       console.log(response.data.success);
       if(response.data.success){
         console.log('Inscription réussie !', response.data);
-        localStorage.setItem('username', username);
+        localStorage.setItem('token', response.data.token);
         window.location.href = "../../index.html"
       }else{
         console.error('Erreur lors de l\'inscription :', response.data);

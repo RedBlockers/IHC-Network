@@ -87,7 +87,7 @@
       breaks:true,
     });
 
-    if (!localStorage.getItem('username')) {
+    if (!localStorage.getItem('token')) {
       window.location.href = 'pages/login.html'; // Rediriger si non connecté
     } else {
       document.getElementById('usernameDisplay').textContent = 'Nom d\'utilisateur: ' + localStorage.getItem('username');
