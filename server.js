@@ -76,7 +76,6 @@ app.post('/messages', async (req, res) => {
         }
 
         io.emit('newMessage', results);
-        console.log(results)
         res.status(200).json({ success: true, message: 'Message ajouté avec succès', data: results });
       });
     });
