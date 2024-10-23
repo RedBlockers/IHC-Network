@@ -52,7 +52,7 @@ app.post('/messages', (req, res) => {
   const sql = 'INSERT INTO messages (contenu) VALUES (?)';
   db.query(sql, [messageContent], (err, result) => {
     if (err) throw err;
-    const newMessage = { id: result.insertId, content: messageContent, created_at: new Date() };
+    const newMessage = { id: result.insertId, contenu: messageContent, created_at: new Date() };
     io.emit('newMessage', newMessage);  // Diffuser le message en temps réel
     res.sendStatus(200);
   });
@@ -101,7 +101,7 @@ app.post('/authenticateToken', async (req, res) => {
     // Comparer les dates de `passwordUpdatedAt`
     if (new Date(user.passwordUpdatedAt).getTime() === new Date(decodedToken.passwordUpdatedAt).getTime()) {
       // Token valide
-      res.json({ success: true, message: 'Token valide'});
+      res.json({ success: true, message: 'Token valide',username: decodedToken.username});
     } else {
       // Le mot de passe a été modifié, donc le token est invalide
       res.json({ success: false, message: 'Le token est invalide, le mot de passe a été changé.' });
@@ -116,10 +116,10 @@ app.post('/authenticateToken', async (req, res) => {
 
 // Route pour l'inscription
 app.post('/register', async (req, res) => {
-  const { username, password, profileImage } = req.body;
+  const { username, password, mail, profileImage } = req.body;
   try {
     // Vérifier si l'utilisateur existe déjà
-    const [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
+    let [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
     if (rows.length > 0) {
       return res.json({ success: false, message: 'Cet utilisateur existe déjà.' });
     }
@@ -128,29 +128,43 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const currentDateTime = new Date();
 
+    // Écriture de la photo de profil
+    if(profileImage){
+      const base64Data = profileImage.replace(/^data:image\/png;base64,/, "");
+      const buffer = Buffer.from(base64Data, 'base64');
+      fs.writeFile(`./public/images/profiles/${lastInsertId}.png`, buffer, (err) => {
+        if (err) {
+          console.error('Erreur lors de l\'écriture de l\'image:', err);
+          return res.json({ success: false, message: 'Erreur lors de l\'écriture de l\'image.' });
+        }
+      });
+      const imagePath = `profiles/${lastInsertId}.png`;
+    }else{
+      const imagePath = `./NoScord.png`;
+    }
+
     const [result] = await db.promise().execute(
-      'INSERT INTO users (userPseudo, userMdp, passwordUpdatedAt) VALUES (?, ?, ?)', 
-      [username, hashedPassword, currentDateTime]
+      'INSERT INTO users (userPseudo, userMdp, userEmail, passwordUpdatedAt) VALUES (?, ?, ?, ?)', 
+      [username, hashedPassword, mail, currentDateTime]
     );
 
     // Récupérer l'ID de la dernière insertion
     const lastInsertId = result.insertId;
 
-    // Écriture de la photo de profil
-    const base64Data = profileImage.replace(/^data:image\/png;base64,/, "");
-    const buffer = Buffer.from(base64Data, 'base64');
-    fs.writeFile(`./public/images/profiles/${lastInsertId}.png`, buffer, (err) => {
-      if (err) {
-        console.error('Erreur lors de l\'écriture de l\'image:', err);
-        return res.json({ success: false, message: 'Erreur lors de l\'écriture de l\'image.' });
-      }
+    [rows] = await db.promise().execute(
+      'SELECT passwordUpdatedAt FROM users WHERE idUser = ?',
+      [lastInsertId]
+    );
+    
+    const passwordUpdatedAt = rows[0].passwordUpdatedAt;
 
-      ConnectUser(username, password, res);
 
-      token = CreateToken(username,currentDateTime)
 
-      res.json({ success: true, token: token });
-    });
+    ConnectUser(username, password, res);
+
+    token = CreateToken(username,passwordUpdatedAt)
+
+    res.json({ success: true, token: token });
   } catch (error) {
     console.error('Erreur lors de l\'inscription:', error);
     res.json({ success: false, message: 'Erreur lors de l\'inscription.' });

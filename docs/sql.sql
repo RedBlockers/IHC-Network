@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : dim. 13 oct. 2024 à 20:28
+-- Généré le : lun. 21 oct. 2024 à 14:20
 -- Version du serveur : 8.3.0
 -- Version de PHP : 8.2.18
 
@@ -24,53 +24,21 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `channels`
+-- Structure de la table `logs`
 --
 
-DROP TABLE IF EXISTS `channels`;
-CREATE TABLE IF NOT EXISTS `channels` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `type` enum('text','voice') NOT NULL,
-  `guild_id` int DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `guild_id` (`guild_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+DROP TABLE IF EXISTS `logs`;
+CREATE TABLE IF NOT EXISTS `logs` (
+  `idLog` int NOT NULL AUTO_INCREMENT,
+  `type` enum('connexion','création serveur','création salon','modification serveur','modification salon','suppression serveur','suppression salon','déconnexion') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `idUser` int DEFAULT NULL,
+  `commentaire` text,
+  `datetime` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idLog`),
+  KEY `idUser` (`idUser`)
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `connections`
---
-
-DROP TABLE IF EXISTS `connections`;
-CREATE TABLE IF NOT EXISTS `connections` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `connected_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `guilds`
---
-
-DROP TABLE IF EXISTS `guilds`;
-CREATE TABLE IF NOT EXISTS `guilds` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `owner_id` int DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `owner_id` (`owner_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
 
 --
 -- Structure de la table `messages`
@@ -78,18 +46,17 @@ CREATE TABLE IF NOT EXISTS `guilds` (
 
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `content` text NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `channel_id` int DEFAULT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `channel_id` (`channel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
+  `idMessage` int NOT NULL AUTO_INCREMENT,
+  `idUser` int DEFAULT NULL,
+  `idSalon` int DEFAULT NULL,
+  `contenu` text NOT NULL,
+  `dateEnvoi` datetime DEFAULT CURRENT_TIMESTAMP,
+  `dateModification` datetime DEFAULT NULL,
+  `media` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`idMessage`),
+  KEY `idUser` (`idUser`),
+  KEY `idSalon` (`idSalon`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Structure de la table `permissions`
@@ -97,16 +64,11 @@ CREATE TABLE IF NOT EXISTS `messages` (
 
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE IF NOT EXISTS `permissions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `role_id` int DEFAULT NULL,
-  `channel_id` int DEFAULT NULL,
-  `can_send_messages` tinyint(1) DEFAULT '0',
-  `can_delete_messages` tinyint(1) DEFAULT '0',
-  `can_manage_channels` tinyint(1) DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `role_id` (`role_id`),
-  KEY `channel_id` (`channel_id`)
+  `idPermission` int NOT NULL AUTO_INCREMENT,
+  `permissionLabel` varchar(64) NOT NULL,
+  `permissionValeur` varchar(128) NOT NULL,
+  `permissionDescription` text NOT NULL,
+  PRIMARY KEY (`idPermission`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -117,12 +79,77 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE IF NOT EXISTS `roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `guild_id` int DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `guild_id` (`guild_id`)
+  `idRole` int NOT NULL AUTO_INCREMENT,
+  `roleLabel` varchar(32) NOT NULL,
+  `idUser` int DEFAULT NULL,
+  `couleur` varchar(7) DEFAULT NULL,
+  `idServeur` int DEFAULT NULL,
+  PRIMARY KEY (`idRole`),
+  KEY `idUser` (`idUser`),
+  KEY `idServeur` (`idServeur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `role_permission`
+--
+
+DROP TABLE IF EXISTS `role_permission`;
+CREATE TABLE IF NOT EXISTS `role_permission` (
+  `idRole` int NOT NULL,
+  `idPermission` int NOT NULL,
+  PRIMARY KEY (`idRole`,`idPermission`),
+  KEY `idPermission` (`idPermission`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `salons`
+--
+
+DROP TABLE IF EXISTS `salons`;
+CREATE TABLE IF NOT EXISTS `salons` (
+  `idSalon` int NOT NULL AUTO_INCREMENT,
+  `type` enum('texte','vocal') NOT NULL,
+  `nom` varchar(32) NOT NULL,
+  `description` text,
+  `idServeur` int DEFAULT NULL,
+  PRIMARY KEY (`idSalon`),
+  KEY `idServeur` (`idServeur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `salon_permission`
+--
+
+DROP TABLE IF EXISTS `salon_permission`;
+CREATE TABLE IF NOT EXISTS `salon_permission` (
+  `idSalon` int NOT NULL,
+  `idPermission` int NOT NULL,
+  PRIMARY KEY (`idSalon`,`idPermission`),
+  KEY `idPermission` (`idPermission`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `serveurs`
+--
+
+DROP TABLE IF EXISTS `serveurs`;
+CREATE TABLE IF NOT EXISTS `serveurs` (
+  `idServeur` int NOT NULL AUTO_INCREMENT,
+  `serveurNom` varchar(32) NOT NULL,
+  `serveurImage` varchar(255) DEFAULT '',
+  `serveurDescription` varchar(255) DEFAULT NULL,
+  `idProprietaire` int DEFAULT NULL,
+  PRIMARY KEY (`idServeur`),
+  UNIQUE KEY `serveurNom` (`serveurNom`),
+  KEY `idProprietaire` (`idProprietaire`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -133,82 +160,67 @@ CREATE TABLE IF NOT EXISTS `roles` (
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `idUser` int NOT NULL AUTO_INCREMENT,
+  `userPseudo` varchar(32) NOT NULL,
+  `userEmail` varchar(64) NOT NULL,
+  `userEmailConfirmer` tinyint(1) NOT NULL DEFAULT '0',
+  `userImage` varchar(255) DEFAULT '',
+  `userMdp` varchar(256) NOT NULL,
+  `userToken` varchar(256) NOT NULL,
+  `passwordUpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idUser`),
+  UNIQUE KEY `userEmail` (`userEmail`),
+  UNIQUE KEY `userPseudo` (`userPseudo`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
-
---
--- Structure de la table `user_roles`
---
-
-DROP TABLE IF EXISTS `user_roles`;
-CREATE TABLE IF NOT EXISTS `user_roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `role_id` int DEFAULT NULL,
-  `guild_id` int DEFAULT NULL,
-  `assigned_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `role_id` (`role_id`),
-  KEY `guild_id` (`guild_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
 -- Contraintes pour les tables déchargées
 --
 
 --
--- Contraintes pour la table `channels`
+-- Contraintes pour la table `logs`
 --
-ALTER TABLE `channels`
-  ADD CONSTRAINT `channels_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `guilds` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `connections`
---
-ALTER TABLE `connections`
-  ADD CONSTRAINT `connections_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `guilds`
---
-ALTER TABLE `guilds`
-  ADD CONSTRAINT `guilds_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `logs`
+  ADD CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`idUser`);
 
 --
 -- Contraintes pour la table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`) ON DELETE CASCADE;
-
---
--- Contraintes pour la table `permissions`
---
-ALTER TABLE `permissions`
-  ADD CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `permissions_ibfk_2` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`idUser`),
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`idSalon`) REFERENCES `salons` (`idSalon`);
 
 --
 -- Contraintes pour la table `roles`
 --
 ALTER TABLE `roles`
-  ADD CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `guilds` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`idUser`),
+  ADD CONSTRAINT `roles_ibfk_2` FOREIGN KEY (`idServeur`) REFERENCES `serveurs` (`idServeur`);
 
 --
--- Contraintes pour la table `user_roles`
+-- Contraintes pour la table `role_permission`
 --
-ALTER TABLE `user_roles`
-  ADD CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `user_roles_ibfk_3` FOREIGN KEY (`guild_id`) REFERENCES `guilds` (`id`) ON DELETE CASCADE;
+ALTER TABLE `role_permission`
+  ADD CONSTRAINT `role_permission_ibfk_1` FOREIGN KEY (`idRole`) REFERENCES `roles` (`idRole`),
+  ADD CONSTRAINT `role_permission_ibfk_2` FOREIGN KEY (`idPermission`) REFERENCES `permissions` (`idPermission`);
+
+--
+-- Contraintes pour la table `salons`
+--
+ALTER TABLE `salons`
+  ADD CONSTRAINT `salons_ibfk_1` FOREIGN KEY (`idServeur`) REFERENCES `serveurs` (`idServeur`);
+
+--
+-- Contraintes pour la table `salon_permission`
+--
+ALTER TABLE `salon_permission`
+  ADD CONSTRAINT `salon_permission_ibfk_1` FOREIGN KEY (`idSalon`) REFERENCES `salons` (`idSalon`),
+  ADD CONSTRAINT `salon_permission_ibfk_2` FOREIGN KEY (`idPermission`) REFERENCES `permissions` (`idPermission`);
+
+--
+-- Contraintes pour la table `serveurs`
+--
+ALTER TABLE `serveurs`
+  ADD CONSTRAINT `serveurs_ibfk_1` FOREIGN KEY (`idProprietaire`) REFERENCES `users` (`idUser`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

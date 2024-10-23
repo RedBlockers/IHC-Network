@@ -10,9 +10,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
       if(response.data.success){
         console.log('Inscription réussie !', response.data);
         localStorage.setItem('token', response.data.token);
-        window.location.href = "../../index.html"
+        window.location.href = "../../index.html";
       }else{
-        console.error('Erreur lors de l\'inscription :', response.data);
+        console.error('Erreur lors de la connexion :', response.data);
+        alert(response.data.message)
       }
     })
     .catch(error => {
