@@ -223,6 +223,10 @@ ALTER TABLE `serveurs`
   ADD CONSTRAINT `serveurs_ibfk_1` FOREIGN KEY (`idProprietaire`) REFERENCES `users` (`idUser`);
 COMMIT;
 
+CREATE VIEW message_content AS
+SELECT m.idMessage, m.idUser, m.contenu, m.dateEnvoi, u.userPseudo, u.userImage FROM messages m 
+INNER JOIN users u WHERE u.idUser = m.idUser ORDER BY m.dateEnvoi ASC;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
