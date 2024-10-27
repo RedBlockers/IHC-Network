@@ -3,10 +3,20 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     event.preventDefault(); // Empêche le rechargement de la page
 
     const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-    // Simule une connexion et stocke le nom d'utilisateur dans le stockage local
-    if (username.trim() !== '') {
-        localStorage.setItem('username', username); // Stocke le nom d'utilisateur
-        window.location.href = '../index.html'; // Redirige vers la page d'accueil
-    }
+    axios.post('/login', {username: username, password: password})
+    .then(response => {
+      if(response.data.success){
+        console.log('Inscription réussie !', response.data);
+        localStorage.setItem('token', response.data.token);
+        window.location.href = "../../index.html";
+      }else{
+        console.error('Erreur lors de la connexion :', response.data);
+        alert(response.data.message)
+      }
+    })
+    .catch(error => {
+      console.error('Erreur lors de l\'inscription :', error);
+    });
 });

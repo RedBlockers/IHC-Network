@@ -74,8 +74,16 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
   let formData = new FormData();
-  username = document.getElementById('username').value;
-  password = document.getElementById('password').value;
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('confirmPassword').value;
+  const mail = document.getElementById('email').value
+
+  if (password != password2){
+    alert('Les deux mots de passe doivent être identique !');
+    return;
+  }
+
   let croppedImage;
   // Récupérer l'image recadrée si elle existe
   if (cropper) {
@@ -87,15 +95,16 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   }
 
   // Envoyer les données au serveur via axios
-  axios.post('/register', {username: username, password: password, profileImage: croppedImage})
+  axios.post('/register', {username: username, password: password, mail: mail, profileImage: croppedImage})
     .then(response => {
-      console.log(response.data.success);
       if(response.data.success){
         console.log('Inscription réussie !', response.data);
-        localStorage.setItem('username', username);
-        window.location.href = "../../index.html"
+        localStorage.setItem('token', response.data.token);
+
+        window.location.href = "../../index.html";
       }else{
         console.error('Erreur lors de l\'inscription :', response.data);
+        alert(response.data.message)
       }
     })
     .catch(error => {
