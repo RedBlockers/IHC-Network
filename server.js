@@ -165,6 +165,10 @@ app.post('/register', async (req, res) => {
     if (rows.length > 0) {
       return res.json({ success: false, message: 'Cet utilisateur existe déjà.' });
     }
+    [rows] = await db.promise().execute('SELECT * FROM users WHERE userEmail = ?', [mail]);
+    if (rows.length > 0) {
+      return res.json({ success: false, message: 'Cet Email est déjà associer a un compte.' });
+    }
 
     // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
