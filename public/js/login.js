@@ -5,7 +5,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    axios.post('/login', {username: username, password: password})
+    axios.post('/users/login', {username: username, password: password})
     .then(response => {
       if(response.data.success){
         console.log('Inscription réussie !', response.data);

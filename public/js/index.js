@@ -7,11 +7,12 @@ marked.use({
 if (!localStorage.getItem('token')) {
   window.location.href = 'pages/login.html'; // Rediriger si non connecté
 } else {
-  axios.post('/authenticateToken', {token: localStorage.getItem('token')})
+  axios.post('/users/authenticateToken', {token: localStorage.getItem('token')})
   .then(response => {
     if(response.data.success){
-      localStorage.setItem('username', response.data.username)
+      localStorage.setItem('username', response.data.username);
       console.log('Authentification réussie !', response.data);
+      document.getElementById('usernameDisplay').textContent = 'Nom d\'utilisateur: ' + response.data.username;
     }else{
       console.error('Erreur lors de l\'authentification :', response.data);
       localStorage.removeItem('token');
@@ -23,7 +24,6 @@ if (!localStorage.getItem('token')) {
     localStorage.removeItem('token');
     window.location.href = 'pages/login.html';
   });
- document.getElementById('usernameDisplay').textContent = 'Nom d\'utilisateur: ' + localStorage.getItem('username');
 }
 const socket = io();
 const textarea = document.getElementById('messageInput');
@@ -67,9 +67,9 @@ textarea.addEventListener('keyup', function(event) {
 
 // Charger les messages existants
 function loadMessages() {
-  axios.get('/messages')
-    .then(response => {
-      const messages = response.data;
+  axios.get('/messages/messages')
+    .then(async response => {
+      const messages = await response.data;
       const messageList = document.getElementById('messageList');
       messageList.innerHTML = ''; // Réinitialiser la liste des messages
       messages.forEach(message => {
@@ -166,8 +166,8 @@ document.getElementById('sendMessage').addEventListener('click', () => {
 
 // Réception des nouveaux messages via WebSockets
 socket.on('newMessage', (message) => {
-  console.log(message[0])
-  displayMessage(message[0]);
+  console.log(message)
+  displayMessage(message);
   scrollToBottom();
 });
 
@@ -175,7 +175,7 @@ socket.on('newMessage', (message) => {
 function sendMessage(){
   const messageContent = document.getElementById('messageInput').value;
   if (messageContent.trim() !== '') {
-    axios.post('/messages', {content: {token:localStorage.getItem("token") ,messageContent: messageContent} }).then(() => {
+    axios.post('/messages/messages', {content: {token:localStorage.getItem("token") ,messageContent: messageContent} }).then(() => {
       document.getElementById('messageInput').value = ''; // Vider le champ
       scrollToBottom();
     });
