@@ -95,7 +95,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
   }
 
   // Envoyer les données au serveur via axios
-  axios.post('/register', {username: username, password: password, mail: mail, profileImage: croppedImage})
+  axios.post('/users/register', {username: username, password: password, mail: mail, profileImage: croppedImage})
     .then(response => {
       if(response.data.success){
         console.log('Inscription réussie !', response.data);
