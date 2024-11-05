@@ -13,15 +13,16 @@ function saveProfileImage(profileImage) {
       
           fs.writeFile(`./public/images/${imagePath}`, buffer, (err) => {
             if (err) {
-              console.error('Erreur lors de l\'écriture de l\'image:', err);
+              logger.error('Erreur lors de l\'écriture de l\'image:', err);
               throw new Error('Erreur lors de l\'écriture de l\'image.');
             }
           });
         }
-        logger.info(`Image saved as ${imagePath}`);
+        logger.info(`Photo de profil de l'utilisateur savegarder avec succès a l'emplacement: ${imagePath}`);
         return imagePath;
     } catch (error) {
-        logger.error(error);
+        logger.error(`Echec de la sauvegarde de la photo de profils.
+ ${error} `);
     }
 
 }

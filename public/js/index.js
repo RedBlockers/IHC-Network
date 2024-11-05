@@ -31,7 +31,7 @@ const textarea = document.getElementById('messageInput');
 
 textarea.addEventListener('keyup', function(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // Empêche d'ajouter un retour à la ligne
+      event.preventDefault();
       sendMessage();
       // Réinitialiser le textarea
       this.value = '';

@@ -1,13 +1,16 @@
 const db = require('./connDB');
 const bcrypt = require('bcrypt');
+const logger = require('../utils/logger');
 
 module.exports = {
   getUserByUsername: async (username) => {
+      logger.info('getUserByUsername '+ username);
     const [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
     return rows;
   },
 
   getUserByMail: async (mail) => {
+      logger.info('getUserByMail '+ mail);
     const [rows] = await db.promise().execute('SELECT * FROM users WHERE userEmail = ?', [mail]);
     return rows;
   },
@@ -27,11 +30,13 @@ module.exports = {
         // Retourner l'ID de l'utilisateur créé
         return { success: true, userId: result.insertId, currentDateTime: currentDateTime };
       } catch (error) {
-        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        logger.error('Erreur lors de la création de l\'utilisateur:\n' + error);
         return { success: false, message: 'Erreur lors de la création de l\'utilisateur.' };
       }
     },
+
     checkPassword: async (existingUser, password) => {
+      logger.info("checkPassword "+ existingUser[0]);
         if (existingUser.length === 0) {
             return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
         }

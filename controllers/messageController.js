@@ -6,6 +6,7 @@ const http = require("http");
 const path = require("path");
 const userRoutes = require("../routes/userRoutes");
 const messageRoutes = require("../routes/messagesRoutes");
+const logger = require("../utils/logger");
 let io;
 
 
@@ -13,10 +14,9 @@ module.exports = {
     getMessages: async (req, res) => {
         try {
             const results = await messageModel.getAllMessages();
-            console.log(results)
             res.json(results);
         } catch (err) {
-            console.error('Erreur lors de la récupération des messages :', err);
+            logger.error('Erreur lors de la récupération des messages :' + err);
             res.status(500).json({ error: 'Erreur interne du serveur' });
         }
     },
@@ -38,7 +38,6 @@ module.exports = {
             if (!result) {
                 throw new Error(`Erreur lors de messages`);
             }
-            console.log(result);
             const newMessage = await messageModel.getMessageById(result.insertId);
             io.emit('newMessage', newMessage);
             res.status(200).json({ success: true, message: 'Message ajouté avec succès', data: newMessage });

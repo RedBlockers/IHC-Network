@@ -27,15 +27,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 
-
-// WebSockets : gérer la connexion et synchronisation des messages
-io.on('connection', async (socket) => {
-  console.log(`Un utilisateur est connecté : ${socket.handshake.address}`)
-  socket.on('disconnect', async () => {
-    console.log('Un utilisateur est déconnecté');
-  });
-});
-
 // Démarrer le serveur
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
