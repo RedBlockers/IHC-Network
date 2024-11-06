@@ -86,12 +86,33 @@
     
       <div class="input-group">
         <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="1024"></textarea>
+        <button id="emojiButton" class="btn" style="border:1px solid #ced4da;">😀</button> <!-- Bouton emoji -->
         <button id="sendMessage" class="btn btn-primary">Envoyer</button>
       </div>
   </div>
 </div>
+  <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.0/dist/index.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="./js/index.js"></script>
+  <script type="module">
+    import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4/dist/index.min.js';
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      const button = document.querySelector('#emojiButton');
+      const picker = new EmojiButton({
+      });  
+      document.querySelector('.emoji-picker').style.backgroundColor = 'rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))';
+      document.querySelector('.emoji-picker__search').style.backgroundColor = 'rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))';
+      picker.on('emoji', emoji => {
+        document.querySelector('#messageInput').value += emoji.emoji;
+        console.log(emoji.emoji);
+      });
+  
+      button.addEventListener('click', () => {
+        picker.togglePicker(button);
+      });
+    });
+  </script>
 </body>
 </html>
