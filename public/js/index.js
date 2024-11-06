@@ -28,7 +28,6 @@ if (!localStorage.getItem('token')) {
 const socket = io();
 const textarea = document.getElementById('messageInput');
 
-
 textarea.addEventListener('keyup', function(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -64,6 +63,17 @@ textarea.addEventListener('keyup', function(event) {
   }
 });
 
+function HandleAnchor() {
+    document.querySelectorAll('a').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("test");
+            if (confirm("Voulez-vous vraiment ouvrir ce lien dans un nouvel onglet ?")) {
+                window.open(anchor.href, '_blank');
+            }
+        });
+    });
+}
 
 // Charger les messages existants
 function loadMessages() {
@@ -144,6 +154,7 @@ function displayMessage(message) {
   `;
   }
   messageList.appendChild(messageElement);
+  HandleAnchor();
 }
 
 
