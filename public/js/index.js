@@ -93,12 +93,15 @@ function escapeHtml(unsafe) {
 function displayMessage(message) {
   const messageList = document.getElementById('messageList');
   const messageElement = document.createElement('li');
+  if (message.contenu.includes(`@${localStorage.getItem('username')}`)){
+    messageElement.style = 'background-color: #e7b9111f !important';
+  }
   messageElement.classList.add('list-group-item', 'text-wrap', 'text-break','bg-dark', 'text-white');
   if(localStorage.getItem('username') == message.userPseudo)
   {
     messageElement.innerHTML = `
-      <div class="message-actions bg-dark text-white position-relative">
-        <div class="content bg-dark text-white">
+      <div class="message-actions position-relative">
+        <div class="content">
           <div class="message-info-container d-flex flex-row">
             <img class="avatar mr-3" src="../images/${message.userImage}">
             <span class="message-info d-flex flex-row align-items-top">
@@ -106,7 +109,7 @@ function displayMessage(message) {
               <p class="timestamp ">${new Date(message.dateEnvoi).toLocaleDateString("fr-FR")}</p>
             </span>
           </div>
-          <div class="message-content bg-dark text-white">
+          <div class="message-content">
             ${marked.parse(escapeHtml(message.contenu).replace(/\n/g, '<br>\n\n'))}
           </div>
         </div>
@@ -127,8 +130,8 @@ function displayMessage(message) {
     `;
   }else{
     messageElement.innerHTML = `
-    <div class="message-actions bg-dark text-white position-relative">
-      <div class="content bg-dark text-white">
+    <div class="message-actions position-relative">
+      <div class="content">
         <div class="message-info-container d-flex flex-row">
           <img class="avatar mr-3" src="../images/${message.userImage}">
           <span class="message-info d-flex flex-row align-items-top">
@@ -136,7 +139,7 @@ function displayMessage(message) {
             <p class="timestamp ">${new Date(message.dateEnvoi).toLocaleDateString("fr-FR")}</p>
           </span>
         </div>
-        <div class="message-content bg-dark text-white">
+        <div class="message-content">
           ${marked.parse(escapeHtml(message.contenu).replace(/\n/g, '<br>\n\n'))}
         </div>
       </div>
