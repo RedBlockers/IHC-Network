@@ -105,7 +105,11 @@
       document.querySelector('.emoji-picker').style.backgroundColor = 'rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))';
       document.querySelector('.emoji-picker__search').style.backgroundColor = 'rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))';
       picker.on('emoji', emoji => {
-        document.querySelector('#messageInput').value += emoji.emoji;
+        const messageInput = document.querySelector('#messageInput');
+        messageInput.value += emoji.emoji;
+        setTimeout(() => {
+          messageInput.focus();
+          }, 100);
         console.log(emoji.emoji);
       });
   

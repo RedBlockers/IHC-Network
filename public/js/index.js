@@ -20,7 +20,7 @@ if (!localStorage.getItem('token')) {
     }
   })
   .catch(error => {
-    console.error('Erreur lors de l\'inscription :', error);
+    console.error('Erreur lors de l\'authentification :', error);
     localStorage.removeItem('token');
     window.location.href = 'pages/login.html';
   });
@@ -81,7 +81,7 @@ function loadMessages() {
     .then(async response => {
       const messages = await response.data;
       const messageList = document.getElementById('messageList');
-      messageList.innerHTML = ''; // Réinitialiser la liste des messages
+      messageList.innerHTML = '';
       messages.forEach(message => {
         displayMessage(message);
       });
