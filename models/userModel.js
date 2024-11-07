@@ -36,15 +36,28 @@ module.exports = {
     },
 
     checkPassword: async (existingUser, password) => {
-      logger.info("checkPassword "+ existingUser[0]);
         if (existingUser.length === 0) {
             return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
         }
+        logger.info("checkPassword "+ existingUser[0]);
         const isPasswordCorrect = await bcrypt.compare(password, existingUser[0].userMdp);
         if (!isPasswordCorrect) {
             return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
         }
         return {success:true};
+    },
+
+    addUserAttempt: async (ip) =>{
+      await db.promise().execute('INSERT INTO user_attempts (ip) VALUES (?)', [ip]);
+    },
+
+    getUserAttempts: async (ip) =>{
+        const [result] = await db.promise().execute('SELECT * FROM user_attempts WHERE ip = ?', [ip]);
+        return result;
+    },
+
+    deleteUserAttempt: async (ip) =>{
+      await db.promise().execute('DELETE FROM user_attempts WHERE ip = ?', [ip]);
     }
 };
  
