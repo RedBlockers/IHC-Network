@@ -175,6 +175,16 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `userPseudo` (`userPseudo`)
 ) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+DROP TABLE IF EXISTS `user_attempts`;
+CREATE TABLE IF NOT EXISTS `user_attempts` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `ip` varchar(16) NOT NULL,
+    `attemptedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 -- Contraintes pour les tables déchargées
 --
 
@@ -228,6 +238,11 @@ COMMIT;
 CREATE VIEW message_content AS
 SELECT m.idMessage, m.idUser, m.contenu, m.dateEnvoi, u.userPseudo, u.userImage FROM messages m 
 INNER JOIN users u WHERE u.idUser = m.idUser ORDER BY m.dateEnvoi ASC;
+
+CREATE DEFINER=`root`@`localhost` EVENT `delete_old_attempts`
+ON SCHEDULE EVERY 10 SECOND STARTS '2024-11-07 14:27:58'
+ON COMPLETION NOT PRESERVE ENABLE
+DO DELETE FROM user_attempts WHERE attemptedAt < NOW() - INTERVAL 30 MINUTE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

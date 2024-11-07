@@ -73,9 +73,16 @@ module.exports = {
             const { username, password } = req.body;
             const users = await userModel.getUserByUsername(username)
             logger.info(`Connexion de l'utilisateur n°${users[0].idUser}`);
+            const userAttempts = await userModel.getUserAttempts(req.ip);
+            console.log(userAttempts.length);
+            if(userAttempts.length > 5) {
+                return res.json({ success: false, message: 'Votre compte a été bloquer suite a une activité suspecte, veuillez rééssayer ultérieurement ' });
+            }
             if (!(await userModel.checkPassword(users, password)).success) {
+                await userModel.addUserAttempt(req.ip);
                 return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
             }
+            await userModel.deleteUserAttempt(req.ip)
                 const token = CreateToken(username, users[0].idUser, users[0].passwordUpdatedAt)
                 res.json({ success: true,token: token});
         } catch (error) {
