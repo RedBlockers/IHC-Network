@@ -4,10 +4,10 @@ const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
 const {saveProfileImage} = require("../services/fileServices");
 
-function CreateToken(username,userId,passwordUpdatedAt) {
+function CreateToken(username,userId,passwordUpdatedAt,profilePicture) {
     logger.info(`Création d'un token pour l'utilisateur n°${userId}`);
     return jwt.sign(
-        { username: username, userId:userId, passwordUpdatedAt: passwordUpdatedAt },
+        { username: username, userId:userId, passwordUpdatedAt: passwordUpdatedAt, profilePicture: profilePicture },
         process.env.SECRET_KEY);
 }
 
@@ -56,11 +56,11 @@ module.exports = {
               return res.json({ success: false, message: "Erreur lors de l\'écriture de l'image." });
           }
 
-          const resp = await userModel.createUser(username,password,mail,imagePath);
+          const resp = await userModel.createUser(username, password, mail, imagePath);
           if (!resp.success) {
               return res.json({ success: false, message: 'Erreur lors de l\'inscription.' });
           }
-          const token = CreateToken(username, resp.userId, resp.currentDateTime);
+          const token = CreateToken(username, resp.userId, resp.currentDateTime, imagePath);
       
           res.json({ success: true, token: token });
         } catch (error) {
@@ -72,7 +72,7 @@ module.exports = {
         try {
             const { username, password } = req.body;
             const users = await userModel.getUserByUsername(username)
-            logger.info(`Connexion de l'utilisateur n°${users[0].idUser}`);
+            logger.info(`Connexion de l'utilisateur n°${users[0].userId}`);
             const userAttempts = await userModel.getUserAttempts(req.ip);
             console.log(userAttempts.length);
             if(userAttempts.length > 5) {
@@ -83,7 +83,7 @@ module.exports = {
                 return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
             }
             await userModel.deleteUserAttempt(req.ip)
-                const token = CreateToken(username, users[0].idUser, users[0].passwordUpdatedAt)
+                const token = CreateToken(username, users[0].userId, users[0].passwordUpdatedAt, users[0].userImage)
                 res.json({ success: true,token: token});
         } catch (error) {
             logger.error('Erreur lors de la connexion :\n'+ error);
@@ -98,7 +98,7 @@ module.exports = {
         const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
 
         if (valid) {
-            res.json({ success: true, message, username: decodedToken.username });
+            res.json({ success: true, message, username: decodedToken.username, avatar: decodedToken.profilePicture });
         } else {
             res.json({ success: false, message });
         }

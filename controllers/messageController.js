@@ -14,7 +14,7 @@ module.exports = {
     getMessages: async (req, res) => {
         try {
             const results = await messageModel.getAllMessages();
-            res.json(results);
+            res.status(200).json(results);
         } catch (err) {
             logger.error('Erreur lors de la récupération des messages :' + err);
             res.status(500).json({ error: 'Erreur interne du serveur' });
@@ -36,13 +36,13 @@ module.exports = {
 
             const result = await messageModel.insertMessage(decodedToken.userId, messageContent);
             if (!result) {
-                throw new Error(`Erreur lors de messages`);
+                throw new Error(`Erreur lors de l'enregistrement du messages`);
             }
             const newMessage = await messageModel.getMessageById(result.insertId);
             io.emit('newMessage', newMessage);
             res.status(200).json({ success: true, message: 'Message ajouté avec succès', data: newMessage });
         } catch (err) {
-            console.error('Erreur lors de l\'ajout du message :', err);
+            logger.error('Erreur lors de l\'ajout du message :', err);
             res.status(500).json({ error: 'Erreur interne du serveur' });
         }
     },

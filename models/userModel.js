@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 module.exports = {
   getUserByUsername: async (username) => {
       logger.info('getUserByUsername '+ username);
-    const [rows] = await db.promise().execute('SELECT * FROM users WHERE userPseudo = ?', [username]);
+    const [rows] = await db.promise().execute('SELECT * FROM users WHERE userNickname = ?', [username]);
     return rows;
   },
 
@@ -23,7 +23,7 @@ module.exports = {
 
         // Exécution de la requête d'insertion
         const [result] = await db.promise().execute(
-          'INSERT INTO users (userPseudo, userMdp, userEmail, userImage, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?)',
+          'INSERT INTO users (userNickname, password, userEmail, userImage, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?)',
           [username, hashedPassword, mail, profileImagePath, currentDateTime]
         );
   
@@ -40,7 +40,7 @@ module.exports = {
             return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
         }
         logger.info("checkPassword "+ existingUser[0]);
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser[0].userMdp);
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser[0].password);
         if (!isPasswordCorrect) {
             return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
         }

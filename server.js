@@ -10,6 +10,7 @@ const fs = require('fs')
 const crypto = require('crypto');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messagesRoutes');
+const guildRoutes = require('./routes/guildsRoutes');
 const messageController = require('./controllers/messageController');
 
 const app = express();
@@ -66,5 +67,6 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 // Routes
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
+app.use('/guilds', guildRoutes);
 
 
