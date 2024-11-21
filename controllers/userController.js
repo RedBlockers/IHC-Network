@@ -32,7 +32,7 @@ async function AuthenticateAndDecodeToken(token){
             return { valid: false, message: 'Le token est invalide, le mot de passe a été changé', decodedToken: null };
         }
     }catch (err){
-        logger.error(`Erreur lors le l'authentification du token de l'utilisateur n°${decodedToken.userId}.\n ${err}`);
+        logger.error(`Erreur lors le l'authentification du token de l'utilisateur \n ${err}`);
         return { valid: false, message: 'Token invalide ou expiré', decodedToken: null };
     }
 }

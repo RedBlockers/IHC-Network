@@ -136,7 +136,7 @@
     }
     .guild:hover {
       border-radius: 10px;
-      color: greenyellow;
+      color: #3ea457;
     }
     .content{
       max-width: 100%;
@@ -196,10 +196,6 @@
       word-wrap: normal !important;
     }
     .spinner {
-      position: absolute;
-      top: 10%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       border: 4px solid rgba(255, 255, 255, 0.3);
       border-top: 4px solid #3498db;
       border-radius: 50%;
@@ -276,7 +272,7 @@
       </div>
 
       <div class="input-group">
-        <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="1024"></textarea>
+        <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="4096"></textarea>
         <button id="emojiButton" class="btn" style="border:1px solid #ced4da;">😀</button>
         <button id="sendMessage" class="btn btn-primary">Envoyer</button>
       </div>
@@ -288,7 +284,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="./js/index.js"></script>
+<script type="module" src="./js/index.js"></script>
 <script type="module">
   import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4/dist/index.min.js';
 
@@ -312,7 +308,6 @@
   });
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
 </script>
 <script>
   const rotateElements = document.getElementsByClassName('rotate-return');

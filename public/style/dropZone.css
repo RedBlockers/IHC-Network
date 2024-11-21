@@ -1,0 +1,58 @@
+.drop-container {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed #ced4da;
+    cursor: pointer;
+    transition: background .2s ease-in-out, border .2s ease-in-out;
+}
+
+.drop-container:hover {
+    background-color: #ffffff16 !important;
+    cursor: pointer;
+
+}
+.custom-form-control:hover {
+    background: transparent !important;
+}
+
+input[type=file]{
+    color: transparent;
+}
+
+input[type=file]::file-selector-button {
+    margin-right: 0;
+    border: none;
+    width: 100%;
+    background: #00000035;
+    padding: 10px 20px;
+    color: #dde0e3;
+    cursor: pointer;
+}
+.custom-form-control {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    background: transparent;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    appearance: none;
+    border-radius: .25rem;
+    cursor: pointer;
+    transition: background .2s ease-in-out, border .2s ease-in-out;
+}
+.drop-title{
+    text-align: center;
+    background: #00000035;
+    border-radius: .25rem;
+    padding: 10px;
+}
