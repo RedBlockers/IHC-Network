@@ -133,7 +133,7 @@ td,tr,th {
 
 .selected{
     background-color: white;
-    height: 90%;
+    height: 60%;
 }
 .hovered{
     animation: selection-bar-fade-in .3s ease-in 1;

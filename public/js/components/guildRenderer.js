@@ -1,8 +1,14 @@
 export const displayIcons = () => {
     const token = localStorage.getItem("token");
+    const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
+    if(!match){
+        return;
+    }
+    const guildId = match[1];
     axios.post("/guilds/getGuildsByUser", {token: token})
         .then(response => {
             if (response.status === 200) {
+
                 const guilds = response.data;
                 const guildContainer = document.getElementById("guildContainer");
                 const guildBarContainer = document.getElementById("guildSelectionBarContainer");
@@ -30,36 +36,42 @@ export const displayIcons = () => {
 
                 let elements = Array.from(document.querySelectorAll(".guild"));
                 elements.push(document.getElementById('homePage'));
-                elements.forEach((element) => {                    element = element.parentElement;
-                    element.addEventListener("mouseover", (e) => {
-                        try {
-                            const selectionBarParentId = `${element.id}_selectionBar`;
-                            const selectionBar = document.getElementById(selectionBarParentId).children[0];
-                            selectionBar.classList.add('hovered');
-                        }catch (e)
-                        {}
+                elements.forEach((element) => {
+                    element = element.parentElement;
+                    if (element.id !== `guild_${guildId}`) {
+                        element.addEventListener("mouseover", (e) => {
+                            try {
+                                const selectionBarParentId = `${element.id}_selectionBar`;
+                                const selectionBar = document.getElementById(selectionBarParentId).children[0];
+                                selectionBar.classList.add('hovered');
+                            } catch (e) {
+                            }
 
-                    })
-                    element.addEventListener("mouseout", (e) => {
-                        try {
-                            const selectionBarParentId = `${element.id}_selectionBar`;
-                            const selectionBar = document.getElementById(selectionBarParentId).children[0];
-                            selectionBar.classList.remove('hovered');
-                            const animation = selectionBar.animate([{
-                                backgroundColor: 'white',
-                                height: '30%'
-                            }, {
-                                backgroundColor: 'transparent',
-                                height: '0%'
-                            }],{duration:300});
-                        }catch (e)
-                        {}
+                        })
+                        element.addEventListener("mouseout", (e) => {
+                            try {
+                                const selectionBarParentId = `${element.id}_selectionBar`;
+                                const selectionBar = document.getElementById(selectionBarParentId).children[0];
+                                selectionBar.classList.remove('hovered');
+                                const animation = selectionBar.animate([{
+                                    backgroundColor: 'white',
+                                    height: '30%'
+                                }, {
+                                    backgroundColor: 'transparent',
+                                    height: '0%'
+                                }], {duration: 300});
+                            } catch (e) {
+                            }
 
-                    })
+                        })
+                    }
                 })
 
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
                 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
             }
+
+            const selctedGuildSelectionBar = document.getElementById(`guild_${guildId}_selectionBar`);
+            selctedGuildSelectionBar.children[0].classList.add('selected');
         });
 };
