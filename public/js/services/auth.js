@@ -1,7 +1,7 @@
 function invalidateToken(){
     alert('Token invalide veuillez vous reconnecter');
     localStorage.removeItem('token');
-    window.location.href = './pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 
@@ -20,10 +20,5 @@ export class Auth {
             console.error("erreur lors de l'authentification", error);
             invalidateToken()
         }
-    }
-
-    static logOut(){
-        localStorage.removeItem('token');
-        window.location.href = 'pages/login.html';
     }
 }

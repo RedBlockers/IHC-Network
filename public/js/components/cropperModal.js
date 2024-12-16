@@ -52,6 +52,8 @@ export class CropperModal {
             minContainerWidth: 600,
             minContainerHeight: 600,
           });
+          const cropperCreationEvent = new CustomEvent('onCropperCreation', { detail: { cropper: this.cropper } });
+           document.dispatchEvent(cropperCreationEvent);
         };
 
         reader.readAsDataURL(file); // Charger l'image
@@ -69,17 +71,20 @@ export class CropperModal {
         });
 
         // Convertir l'image en base64
-        const croppedImage = canvas.toDataURL('image/png');
+        this.croppedImage = canvas.toDataURL('image/png');
 
         // Ajouter l'image recadrée au formulaire (ou à une balise img)
         const imagePreviewBox = document.getElementById('dropcontainer');
         if (imagePreviewBox) {
-          imagePreviewBox.style.backgroundImage = `url('${croppedImage}')`;
+          imagePreviewBox.style.backgroundImage = `url('${this.croppedImage}')`;
         }
 
         // Fermer la modale
         this.cropModal.hide();
       }
     });
+    }
+  getCroppedImage(){
+    return this.croppedImage || null;
   }
 }

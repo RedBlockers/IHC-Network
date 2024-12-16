@@ -73,7 +73,7 @@ Pour activer SSL pour des connexions sécurisées :
 ## Déploiement sur VPS
 1. Connectez-vous à votre VPS en SSH.
     ```bash
-    ssh root@185.166.39.170
+    ssh root@[IP ADDRESS]
     ```
 
 2. Installez Git, Node.js, et MySQL sur votre VPS.

@@ -3,7 +3,7 @@ const guildController = require('../controllers/guildController');
 
 const router = express.Router();
 
-//route pour la récupèration des serveurs
-router.post("/getGuilds", guildController.getGuilds);
+router.post("/getGuildsByUser",guildController.getGuildsByUser);
+router.post("/createGuild", guildController.createGuild);
 
 module.exports = router;

@@ -20,7 +20,7 @@ module.exports = {
         // Hachage du mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
         const currentDateTime = new Date();
-
+        console.log(username, hashedPassword, mail, profileImagePath, currentDateTime)
         // Exécution de la requête d'insertion
         const [result] = await db.promise().execute(
           'INSERT INTO users (userNickname, password, userEmail, userImage, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?)',
@@ -30,7 +30,7 @@ module.exports = {
         // Retourner l'ID de l'utilisateur créé
         return { success: true, userId: result.insertId, currentDateTime: currentDateTime };
       } catch (error) {
-        logger.error('Erreur lors de la création de l\'utilisateur:\n' + error);
+        logger.error('Erreur lors de la création de l\'utilisateur:\n' + error.stack);
         return { success: false, message: 'Erreur lors de la création de l\'utilisateur.' };
       }
     },

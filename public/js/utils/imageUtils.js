@@ -18,7 +18,6 @@ export function addLoader(img) {
             clearInterval(poll);
             spinnerContainer.style.height = img.clientHeight + 'px';
             spinnerContainer.style.width = img.clientWidth + 'px';
-            console.log(img.naturalWidth, img.naturalHeight);
             img.style.display = 'none';
             const messageBox = document.getElementById('messageBox');
             scrollToBottom(messageBox);

@@ -3,7 +3,7 @@ const http = require('http');
 const https = require('https');
 const socketIo = require('socket.io');
 const path = require('path');
-const bcrypt = require('bcrypt'); // Assurez-vous d'importer bcrypt pour le hachage des mots de passe
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config()
 const fs = require('fs')
@@ -11,6 +11,7 @@ const crypto = require('crypto');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messagesRoutes');
 const guildRoutes = require('./routes/guildsRoutes');
+const channelsRoutes = require('./routes/channelsRoutes');
 const messageController = require('./controllers/messageController');
 
 const app = express();
@@ -52,7 +53,6 @@ if (process.env.USE_SSL === 'true'){
   });
 }
 
-// Créer un serveur HTTPS
 
 // Configurer Socket.IO avec le serveur HTTPS
 const io = socketIo(server);
@@ -68,5 +68,17 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/users', userRoutes);
 app.use('/messages', messageRoutes);
 app.use('/guilds', guildRoutes);
+app.use('/channels', channelsRoutes);
 
+app.get('^\\/(\\d+)\\/(\\d+)$',(req,res, next)=>{
+  // Vous pouvez récupérer guildId et channelId ici si nécessaire
+  const requestedPath = path.join(__dirname, 'public', req.url);
+  const { 0: guildId, 1: channelId } = req.params;
+  if (fs.existsSync(requestedPath)) {
+    // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
+    return next();
+  }
 
+  // Servir le fichier index.html
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});

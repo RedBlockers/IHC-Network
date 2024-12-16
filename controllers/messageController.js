@@ -13,16 +13,23 @@ let io;
 module.exports = {
     getMessages: async (req, res) => {
         try {
-            const results = await messageModel.getAllMessages();
-            res.status(200).json(results);
+            const channelId = req.params.channelId;
+            console.log(channelId);
+            if (!channelId) {
+                return res.status(400).json({ error: 'Le channelId est manquant' });
+            }
+            const messages = await messageModel.getMessagesByChannelId(channelId);
+            return res.status(200).json(messages);
+            //const results = await messageModel.getAllMessages();
+            //return res.status(200).json(results);
         } catch (err) {
             logger.error('Erreur lors de la récupération des messages :' + err);
-            res.status(500).json({ error: 'Erreur interne du serveur' });
+            return res.status(500).json({ error: 'Erreur interne du serveur' });
         }
     },
     postMessage: async (req, res) => {
         try {
-            const { token, messageContent } = req.body.content;
+            const { token, messageContent, channel } = req.body.content;
 
             if (!messageContent) {
                 return res.status(400).json({ error: 'Le contenu du message est manquant' });
@@ -34,7 +41,7 @@ module.exports = {
                 return res.status(401).json({ error: message });
             }
 
-            const result = await messageModel.insertMessage(decodedToken.userId, messageContent);
+            const result = await messageModel.insertMessage(decodedToken.userId, messageContent, channel);
             if (!result) {
                 throw new Error(`Erreur lors de l'enregistrement du messages`);
             }

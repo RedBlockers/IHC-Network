@@ -1,4 +1,3 @@
-let cropper; // Variable pour le cropper
 const dropContainer = document.getElementById("dropcontainer");
 const fileInput = document.getElementById("profilePicture");
 import {CropperModal} from '../js/components/cropperModal.js'
@@ -22,7 +21,7 @@ dropContainer.addEventListener("drop", (e) => {
   fileInput.dispatchEvent(new Event('change'));
 });
 
-cropper = new CropperModal(fileInput,bootstrap);
+const cropper = new CropperModal(fileInput);
 
 
 document.getElementById('registerForm').addEventListener('submit', function(e) {
@@ -39,7 +38,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     return;
   }
 
-  let croppedImage = dropContainer.backgroundImage || null;
+  let croppedImage = cropper.getCroppedImage()
 
   // Envoyer les données au serveur via axios
   axios.post('/users/register', {username: username, password: password, mail: mail, profileImage: croppedImage})

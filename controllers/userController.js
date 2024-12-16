@@ -2,7 +2,7 @@ const userModel = require('../models/userModel');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
-const {saveProfileImage} = require("../services/fileServices");
+const {saveImage} = require("../services/fileServices");
 
 function CreateToken(username,userId,passwordUpdatedAt,profilePicture) {
     logger.info(`Création d'un token pour l'utilisateur n°${userId}`);
@@ -39,6 +39,7 @@ async function AuthenticateAndDecodeToken(token){
 module.exports = {
     register: async (req, res) => {
         const { username, password, mail, profileImage } = req.body;
+        let imagePath;
         try {
           // Vérifier si l'utilisateur existe déjà
           const existingUser = await userModel.getUserByUsername(username);
@@ -49,14 +50,19 @@ module.exports = {
           if (existingEmail.length > 0) {
             return res.json({ success: false, message: 'Cet Email est déjà associer a un compte.' });
           }
-          logger.info("Création d'un nouvel utilisateur")
-          const imagePath = saveProfileImage(profileImage);
 
-          if (!imagePath) {
+          if(profileImage){
+              imagePath = await saveImage(profileImage,"profiles");
+          }else{
+              imagePath = await saveImage(profileImage);
+          }
+
+          if(!imagePath){
               return res.json({ success: false, message: "Erreur lors de l\'écriture de l'image." });
           }
 
           const resp = await userModel.createUser(username, password, mail, imagePath);
+            console.log(resp)
           if (!resp.success) {
               return res.json({ success: false, message: 'Erreur lors de l\'inscription.' });
           }
