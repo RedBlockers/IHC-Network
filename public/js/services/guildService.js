@@ -14,7 +14,6 @@ export function handleGuildCreation() {
         const guildName = document.getElementById('guildName').value;
         const guildDescription = document.getElementById('guildDescription').value;
         const guildImage = cropper.getCroppedImage()
-        console.log(guildImage);
         axios.post('/guilds/createGuild', {token, guildName, guildDescription, guildImage})
             .then(response => {
                 if(response.status === 200){

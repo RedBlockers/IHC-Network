@@ -13,6 +13,7 @@ const messageRoutes = require('./routes/messagesRoutes');
 const guildRoutes = require('./routes/guildsRoutes');
 const channelsRoutes = require('./routes/channelsRoutes');
 const messageController = require('./controllers/messageController');
+const channelController = require("./controllers/channelsController");
 
 const app = express();
 let server;
@@ -57,6 +58,7 @@ if (process.env.USE_SSL === 'true'){
 // Configurer Socket.IO avec le serveur HTTPS
 const io = socketIo(server);
 messageController.setIo(io);
+channelController.setIo(io);
 
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));

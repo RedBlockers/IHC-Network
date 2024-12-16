@@ -1,5 +1,6 @@
 import {MessageRenderer} from '../components/messageRenderer.js'
 import {scrollToBottom} from '../utils/scrollUtils.js'
+import {displayChannel} from "../components/channelRenderer.js";
 
 export class Listeners {
     constructor() {
@@ -9,10 +10,16 @@ export class Listeners {
         const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
         const channel = match[2];
         this.socket.on(`newMessage/${channel}`, (message) => {
-            console.log(message)
             MessageRenderer.displayMessage(message);
             scrollToBottom();
         });
+    }
+    listenForChannels(){
+        const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
+        const guild = match[1];
+        this.socket.on(`newChannel/${guild}`, (channel) => {
+            displayChannel(channel);
+        })
     }
     listenForAll(){
         const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this))

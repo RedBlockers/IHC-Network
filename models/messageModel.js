@@ -22,9 +22,9 @@ module.exports = {
             return false;
         }
     },
-    getMessagesByChannelId: async (channelId) => {
+    getMessagesByChannelId: async (channelId, guildId) => {
         logger.info("Getting messages for channel id " + channelId);
-        const [rows] = await db.promise().execute("SELECT * FROM message_content WHERE channelId = ?", [channelId]);
+        const [rows] = await db.promise().execute("SELECT * FROM message_content WHERE channelId = ? AND guildId = ?", [channelId, guildId]);
         return rows;
     },
 }
