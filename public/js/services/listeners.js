@@ -6,7 +6,9 @@ export class Listeners {
         this.socket = io()
     }
     listenForMessages(){
-        this.socket.on('newMessage', (message) => {
+        const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
+        const channel = match[2];
+        this.socket.on(`newMessage/${channel}`, (message) => {
             console.log(message)
             MessageRenderer.displayMessage(message);
             scrollToBottom();

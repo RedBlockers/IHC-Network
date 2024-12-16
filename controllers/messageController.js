@@ -46,7 +46,7 @@ module.exports = {
                 throw new Error(`Erreur lors de l'enregistrement du messages`);
             }
             const newMessage = await messageModel.getMessageById(result.insertId);
-            io.emit('newMessage', newMessage);
+            io.emit(`newMessage/${channel}`, newMessage);
             res.status(200).json({ success: true, message: 'Message ajouté avec succès', data: newMessage });
         } catch (err) {
             logger.error('Erreur lors de l\'ajout du message :', err);
