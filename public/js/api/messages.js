@@ -16,9 +16,15 @@ export class Messages {
                 scrollToBottom(messageBox);
             });
     }
-    static loadMessageByChannelId(channelId){
-        axios.get(`/messages/messages/${channelId}`,{token:localStorage.getItem("token")})
+    static loadMessageByChannelId(channelId, guildId){
+        axios.get(`/messages/messages/${guildId}/${channelId}`,{headers: {token: localStorage.getItem("token")}})
             .then(async response => {
+
+                if (await response.data.redirect){
+                    const baseUrl = window.location.origin;
+                    window.location.href = `${baseUrl}${response.data.url}`;
+                    return;
+}
                 const messages = await response.data;
                 const messageList = document.getElementById('messageList');
                 messageList.innerHTML = '';

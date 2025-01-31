@@ -14,8 +14,8 @@ await Auth.authenticateToken(token);
 const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
 if(match){
     const guild = match[1];
-    const channels = match[2];
-    localStorage.setItem('currentSession', JSON.stringify({guild: guild, channel: channels}));
+    const channel = match[2];
+    localStorage.setItem('currentSession', JSON.stringify({guild: guild, channel: channel}));
 }else if(localStorage.getItem('currentSession') && !window.location.href.match('\\/(.+)$')){
     const currentSession = JSON.parse(localStorage.getItem('currentSession'));
     window.location.href = `/${currentSession.guild}/${currentSession.channel}`;

@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const https = require('https');
@@ -5,7 +6,6 @@ const socketIo = require('socket.io');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv').config()
 const fs = require('fs')
 const crypto = require('crypto');
 const userRoutes = require('./routes/userRoutes');
@@ -17,6 +17,8 @@ const channelController = require("./controllers/channelsController");
 
 const app = express();
 let server;
+
+const PORT = process.env.USE_SSL === 'true' ? process.env.HTTPS_PORT : process.env.HTTP_PORT;
 
 if (process.env.USE_SSL === 'true'){
 
@@ -33,7 +35,6 @@ if (process.env.USE_SSL === 'true'){
   server = https.createServer(options, app);
 
   // Démarrer le serveur HTTPS
-  const PORT = process.env.HTTPS_PORT; // Port 443 par défaut pour HTTPS
   server.listen(PORT, () => {
     console.log(`Serveur HTTPS démarré sur ${process.env.HOSTNAME}:${PORT}`);
   });
@@ -47,8 +48,7 @@ if (process.env.USE_SSL === 'true'){
     console.log('Redirection HTTP vers HTTPS sur le port ' + process.env.HTTP_PORT);
   });
 }else{
-  server = http.createServer(app)
-  const PORT = process.env.HTTP_PORT; // Port 80 par défaut pour HTTP
+  server = http.createServer(app);
   server.listen(PORT, () => {
     console.log(`Serveur HTTP démarré sur ${process.env.HOSTNAME}:${PORT}`);
   });
@@ -62,7 +62,6 @@ channelController.setIo(io);
 
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public/js')));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 

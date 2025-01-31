@@ -20,8 +20,12 @@ module.exports = {
         return channels;
     },
     getChannelById: async (id, guild) => {
-        logger.info(`Récupération du channels avec l'ID ${id}`);
+        logger.info(`Récupération du channel avec l'ID ${id}`);
         const [rows] = await db.promise().execute("SELECT * FROM channels WHERE channelId = ? LIMIT 1", [id]);
+        if (rows.length === 0) {
+            logger.info(`Aucun channel trouvé avec l'ID ${id}`);
+            return null;
+        }
         const row = rows[0];
         const channel = {
             channelId: row.channelId,
@@ -30,13 +34,26 @@ module.exports = {
             description: row.description,
             guild: guild
         };
-        logger.info(`Channels récupérés pour la guilde avec l'ID ${guild.id}`);
+        logger.info(`Channel récupéré avec l'ID ${id}`);
+        return channel;
+    },
+    getFirstChannelByGuild: async (guild) => {
+        logger.info(`Récupération du premier channel pour la guilde avec l'ID ${guild.guildId}`);
+        const [rows] = await db.promise().execute("SELECT * FROM channels WHERE guildId = ? LIMIT 1", [guild.guildId]);
+        const row = rows[0];
+        const channel = {
+            channelId: row.channelId,
+            type: row.type,
+            name: row.name,
+            description: row.description,
+            guild: guild
+        };
+        logger.info(`Premier channel récupéré pour la guilde avec l'ID ${guild.guildId}`);
         return channel;
     },
     createChannel: async (type, name, description, guildId) => {
         logger.info("Création d'un nouveau channel");
         try {
-            console.log(type, name, description, guildId)
             const [result] = await db.promise().execute(
                 "INSERT INTO channels (type, name, description, guildId) VALUES (?, ?, ?, ?)",
                 [type, name, description, guildId]

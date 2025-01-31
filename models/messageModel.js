@@ -23,8 +23,15 @@ module.exports = {
         }
     },
     getMessagesByChannelId: async (channelId, guildId) => {
+        console.log(channelId, guildId)
         logger.info("Getting messages for channel id " + channelId);
-        const [rows] = await db.promise().execute("SELECT * FROM message_content WHERE channelId = ? AND guildId = ?", [channelId, guildId]);
+        const [rows] = await db.promise().execute(`
+            SELECT * 
+            FROM message_content mc 
+            INNER JOIN messages ON messages.messageId = mc.messageId 
+            INNER JOIN channels ON channels.channelId = messages.channelId 
+            WHERE messages.channelId = ? AND channels.guildId = ?
+        `, [channelId, guildId]);
         return rows;
     },
 }

@@ -1,4 +1,5 @@
 const messageModel = require('../models/messageModel');
+const channelController = require('./channelsController');
 const { AuthenticateAndDecodeToken } = require('./userController');
 const socketIo = require("socket.io");
 const express = require("express");
@@ -7,23 +8,40 @@ const path = require("path");
 const userRoutes = require("../routes/userRoutes");
 const messageRoutes = require("../routes/messagesRoutes");
 const logger = require("../utils/logger");
+const userController = require("./userController");
+const { url } = require('inspector');
 let io;
 
 
 module.exports = {
     getMessages: async (req, res) => {
         try {
-            const channelId = req.params.channelId;
-            console.log(channelId);
+            const { guildId, channelId } = req.params;
+            const token = req.headers.token;
+            console.log(channelId, guildId, token);
+
+            const { valid, message, decodedToken } = await userController.AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ error: message });
+            }
+
             if (!channelId) {
                 return res.status(400).json({ error: 'Le channelId est manquant' });
             }
-            const messages = await messageModel.getMessagesByChannelId(channelId);
+            
+            if(!await channelController.isChannelInGuild(guildId, channelId)){
+                const firstChannel = await channelController.getFirstChannelByGuildId(guildId);
+                console.log("c'est le test");
+                
+                logger.info(`Redirection de l'utilisateur vers le premier salon de la guilde n°${guildId}`);
+                return res.status(200).json({ redirect:true, url: `/${guildId}/${firstChannel.channelId}`});
+            }
+
+            const messages = await messageModel.getMessagesByChannelId(channelId, guildId);
             return res.status(200).json(messages);
-            //const results = await messageModel.getAllMessages();
-            //return res.status(200).json(results);
+
         } catch (err) {
-            logger.error('Erreur lors de la récupération des messages :' + err);
+            logger.error('Erreur lors de la récupération des messages :' + err.stack);
             return res.status(500).json({ error: 'Erreur interne du serveur' });
         }
     },

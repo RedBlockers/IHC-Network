@@ -35,7 +35,7 @@ document.getElementById('userAvatar').src = `/images/${localStorage.getItem('ava
 document.getElementById('usernameDisplay').textContent = localStorage.getItem('username');
 
 listeners.listenForAll();
-Messages.loadMessageByChannelId(match[2]);
+Messages.loadMessageByChannelId(match[2],match[1]);
 handleMessageInput();
 handleGuildCreation();
 displayIcons();

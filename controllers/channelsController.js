@@ -1,6 +1,8 @@
 const channelModel = require('../models/channelModel');
 const userController = require('./userController');
 const guildModel = require('../models/guildModel');
+const guildController = require('./guildController');
+const logger = require('../utils/logger');
 let io;
 
 module.exports = {
@@ -23,6 +25,28 @@ module.exports = {
         const channels = await channelModel.getChannelsByGuild(guild);
         return res.status(200).json(channels);
     },
+
+    getFirstChannelByGuildId: async (guildId) => {
+        const guild = await guildController.getGuildById(guildId);
+        const channel = await channelModel.getFirstChannelByGuild(guild);
+        return channel;
+    },
+
+    isChannelInGuild: async (guildId, channelId) => {
+        const guild = await guildModel.getGuildById(guildId);
+        if (!guild || guild.length > 1) {
+            throw new ReferenceError();
+        }
+        const channels = await channelModel.getChannelById(channelId, guild);
+        
+        if (!channels || channels === null) {
+            return false;
+        }
+        return true;
+    },
+
+    // A faire : reidiriger l'utilisateur vers le premier salon de la guilde si aucun n'est trouvé
+
     createChannel: async (req, res) => {
         try {
             // Récupération des données depuis le corps de la requête
@@ -31,7 +55,6 @@ module.exports = {
             // Authentification et validation du token
             const { valid, message, decodedToken } = await userController.AuthenticateAndDecodeToken(token);
             if (!valid) {
-                console.log(message);
                 return res.status(401).json({ error: message });
             }
 
@@ -53,7 +76,7 @@ module.exports = {
 
         } catch (err) {
             // Gestion des erreurs
-            console.error('Erreur dans createChannel:', err);
+            logger.error('Erreur dans createChannel:', err);
 
             // Retourner une erreur HTTP avec statut 500 (Erreur Interne du Serveur)
             return res.status(500).json({ error: 'An unexpected error occurred', details: err.message });

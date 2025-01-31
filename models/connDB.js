@@ -14,7 +14,7 @@ db.connect((err) => {
   if (err) {
     logger.error(err);
     throw err;
-  };
+  }
   logger.info('Connecté à la base de données MySQL');
 });
 

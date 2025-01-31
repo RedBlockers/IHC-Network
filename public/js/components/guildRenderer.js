@@ -1,10 +1,7 @@
 export const displayIcons = () => {
     const token = localStorage.getItem("token");
     const match = window.location.href.match('\\/(\\d+)\\/(\\d+)$')
-    if(!match){
-        return;
-    }
-    const guildId = match[1];
+    const guildId = match ? match[1]: 0;
     axios.post("/guilds/getGuildsByUser", {token: token})
         .then(response => {
             if (response.status === 200) {
@@ -38,6 +35,9 @@ export const displayIcons = () => {
                 elements.push(document.getElementById('homePage'));
                 elements.forEach((element) => {
                     element = element.parentElement;
+                    if(element.id !== 'homePage'){
+
+                    }
                     if (element.id !== `guild_${guildId}`) {
                         element.addEventListener("mouseover", (e) => {
                             try {

@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `isEmailConfirmed` tinyint(1) NOT NULL DEFAULT '0',
   `userImage` varchar(255) DEFAULT '',
   `password` varchar(256) NOT NULL,
-  `userToken` varchar(256) NOT NULL,
   `passwordUpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`userId`),
   UNIQUE KEY `userEmail` (`userEmail`),
@@ -108,14 +107,17 @@ SELECT
   `m`.`content` AS `content`,
   `m`.`sentDate` AS `sentDate`,
   `u`.`userNickname` AS `userNickname`,
-  `u`.`userImage` AS `userImage`
+  `u`.`userImage` AS `userImage`,
+  `c`.`guildId` AS `guildId`,
+  `c`.`channelId` AS `channelId`
 FROM
   `messages` `m`
 JOIN
   `users` `u` ON `u`.`userId` = `m`.`userId`
+JOIN
+  `channels` `c` ON `c`.`channelId` = `m`.`channelId`
 ORDER BY
   `m`.`sentDate` ASC;
-
 
 -- --------------------------------------------------------
 -- Adding Foreign Key Constraints
