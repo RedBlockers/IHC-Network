@@ -1,0 +1,64 @@
+name: Bug report
+description: Crée un rapport de bug pour nous aider à améliorer le projet
+title: "[BUG] Titre du bug"
+labels: [bug]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de nous aider à améliorer le projet en signalant un bug. Veuillez fournir autant de détails que possible.
+
+  - type: input
+    id: description
+    attributes:
+      label: Description du bug
+      description: Une description claire et concise du bug.
+      placeholder: Décrivez le bug ici
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      description: Étapes pour reproduire le comportement.
+      placeholder: |
+        1. Aller à '...'
+        2. Cliquer sur '....'
+        3. Faire défiler jusqu'à '....'
+        4. Voir l'erreur
+    validations:
+      required: true
+
+  - type: input
+    id: expected
+    attributes:
+      label: Comportement attendu
+      description: Une description claire et concise de ce à quoi tu t'attendais.
+      placeholder: Décrivez le comportement attendu ici
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Captures d'écran
+      description: Si possible, ajoute des captures d'écran pour expliquer ton problème.
+      placeholder: Ajoute des captures d'écran ici
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environnement
+      description: Informations sur l'environnement de bureau et mobile.
+      placeholder: |
+        - OS: [e.g. iOS]
+        - Navigateur: [e.g. chrome, safari]
+        - Version: [e.g. 22]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Con
