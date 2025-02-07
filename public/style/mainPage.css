@@ -46,6 +46,55 @@ td,tr,th {
     text-align: center;
 }
 
+
+@media (max-width: 1000px) {
+    .sideEndbar {
+        display: none;
+    }
+    .container-sidebar-right {
+        width: calc(100% - 21px)!important;
+    }
+}
+
+.container-sidebar-right{
+    width: calc(100% - 320px);
+    margin: 0;
+}
+.userToolsBox{
+    width: 100%;
+}
+
+.userToolsBox svg:hover{
+    cursor: pointer;
+}
+
+
+.sideEndbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 300px;
+    color: white;
+    overflow-y: hidden;
+    z-index: 1000;
+    background-color: #25292d;
+}
+.sideEndbar a {
+    color: #ffffff;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    font-size: 1.1em;
+}
+.sideEndbar a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+.sideEndbar h2 {
+    text-align: center;
+}
+
 .main-content {
     margin-left: 320px;
 }
@@ -176,12 +225,12 @@ td,tr,th {
 .rotate{
     animation: rotate-return .6s ease-in-out 1 forwards;
 }
-#userInformations{
+.userInformations{
     transition: 0.2s ease-in-out;
     display: inline-block;
     transform-origin: center;
 }
-#userInformations:hover {
+.userInformations:hover {
     background-color: #ffffff30;
 }
 #serverInfoContainer{
@@ -229,6 +278,8 @@ code{
     cursor: pointer;
     background-color: rgba(208,233,255,0.11);
 }
+
+
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

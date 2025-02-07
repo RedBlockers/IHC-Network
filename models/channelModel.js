@@ -64,5 +64,26 @@ module.exports = {
             logger.error("Erreur lors de la création du channel :", err);
             throw err;
         }
+    },
+    getPrivateChannelsByUserId: async(userId) => {
+        logger.info(`Récupération des channels privés pour l'utilisateur avec l'ID ${userId}`);
+        const [rows] = await db.promise().execute("SELECT u.userNickname, u.userId, u.userImage, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId ", [userId, userId]);
+        const channels = [];
+        rows.forEach((row) => {
+            const channel = {
+                channelId: row.channelId,
+                type: row.type,
+                name: row.userNickname,
+                description: row.description,
+                user: {
+                    userId: row.userId,
+                    username: row.userNickname,
+                    userImage: row.userImage
+                }
+            };
+            channels.push(channel);
+        });
+        logger.info(`Channels privés récupérés pour l'utilisateur avec l'ID ${userId}`);
+        return channels;
     }
 };

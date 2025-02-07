@@ -72,9 +72,20 @@ app.use('/guilds', guildRoutes);
 app.use('/channels', channelsRoutes);
 
 app.get('^\\/(\\d+)\\/(\\d+)$',(req,res, next)=>{
-  // Vous pouvez récupérer guildId et channelId ici si nécessaire
   const requestedPath = path.join(__dirname, 'public', req.url);
-  const { 0: guildId, 1: channelId } = req.params;
+  //const { 0: guildId, 1: channelId } = req.params;
+  if (fs.existsSync(requestedPath)) {
+    // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
+    return next();
+  }
+
+  // Servir le fichier index.html
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('^\\/(\\d+)$',(req,res, next)=>{
+  const requestedPath = path.join(__dirname, 'public', req.url);
+  //const { 0: channelId } = req.params;
   if (fs.existsSync(requestedPath)) {
     // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
     return next();

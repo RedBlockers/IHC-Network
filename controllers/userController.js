@@ -88,28 +88,140 @@ module.exports = {
                 await userModel.addUserAttempt(req.ip);
                 return res.json({ success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' });
             }
-            await userModel.deleteUserAttempt(req.ip)
-                const token = CreateToken(username, users[0].userId, users[0].passwordUpdatedAt, users[0].userImage)
-                res.json({ success: true,token: token});
+            await userModel.deleteUserAttempt(req.ip);
+            const token = CreateToken(username, users[0].userId, users[0].passwordUpdatedAt, users[0].userImage);
+            res.json({ success: true,token: token});
         } catch (error) {
             logger.error('Erreur lors de la connexion :\n'+ error);
             res.json({ success: false, message: 'Erreur lors de la connexion.' });
         }
     },
 
+    RequestFriend: async (req, res) => {
+        try {
+            const {token, username} = req.body;
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ success: false, message });
+            }
+
+            const user = await userModel.getUserByUsername(username);
+            if(!user){
+                return res.status(404).json({ success: false, message: 'Utilisateur introuvable.' });
+            }
+
+            const resp = await userModel.addFriendRequest(decodedToken.userId, user[0].userId);
+
+            if(!resp.success){
+                return res.status(409).json({ success: false, message: resp.message });
+            }
+            return res.json({ success: true, message: 'Demande d\'ami envoyée.' });
+
+        } catch (error) {
+            
+        }
+    },
+
+    getFriends: async (req, res) => {
+        try {
+            const {token} = req.body;
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ success: false, message });
+            }
+
+            const friends = await userModel.getFriends(decodedToken.userId);
+            if(!friends){
+                return res.status(404).json({ success: false, message: 'Aucun amis trouvé.' });
+            }
+
+            return res.json({ success: true, friends: friends });
+
+        } catch (error) {
+            
+        }
+    },
+
     authenticateToken: async (req, res) => {
         const token = req.body.token;
 
-        // Utiliser la fonction de vérification du token
-        const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
-
-        if (valid) {
-            res.json({ success: true, message, username: decodedToken.username, avatar: decodedToken.profilePicture });
-        } else {
-            res.json({ success: false, message });
+        try {
+            // Utiliser la fonction de vérification du token
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            const user = await userModel.getUserById(decodedToken.userId);
+            if (valid) {
+                res.json({ success: true, message, username: user.userNickname, avatar: user.userImage });
+            } else {
+                res.json({ success: false, message });
+            }
+        } catch (error) {
+            logger.error('Erreur lors de l\'authentification du token :\n'+ error);
+            res.json({ success: false, message: 'Erreur lors de l\'authentification du token.' });
         }
-    }
-    ,
-    AuthenticateAndDecodeToken
+    },
+
+    acceptFriend: async (req, res) => {
+        try {
+            const {token, friendId} = req.body;
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ success: false, message });
+            }
+
+            const resp = await userModel.acceptFriendRequest(decodedToken.userId, friendId);
+
+            if(!resp.success){
+                return res.status(409).json({ success: false, message: resp.message });
+            }
+            return res.json({ success: true, message: 'Demande d\'ami acceptée.' });
+
+        } catch (error) {
+            logger.error('Erreur lors de l\'acceptation de la demande d\'ami :\n'+ error);
+            res.json({ success: false, message: 'Erreur lors de l\'acceptation de la demande d\'ami.' });
+        }
+    },
+
+    refuseFriend: async (req, res) => {
+        try {
+            const {token, friendId} = req.body;
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ success: false, message });
+            }
+            
+            const resp = await userModel.refuseFriendRequest(decodedToken.userId, friendId);
+
+            if(!resp.success){
+                return res.status(409).json({ success: false, message: resp.message });
+            }
+            return res.json({ success: true, message: 'Demande d\'ami refusée.' });
+
+        } catch (error) {
+            logger.error('Erreur lors du refus de la demande d\'ami :\n'+ error.stack);
+            res.json({ success: false, message: 'Erreur lors du refus de la demande d\'ami.' });
+        }
+    },
+
+    cancelFriendRequest: async (req, res) => {
+        try {
+            const {token, friendId} = req.body;
+            const { valid, message, decodedToken } = await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                return res.status(401).json({ success: false, message });
+            }
+
+            const resp = await userModel.cancelFriendRequest(decodedToken.userId, friendId);
+
+            if(!resp.success){
+                return res.status(409).json({ success: false, message: resp.message });
+            }
+            return res.json({ success: true, message: 'Demande d\'ami annulée.' });
+
+        } catch (error) {
+            logger.error('Erreur lors de l\'annulation de la demande d\'ami :\n'+ error.stack);
+            res.json({ success: false, message: 'Erreur lors de l\'annulation de la demande d\'ami.' });
+        }
+    },
+    AuthenticateAndDecodeToken,
 
 }

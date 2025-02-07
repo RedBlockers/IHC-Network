@@ -15,6 +15,12 @@ module.exports = {
     return rows;
   },
 
+  getUserById: async (userId) => {
+    logger.info('getUserById '+ userId);
+    const [rows] = await db.promise().execute('SELECT * FROM users WHERE userId = ?', [userId]);
+    return rows[0];
+  },
+
   createUser: async (username, password, mail, profileImagePath) => {
     try {
         // Hachage du mot de passe
@@ -35,29 +41,84 @@ module.exports = {
       }
     },
 
-    checkPassword: async (existingUser, password) => {
-        if (existingUser.length === 0) {
-            return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
-        }
-        logger.info("checkPassword "+ existingUser[0]);
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser[0].password);
-        if (!isPasswordCorrect) {
-            return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
-        }
-        return {success:true};
-    },
+  checkPassword: async (existingUser, password) => {
+      if (existingUser.length === 0) {
+          return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
+      }
+      logger.info("checkPassword for userId: " + existingUser[0].userId);
+      const isPasswordCorrect = await bcrypt.compare(password, existingUser[0].password);
+      if (!isPasswordCorrect) {
+          return { success: false, message: 'Nom d\'utilisateur ou mot de passe incorrect.' };
+      }
+      return {success:true};
+  },
 
-    addUserAttempt: async (ip) =>{
-      await db.promise().execute('INSERT INTO user_attempts (ip) VALUES (?)', [ip]);
-    },
+  addUserAttempt: async (ip) =>{
+    await db.promise().execute('INSERT INTO user_attempts (ip) VALUES (?)', [ip]);
+  },
 
-    getUserAttempts: async (ip) =>{
-        const [result] = await db.promise().execute('SELECT * FROM user_attempts WHERE ip = ?', [ip]);
-        return result;
-    },
+  getUserAttempts: async (ip) =>{
+      const [result] = await db.promise().execute('SELECT * FROM user_attempts WHERE ip = ?', [ip]);
+      return result;
+  },
 
-    deleteUserAttempt: async (ip) =>{
-      await db.promise().execute('DELETE FROM user_attempts WHERE ip = ?', [ip]);
+  deleteUserAttempt: async (ip) =>{
+    await db.promise().execute('DELETE FROM user_attempts WHERE ip = ?', [ip]);
+  },
+
+  checkPendingFriendRequest: async (userId, friendId) => {
+    const [result] = await db.promise().execute('SELECT * FROM friends WHERE userId = ? AND friendId = ? AND isPending = 1', [userId, friendId]);
+    return result.length > 0;
+  },
+
+  addFriendRequest: async (userId, friendId) => {
+    const hasPendingRequest = await module.exports.checkPendingFriendRequest(userId, friendId);
+    if (hasPendingRequest) {
+        return { success: false, message: 'Une demande d\'amis est déjà en cours.' };
     }
+    await db.promise().execute('INSERT INTO friends (userId, friendId, isPending) VALUES (?, ?, 1)', [userId, friendId]);
+    return { success: true };
+  },
+
+  getFriends: async (userId) => {
+      const [result] = await db.promise().execute(`
+          SELECT u.userId, u.userNickname, u.userImage, f.isPending, f.UserId = ? AS isSender
+          FROM friends f
+          JOIN users u ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?)
+      `, [userId, userId, userId]);
+      return result.map(r => ({
+          userId: r.userId,
+          username: r.userNickname,
+          userImage: r.userImage,
+          isPending: r.isPending,
+          isSender: r.isSender,
+      }));
+  },
+  acceptFriendRequest: async (userId, friendId) => {
+    const res = await db.promise().execute('UPDATE friends SET isPending = 0 WHERE userId = ? AND friendId = ?', [friendId, userId]);
+    if(res[0].affectedRows === 0){
+        return { success: false, message: 'Demande d\'ami introuvable.' };
+    }
+    const [rows] = await db.promise().execute('SELECT id FROM friends WHERE userId = ? AND friendId = ? AND isPending = 0', [friendId, userId]);
+    await db.promise().execute('INSERT INTO channels(type, name, description, guildId, isPrivate, friendId) VALUES (?,?,?,?,?,?)', ['text', 'Private chat', 'Chat privé', null, 1, rows[0].id]);
+    return { success: true };
+  },
+
+  refuseFriendRequest: async (userId, friendId) => {
+    const res = await db.promise().execute('DELETE FROM friends WHERE userId = ? AND friendId = ?', [friendId, userId]);
+    if(res[0].affectedRows === 0){
+        return { success: false, message: 'Demande d\'ami introuvable.' };
+    }
+    return { success: true };
+  },
+  cancelFriendRequest: async (userId, friendId) => {
+    const res = await db.promise().execute('DELETE FROM friends WHERE userId = ? AND friendId = ?', [userId, friendId]);
+    if(res[0].affectedRows === 0){
+        return { success: false, message: 'Demande d\'ami introuvable.' };
+    }
+    return { success: true };
+  }
 };
+
+
  

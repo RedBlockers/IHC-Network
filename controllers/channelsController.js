@@ -3,6 +3,7 @@ const userController = require('./userController');
 const guildModel = require('../models/guildModel');
 const guildController = require('./guildController');
 const logger = require('../utils/logger');
+const { get } = require('../routes/userRoutes');
 let io;
 
 module.exports = {
@@ -82,6 +83,18 @@ module.exports = {
             return res.status(500).json({ error: 'An unexpected error occurred', details: err.message });
         }
     },
+
+    getPrivateChannelsByUserId: async (req, res) => {
+        const { token } = req.body;
+        
+        const { valid, message, decodedToken } = await userController.AuthenticateAndDecodeToken(token);
+        if (!valid) {
+            return res.status(401).json({ error: message });
+        }
+        const channels = await channelModel.getPrivateChannelsByUserId(decodedToken.userId);
+        return res.status(200).json(channels);
+    },
+
     setIo: (socketIo) => {
         io = socketIo;
     },

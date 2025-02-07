@@ -13,6 +13,7 @@
     <link href="/style/friendPage.css" rel="stylesheet">
 </head>
 <body class="bg-dark text-white">
+
 <!-- Sidebar -->
 <div class="sidebar container pt-3 px-3">
     <h2>NoScord</h2>
@@ -25,13 +26,13 @@
                 </svg>
             </div>
         </div>
-        <div class="col rounded-top pr-0" id="secondaryContainer">
-            test
+        <div class="col rounded-top pr-0" id="secondaryContainer">                                                                      
+            
         </div>
     </div>
     <div class="userInfo mt-2">
         <div class="d-flex flex-row">
-            <div id="userInformations" class="d-flex flex-row rounded">
+            <div id="userInformations" class="d-flex flex-row rounded userInformations">
                 <img id="userAvatar" class="avatar" src="/images/NoScord.jpg">
                 <div class="d-flex flex-column justify-content-center mx-2">
                     <div id="userInfoUsername">
@@ -81,8 +82,22 @@
         <button class="mx-1">
             En attente
         </button>
+        <button class="mx-1">
+            Bloqués
+        </button>
+        <button class="mx-1" id="openAddFriendModal">
+            Ajouter
+        </button>
+    </div>
+    <div class="container mt-2 container-sidebar-right" id="mainContainer">
+        
     </div>
 </div>
+
+<div class="sideEndbar container pt-3 px-3">
+    <h3>Notifications</h3>
+</div>
+
 
 <div class="modal fade" id="addGuildModal" tabindex="-1" aria-labelledby="addGuildModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -103,10 +118,10 @@
                         <textarea class="form-control bg-dark text-white" style="resize: none;" id="guildDescription" rows="3" maxlength="255" placeholder="Entrez une description"></textarea>
                     </div>
                     <div class="d-flex flex-column justify-content-center align-items-center">
-                        <p>Icone du serveur</p>
+                        <p>Icône du serveur</p>
                         <div class="mb-3 text-center" style="width: 300px; height: 300px;">
                             <label for="guildIcon" class="form-label drop-container bg-dark text-white" id="dropcontainer">
-                                <span class="drop-title">Déposer vos fichiers<br>ou</span>
+                                <span class="drop-title">Déposez vos fichiers<br>ou</span>
                                 <input type="file" class="custom-form-control" id="guildIcon" accept="image/*">
                             </label>
                         </div>
@@ -114,6 +129,26 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                         <button type="button" class="btn btn-primary" id="addGuildModalAccept">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addFriendModal" tabindex="-1" aria-labelledby="addFriendModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFriendModalLabel">Ajouter un ami</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenu du modal -->
+                <form id="addFriendForm">
+                    <div class="input-group mb-3">
+                        <input id="friendUsername" type="text" class="form-control" placeholder="Ajoutez un ami grâce à son pseudo" aria-label="Text input with button">
+                        <button class="btn btn-primary" type="button" id="addFriendModalAccept">Valider</button>
                     </div>
                 </form>
             </div>

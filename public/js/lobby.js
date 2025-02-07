@@ -1,6 +1,10 @@
 import {Auth} from './services/auth.js';
 import { handleGuildCreation } from './services/guildService.js';
 import {displayIcons} from './components/guildRenderer.js';
+import { displayPrivateChannels, handleFriendRequest } from './services/friendService.js';
+import { handleFriendList } from './services/friendService.js';
+import { UserAPI } from './api/user.js';
+import { handleFriendActions } from './services/friendService.js';
 
 //const listeners = new Listeners();
 const token = localStorage.getItem('token');
@@ -24,5 +28,10 @@ if(match){
 document.getElementById('userAvatar').src = `/images/${localStorage.getItem('avatar')}`;
 document.getElementById('usernameDisplay').textContent = localStorage.getItem('username');
 
+const friendList = await UserAPI.getFriends(token);
+handleFriendList(friendList.friends, true);
+handleFriendRequest();
 handleGuildCreation();
+displayPrivateChannels();
 displayIcons();
+window.handleFriendActions = handleFriendActions;
