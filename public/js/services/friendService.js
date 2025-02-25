@@ -1,33 +1,63 @@
 import { Channels } from "../api/channels.js";
 import { UserAPI } from "../api/user.js";
+import { ContextMenu } from "../utils/contextMenuUtils.js";
 
 export function handleFriendRequest() {
-    const modal =  new bootstrap.Modal(document.getElementById('addFriendModal'));
-    const friendRequestModal = document.getElementById('openAddFriendModal')
-    friendRequestModal.addEventListener('click', () => {
+    const modal = new bootstrap.Modal(
+        document.getElementById("addFriendModal")
+    );
+    const friendRequestModal = document.getElementById("openAddFriendModal");
+    friendRequestModal.addEventListener("click", () => {
         modal.show();
     });
-    const friendRequestButton = document.getElementById('addFriendModalAccept');
-    friendRequestButton.addEventListener('click',() => {
-        const token = localStorage.getItem('token');
-        const username = document.getElementById('friendUsername').value;
-        const resp = UserAPI.addFriend(token, username);
-    })
+    const friendRequestButton = document.getElementById("addFriendModalAccept");
+    friendRequestButton.addEventListener("click", async () => {
+        const token = localStorage.getItem("token");
+        const username = document.getElementById("friendUsername").value;
+        const resp = await UserAPI.addFriend(token, username);
+        if (resp.success) {
+            modal.hide();
+            window.createNotification({
+                closeOnClick: true,
+                displayCloseButton: true,
+                positionClass: "nfc-bottom-right",
+                showDuration: 3500,
+                theme: "success",
+            })({
+                title: "Succès",
+                message: resp.message,
+            });
+        } else {
+            modal.hide();
+            window.createNotification({
+                closeOnClick: true,
+                displayCloseButton: true,
+                positionClass: "nfc-bottom-right",
+                showDuration: 3500,
+                theme: "error",
+            })({
+                title: "Erreur",
+                message: resp.message,
+            });
+        }
+    });
 }
 
-export function handleFriendList(friendList, showPendings) {
-    const mainContainer = document.getElementById('mainContainer');
-    if(friendList.length == 0){
-        mainContainer.innerHTML = 'Aucun ami trouvé.';
+export async function handleFriendList(friendList, showPendings) {
+    const mainContainer = document.getElementById("mainContainer");
+    if (friendList.length == 0) {
+        window.displayMode = "pendingDemands";
+        mainContainer.innerHTML = "Aucun ami trouvé.";
         return;
     }
-    mainContainer.innerHTML = '';
-    if(showPendings){
-        friendList = friendList.filter(f => f.isPending);
+    mainContainer.innerHTML = "";
+    if (showPendings) {
+        window.displayMode = "pendingDemands";
+        friendList = friendList.filter((f) => f.isPending);
         mainContainer.innerHTML = `En attente: ${friendList.length}`;
-        friendList.forEach(f => {
-            if(f.isSender){
-            mainContainer.innerHTML += `
+        friendList.forEach((f) => {
+            if (f.isSender) {
+                mainContainer.innerHTML += `
             <hr class="my-2">
             <div id="User${f.userId}" class="d-flex flex-row rounded userInformations">
             <img id="userAvatar0" class="avatar" src="/images/${f.userImage}" alt="avatar">
@@ -47,7 +77,7 @@ export function handleFriendList(friendList, showPendings) {
             </div>
         </div>
             `;
-            }else{
+            } else {
                 mainContainer.innerHTML += `
                 <hr class="my-2">
                 <div id="User${f.userId}" class="d-flex flex-row rounded userInformations">
@@ -76,47 +106,115 @@ export function handleFriendList(friendList, showPendings) {
             </div>
                 `;
             }
-
+        });
+    } else {
+        window.displayMode = "friendList";
+        const channels = await Channels.getPrivateChannelsByUserId(
+            localStorage.getItem("token")
+        );
+        mainContainer.innerHTML = `Amis: ${channels.length}`;
+        channels.forEach((f) => {
+            mainContainer.insertAdjacentHTML(
+                "beforeend",
+                `
+            <hr class="my-2">
+            <div id="User${f.user.userId}" class="d-flex flex-row rounded userInformations">
+            <img id="userAvatar0" class="avatar" src="/images/${f.user.userImage}" alt="avatar">
+            <div class="d-flex flex-column justify-content-center mx-2">
+                <div id="Username${f.user.userId}">
+                    <span id="usernameDisplay${f.user.userId}">${f.user.username}</span>
+                </div>
+                <div id="userInfoStatus0">
+                    placeholder
+                </div>
+            </div>
+            <div class="userToolsBox d-flex justify-content-end align-items-center flex-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16" onclick="window.location.href = '/${f.channelId}'">
+              <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+            </svg>
+            </div>`
+            );
+            AddContextMenu(
+                document.getElementById(`User${f.user.userId}`),
+                f.user,
+                f.channelId
+            );
         });
     }
 }
 
-export function handleFriendActions(type,FriendId){
-    switch(type){
-        case 'accept':
-            UserAPI.acceptFriend(localStorage.getItem('token'), FriendId);
+export function handleFriendActions(type, FriendId) {
+    switch (type) {
+        case "accept":
+            UserAPI.acceptFriend(localStorage.getItem("token"), FriendId);
             break;
-        case 'refuse':
-            UserAPI.refuseFriend(localStorage.getItem('token'), FriendId);
+        case "refuse":
+            UserAPI.refuseFriend(localStorage.getItem("token"), FriendId);
             break;
-        case 'block':
-            UserAPI.blockFriend(localStorage.getItem('token'), FriendId);
+        case "block":
+            UserAPI.blockFriend(localStorage.getItem("token"), FriendId);
             break;
-        case 'cancel':
-            UserAPI.cancelFriend(localStorage.getItem('token'), FriendId);
+        case "cancel":
+            UserAPI.cancelFriend(localStorage.getItem("token"), FriendId);
             break;
-        
+        case "remove":
+            UserAPI.removeFriend(localStorage.getItem("token"), FriendId);
+            break;
     }
 }
 
-export async function displayPrivateChannels(){
-    const channels = await Channels.getPrivateChannelsByUserId(localStorage.getItem('token'));
-    if(channels.length == 0){
+export async function displayPrivateChannels() {
+    const channels = await Channels.getPrivateChannelsByUserId(
+        localStorage.getItem("token")
+    );
+    if (channels.length == 0) {
+        const secondaryContainer =
+            document.getElementById("secondaryContainer");
+        secondaryContainer.innerHTML = "";
         return;
     }
-    const secondaryContainer = document.getElementById('secondaryContainer');
-    channels.forEach(c => {
-        secondaryContainer.innerHTML += `
-                        <div id="User${c.user.userId}" class="d-flex flex-row rounded userInformations" onclick="window.location.href = '/${c.channelId}'">
-                <img id="userAvatar0" class="avatar" src="/images/${c.user.userImage}" alt="avatar">
+    const secondaryContainer = document.getElementById("secondaryContainer");
+    secondaryContainer.innerHTML = "";
+    channels.forEach((c) => {
+        secondaryContainer.insertAdjacentHTML(
+            "beforeend",
+            `
+                        <div id="UserChannel${c.user.userId}" class="d-flex flex-row rounded userInformations my-1" onclick="window.location.href = '/${c.channelId}'">
+                <img id="userChannelAvatar0" class="avatar" src="/images/${c.user.userImage}" alt="avatar">
                 <div class="d-flex flex-column justify-content-center mx-2">
-                    <div id="Username${c.user.userId}">
-                        <span id="usernameDisplay${c.user.userId}">${c.user.username}</span>
+                    <div id="UsernameChannel${c.user.userId}">
+                        <span id="usernameChannelDisplay${c.user.userId}">${c.user.username}</span>
                     </div>
                     <div id="userInfoStatus0">
                         placeholder
                     </div>
                 </div>
                 `
+        );
+        AddContextMenu(
+            document.getElementById(`UserChannel${c.user.userId}`),
+            c.user,
+            c.channelId
+        );
     });
+}
+
+function AddContextMenu(target, friend, channelId) {
+    let contextMenu = new ContextMenu(
+        target,
+        document.getElementById("contextMenu")
+    );
+    contextMenu.addContextAction("Profil", () => {
+        alert("Afficher le profil");
+    });
+    contextMenu.addContextAction("Ouvrir les MP", () => {
+        window.location.href = `/${channelId}`;
+    });
+    contextMenu.addContextAction(
+        "Retirer l'ami",
+        () => {
+            handleFriendActions("remove", friend.userId);
+        },
+        { color: "rgb(255,60,60)" }
+    );
 }

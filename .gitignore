@@ -129,6 +129,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Prettier config
+.prettierrc.*
+
 # Ignore user profile data
 /public/images/profiles/
 /public/images/guilds/

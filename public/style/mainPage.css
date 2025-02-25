@@ -54,6 +54,9 @@ td,tr,th {
     .container-sidebar-right {
         width: calc(100% - 21px)!important;
     }
+    .input-group {
+        width: auto !important;
+    }
 }
 
 .container-sidebar-right{
