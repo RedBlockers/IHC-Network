@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: noscord
+    restart: always
+    ports:
+      - "80:80"
+      - "3000:3000"
+      - "443:443"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=example
+      - DB_DATABASE=chat_app_db_dev
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:latest
+    container_name: noscord_mysql
+    ports:
+      - "3306:3306"
+      - "8080:8080"
+    environment:
+      MYSQL_ROOT_PASSWORD: example #non modifiable une fois créer
+      MYSQL_DATABASE: chat_app_db_dev
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

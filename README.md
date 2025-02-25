@@ -1,95 +1,105 @@
-# NoScord - Application de Chat
+# NoScord - [1.0.0]
 
-NoScord est une application de chat anonyme développée avec Node.js, Express, MySQL et Socket.IO. Ce projet permet aux utilisateurs de discuter en temps réel avec prise en charge du formatage Markdown, des messages multi-lignes, ainsi que la possibilité de modifier et supprimer des messages. L'authentification est gérée via des JWT, et l'interface est construite avec Bootstrap.
+**NoScord** est une application de chat en temps réel développée avec Node.js, Express, MySQL et Socket.IO. Ce projet permet de discuter en temps réel à travers des serveurs et des discussions privées. Le formatage Markdown permet une conversation plus ergonomique et agréable.
 
 ## Fonctionnalités
 
-- Chat en temps réel avec Socket.IO
-- Authentification des utilisateurs avec des tokens JWT
-- Support du formatage Markdown dans les messages
-- Messages multi-lignes avec Shift+Entrée
-- Modification et suppression des messages
-- Interface en mode sombre
-- Connexions sécurisées via des certificats SSL
-- Intégration d'une base de données MySQL
-- Gestion des versions avec Git
+### Chat en temps réel
+
+NoScord offre une expérience de chat instantané, améliorant la fluidité des conversations.
+
+### Utilisation de guildes
+
+La création et l'utilisation de guildes permettent une meilleure organisation des communautés.
+
+### Gestion des amis
+
+Ajoutez des amis et conversez avec eux dans des salons privés.
 
 ## Technologies Utilisées
 
-- **Backend** : Node.js, Express.js, MySQL, Socket.IO
-- **Frontend** : Bootstrap, Axios
-- **Authentification** : JSON Web Tokens (JWT), bcrypt pour le hachage des mots de passe
-- **Base de données** : MySQL
-- **Contrôle de version** : Git
-- **SSL** : Let's Encrypt
+-   **Backend** : Node.js, Express.js, MySQL, Socket.IO
+-   **Frontend** : Bootstrap, Axios
+-   **Authentification** : JSON Web Tokens (JWT), bcrypt pour le hachage des mots de passe
+-   **Base de données** : MySQL
+-   **Contrôle de version** : Git
 
 ## Démarrage
 
 ### Prérequis
 
-- Node.js (v14 ou plus)
-- MySQL
-- Git
-- Certificats SSL Let's Encrypt (optionnel, mais recommandé pour HTTPS)
+-   Node.js (v14 ou plus)
+-   Serveur MySQL
+-   Certificats SSL (optionnel, mais recommandé pour HTTPS)
 
 ### Installation
 
 1. **Cloner le dépôt :**
 
-   ```bash
-   git clone https://github.com/votreutilisateur/noscord.git
-   cd noscord
-   ```
+    ```bash
+    git clone https://github.com/RedBlockers/IHC-Network.git
+    cd noscord
+    ```
+
 2. **Installer les dépendances :**
+
     ```bash
     npm install
     ```
-3. **Configurer MySQL :**
 
+3. **Configurer l'environnement :**
+
+    - Connectez-vous à votre serveur MySQL ou créez-en un.
     - Créez une base de données MySQL.
-    - Mettez à jour le fichier .env avec vos informations de connexion MySQL.
-    Exemple de fichier `.env` :
-    ```bash
-    # SQL configuration
-    DB_HOST = localhost
-    DB_USER = root
-    DB_PASSWORD = ""
-    DB_DATABASE = chat_app_db
+    - Créez un fichier `.env` avec vos informations de connexion.
+      Exemple de fichier `.env` :
+
+    ```env
+    DB_HOST=XX.XX.XX.XX
+    DB_USER=ADMIN
+    DB_PASSWORD=CHANGE_ME
+    DB_DATABASE=YOUR_DATABASE
 
     # App config
-    PORT = 3000
-    HOSTNAME = http://localhost
+    HTTP_PORT=80
+    HTTPS_PORT=443
+    HOSTNAME=http://YOUR_HOST.com
+    USE_SSL=false
+
+    # SSL config
+    SSL_KEY_PATH=
+    SSL_CERT_PATH=
+    SSL_CA_PATH=
+
+    # Configuration Token
+    SECRET_KEY=TOKEN_POUR_JWT
     ```
-4. Lancer l'application :
+
+4. **Lancer l'application :**
     ```bash
-    npm start server.js
+    node server.js
     ```
+
 ## Configuration SSL
+
 Pour activer SSL pour des connexions sécurisées :
 
 1. Obtenez un certificat SSL (par exemple via Let's Encrypt).
-2. Mettez à jour la configuration du serveur pour utiliser HTTPS (voir le fichier server.js pour un exemple).
+2. Mettez à jour la configuration du serveur pour utiliser HTTPS.
 3. Redémarrez le serveur.
-## Déploiement sur VPS
-1. Connectez-vous à votre VPS en SSH.
-    ```bash
-    ssh root@185.166.39.170
-    ```
 
-2. Installez Git, Node.js, et MySQL sur votre VPS.
+## A Venir
 
-3. Clonez votre dépôt de projet.
+-   Téléchargement de fichiers
+-   Permissions de guilde
+-   Permissions de channels
+-   Application desktop
+-   Vérification de l'adresse mail
 
-4. Installez PM2 pour exécuter votre application Node.js en arrière-plan :
-    ```bash
-    npm install pm2 -g
-    ```
-5. Démarrez l'application avec PM2 :
-    ```bash
-    pm2 start server.js
-    ```
 ## Contribution
+
 N'hésitez pas à forker ce projet, à apporter des modifications et à soumettre une pull request !
 
 ## Licence
-Ce projet est sous licence MIT - voir le fichier LICENCE pour plus de détails.
+
+Ce projet est sous licence MIT - voir le fichier `LICENCE` pour plus de détails.

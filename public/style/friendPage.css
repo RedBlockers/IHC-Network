@@ -1,0 +1,17 @@
+
+.button-bar{
+    height: 25px;
+}
+.button-bar button{
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 2px;
+}
+.button-bar button:hover{
+    background-color: #FFFFFF30 !important;
+}
+
+.active{
+    background-color: #FFFFFF50 !important;
+}

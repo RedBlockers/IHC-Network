@@ -6,67 +6,7 @@
   <title>Inscription - NoScord</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-  <style>
-.drop-container {
-  position: relative;
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  padding: 20px;
-  border-radius: 10px;
-  border: 2px dashed #ced4da;
-  cursor: pointer;
-  transition: background .2s ease-in-out, border .2s ease-in-out;
-}
-
-.drop-container:hover {
-  background-color: #ffffff16 !important;
-  cursor: pointer;
-
-}
-.custom-form-control:hover {
-  background: transparent !important;
-}
-
-input[type=file]{
-  color: transparent;
-}
-
-input[type=file]::file-selector-button {
-  margin-right: 0;
-  border: none;
-  width: 100%;
-  background: #00000035;
-  padding: 10px 20px;
-  color: #dde0e3;
-  cursor: pointer;
-}
-.custom-form-control {
-    display: block;
-    width: 100%;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    background: transparent;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    appearance: none;
-    border-radius: .25rem;
-    cursor: pointer;
-    transition: background .2s ease-in-out, border .2s ease-in-out;
-}
-.drop-title{
-  text-align: center;
-  background: #00000035;
-  border-radius: .25rem;
-  padding: 10px;
-}
-
-  </style>
+  <link href="../style/dropZone.css" rel="stylesheet">
 </head>
 <body class="bg-dark text-white">
   <div class="container mt-5">
@@ -104,28 +44,10 @@ input[type=file]::file-selector-button {
     </div>
   </div>
   
-
-  <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-          <h5 class="modal-title" id="cropModalLabel">Recadrer la photo de profil</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body d-flex justify-content-center">
-          <img id="imageToCrop" class="img-fluid" style="max-width: 100%;" />
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="button" class="btn btn-primary" id="cropAccept">Accepter</button>
-        </div>
-      </div>
-    </div>
-  </div>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/register.js"></script>
+  <script src="../js/register.js" type="module"></script>
 </body>
 </html>
  <!-- 
