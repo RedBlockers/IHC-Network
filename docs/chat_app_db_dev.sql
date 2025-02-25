@@ -68,6 +68,23 @@ DROP VIEW IF EXISTS `guilds_user`;
 CREATE TABLE `guilds_user` (`guildId` int(11), `userId` int(11), `guildName` varchar(32), `guildImage` varchar(255), `guildDescription` varchar(255), `ownerId` int(11), `userNickname` varchar(32), `userImage` varchar(255));
 
 
+DROP TABLE IF EXISTS `invites`;
+CREATE TABLE `invites` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `guild` int(11) NOT NULL,
+  `author` int(11) NOT NULL,
+  `invite` varchar(64) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `invite` (`invite`),
+  UNIQUE KEY `invite_2` (`invite`),
+  KEY `guild` (`guild`),
+  KEY `author` (`author`),
+  CONSTRAINT `invites_ibfk_1` FOREIGN KEY (`guild`) REFERENCES `guilds` (`guildId`),
+  CONSTRAINT `invites_ibfk_2` FOREIGN KEY (`author`) REFERENCES `users` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
   `messageId` int(11) NOT NULL AUTO_INCREMENT,
@@ -115,6 +132,20 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
+DROP TABLE IF EXISTS `users_invited`;
+CREATE TABLE `users_invited` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invite` int(11) NOT NULL,
+  `user` int(11) NOT NULL,
+  `used_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `invite` (`invite`),
+  KEY `user` (`user`),
+  CONSTRAINT `users_invited_ibfk_1` FOREIGN KEY (`invite`) REFERENCES `invites` (`id`),
+  CONSTRAINT `users_invited_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+
 DROP TABLE IF EXISTS `user_attempts`;
 CREATE TABLE `user_attempts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -130,4 +161,4 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `guilds_user` AS select `gj
 DROP TABLE IF EXISTS `message_content`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `message_content` AS select `m`.`messageId` AS `messageId`,`m`.`userId` AS `userId`,`m`.`content` AS `content`,`m`.`sentDate` AS `sentDate`,`u`.`userNickname` AS `userNickname`,`u`.`userImage` AS `userImage` from (`messages` `m` join `users` `u` on(`u`.`userId` = `m`.`userId`)) order by `m`.`sentDate`;
 
--- 2025-02-14 12:13:11
+-- 2025-02-25 11:56:43
