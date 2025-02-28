@@ -12,6 +12,8 @@ import { handleMessageInput } from "./components/resizableTextArea.js";
 import { Messages } from "./api/messages.js";
 import { Listeners } from "./services/listeners.js";
 import { ContextMenu } from "./utils/contextMenuUtils.js";
+import { getAverageRGB } from "./utils/imageUtils.js";
+import { addLoader } from "./utils/imageUtils.js";
 
 //const listeners = new Listeners();
 const token = localStorage.getItem("token");
@@ -94,3 +96,9 @@ document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
 )}`;
 document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
+
+const rgb = getAverageRGB(document.getElementById("userProfilePicture"));
+
+document.getElementById(
+    "userProfileHeader"
+).style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
