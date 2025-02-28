@@ -2,20 +2,32 @@ import { EmojiButton } from "https://cdn.jsdelivr.net/npm/@joeattardi/emoji-butt
 
 document.addEventListener("DOMContentLoaded", () => {
     const button = document.querySelector("#emojiButton");
-    const picker = new EmojiButton({});
-    document.querySelector(".emoji-picker").style.backgroundColor =
-        "rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))";
-    document.querySelector(".emoji-picker__search").style.backgroundColor =
-        "rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))";
-    picker.on("emoji", (emoji) => {
-        const messageInput = document.querySelector("#messageInput");
-        messageInput.value += emoji.emoji;
-        setTimeout(() => {
-            messageInput.focus();
-        }, 100);
-    });
 
-    button.addEventListener("click", () => {
-        picker.togglePicker(button);
+    const waitForElement = (selector, callback) => {
+        const element = document.querySelector(selector);
+        if (element) {
+            callback(element);
+        } else {
+            setTimeout(() => waitForElement(selector, callback), 100);
+        }
+    };
+
+    waitForElement("#emojiButton", (button) => {
+        const picker = new EmojiButton({});
+        document.querySelector(".emoji-picker").style.backgroundColor =
+            "rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))";
+        document.querySelector(".emoji-picker__search").style.backgroundColor =
+            "rgba(var(--bs-dark-rgb), var(--bs-bg-opacity))";
+        picker.on("emoji", (emoji) => {
+            const messageInput = document.querySelector("#messageInput");
+            messageInput.value += emoji.emoji;
+            setTimeout(() => {
+                messageInput.focus();
+            }, 100);
+        });
+
+        button.addEventListener("click", () => {
+            picker.togglePicker(button);
+        });
     });
 });

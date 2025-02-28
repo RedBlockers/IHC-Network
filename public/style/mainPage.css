@@ -15,7 +15,9 @@ body::-webkit-scrollbar {
 code {
     white-space: pre-wrap;
 }
-td,tr,th {
+td,
+tr,
+th {
     border: white solid 1px;
     text-align: center;
 }
@@ -46,31 +48,29 @@ td,tr,th {
     text-align: center;
 }
 
-
 @media (max-width: 1000px) {
     .sideEndbar {
         display: none;
     }
     .container-sidebar-right {
-        width: calc(100% - 21px)!important;
+        width: calc(100% - 21px) !important;
     }
     .input-group {
         width: auto !important;
     }
 }
 
-.container-sidebar-right{
+.container-sidebar-right {
     width: calc(100% - 320px);
     margin: 0;
 }
-.userToolsBox{
+.userToolsBox {
     width: 100%;
 }
 
-.userToolsBox svg:hover{
+.userToolsBox svg:hover {
     cursor: pointer;
 }
-
 
 .sideEndbar {
     position: fixed;
@@ -110,22 +110,24 @@ td,tr,th {
     overflow-y: scroll;
     padding: 10px;
 }
-#messageBox img{
+#messageBox img {
     max-width: 100%;
 }
 #messageContainer {
     height: 85vh;
 }
-#secondaryContainer{
+#secondaryContainer {
     background-color: #272727;
 }
-.btn-edit, .btn-delete {
+.btn-edit,
+.btn-delete {
     margin-left: 10px;
     color: #ffffff;
     background-color: transparent;
     border: none;
 }
-.btn-edit:hover, .btn-delete:hover {
+.btn-edit:hover,
+.btn-delete:hover {
     color: #cccccc;
 }
 .account-info {
@@ -143,7 +145,7 @@ td,tr,th {
     border-radius: 50%;
 }
 .timestamp {
-    font-size: .75em;
+    font-size: 0.75em;
     color: rgb(86, 96, 93);
 }
 .username {
@@ -156,7 +158,7 @@ td,tr,th {
 .tool-container div:hover {
     cursor: pointer;
 }
-.tool-container svg{
+.tool-container svg {
     height: 19px;
     width: 19px;
 }
@@ -169,7 +171,7 @@ td,tr,th {
 .settings-button:hover {
     transform: rotate(180deg);
 }
-.guild{
+.guild {
     transition: 0.2s ease-in-out;
     display: inline-block;
     transform-origin: center;
@@ -179,16 +181,16 @@ td,tr,th {
     color: #3ea457;
     transform: scale(105%);
 }
-.content{
+.content {
     max-width: 100%;
 }
 
-.selected{
+.selected {
     background-color: white;
     height: 60%;
 }
-.hovered{
-    animation: selection-bar-fade-in .3s ease-in 1;
+.hovered {
+    animation: selection-bar-fade-in 0.3s ease-in 1;
     background-color: white;
     height: 30%;
 }
@@ -225,10 +227,10 @@ td,tr,th {
         transform: rotate(0deg);
     }
 }
-.rotate{
-    animation: rotate-return .6s ease-in-out 1 forwards;
+.rotate {
+    animation: rotate-return 0.6s ease-in-out 1 forwards;
 }
-.userInformations{
+.userInformations {
     transition: 0.2s ease-in-out;
     display: inline-block;
     transform-origin: center;
@@ -236,7 +238,7 @@ td,tr,th {
 .userInformations:hover {
     background-color: #ffffff30;
 }
-#serverInfoContainer{
+#serverInfoContainer {
     height: calc(100% - 130px);
 }
 p {
@@ -253,7 +255,8 @@ blockquote {
     border-top-right-radius: 10px;
 }
 
-a, u {
+a,
+u {
     text-decoration: none;
 }
 
@@ -263,7 +266,7 @@ blockquote p {
 .hljs {
     all: unset;
 }
-code{
+code {
     overflow-x: scroll !important; /* Ajoute un défilement horizontal si nécessaire */
     white-space: pre !important; /* Conserve les espaces et les retours à la ligne */
     word-wrap: normal !important;
@@ -277,14 +280,132 @@ code{
     animation: spin 1s linear infinite;
 }
 
-.channel:hover{
+.channel:hover {
     cursor: pointer;
-    background-color: rgba(208,233,255,0.11);
+    background-color: rgba(208, 233, 255, 0.11);
+}
+
+.userProfileContainer {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    border-radius: 20px;
+    min-height: 100px;
+    width: 375px;
+    background-color: #3a3a3a;
+    z-index: 1000;
+}
+
+.userProfileContainer h4{
+    position: relative;
+    top: -20px;
 }
 
 
+.userProfileHeader {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: #cccccc;
+    height: 53px;
+}
 
+.userProfilePictureCircle {
+    position: relative;
+    top: -27px;
+    left: 12px;
+    border-radius: 50px;
+    width: 67px;
+    height: 67px;
+    background-color: #3a3a3a;
+}
+
+.userProfilePicture {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+}
+
+.presenceCircleBorder {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background-color: #2a2a2a;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+}
+
+.presenceCircle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #43b581;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+}
+
+.noteContainer {
+    position: absolute;
+    z-index: 1001;
+    top: 35px;
+    left: 110px;
+    border-radius: 10px;
+    width: 195px;
+    height: 50px;
+    background-color: #1d1d1dcc;
+    overflow: hidden;
+}
+
+#statusText {
+    font-size: 0.85em;
+    white-space: pre-wrap; /* Permet le retour à la ligne */
+    word-wrap: break-word; /* Gère le dépassement horizontal */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noteContainer p {
+    font-size: 0.85em;
+    white-space: pre-wrap; /* Permet le retour à la ligne */
+    word-wrap: break-word; /* Gère le dépassement horizontal */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Nombre de lignes max avant les "..." */
+    -webkit-box-orient: vertical;
+}
+
+.noteContainer:hover {
+    height: auto; /* Agrandit le conteneur */
+    max-height: 300px; /* Définit une limite pour éviter un conteneur infini */
+}
+
+.noteContainer:hover p {
+    -webkit-line-clamp: unset; /* Supprime les "..." au survol */
+}
+
+.profileButtonContainer {
+    background-color: #00000066;
+    height: 78px;
+    border-radius: 10px;
+}
+
+.profileButtonContainer button {
+    background-color: #00000000;
+    border: none;
+    height: 50%;
+}
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

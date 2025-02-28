@@ -101,7 +101,7 @@ module.exports = {
             if (profileImage) {
                 imagePath = await saveImage(profileImage, "profiles");
             } else {
-                imagePath = await saveImage(profileImage);
+                imagePath = "NoScord.jpg";
             }
 
             if (!imagePath) {
