@@ -6,6 +6,7 @@ import { handleGuildCreation } from "./services/guildService.js";
 import { displayIcons } from "./components/guildRenderer.js";
 import { Channels } from "./api/channels.js";
 import { displayChannel } from "./components/channelRenderer.js";
+import { UserUtils } from "./utils/UserUtils.js";
 
 const listeners = new Listeners();
 const token = localStorage.getItem("token");
@@ -48,6 +49,9 @@ Messages.loadMessageByChannelId(match[2], match[1]);
 handleMessageInput();
 handleGuildCreation();
 displayIcons();
+
+window.displayProfileInfo = UserUtils.positionProfileContainer
+
 
 //// Modifier un message
 //function editMessage(messageId) {

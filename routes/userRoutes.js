@@ -29,6 +29,9 @@ router.delete("/cancelFriendRequest", userController.cancelFriendRequest);
 
 router.delete("/removeFriend", userController.removeFriend);
 
+// Route pour récupérer les informations d'un utilisateur
+router.get("/getUser", userController.getUserInfo);
+
 // Autres routes possibles : mise à jour du profil, suppression de compte, etc.
 // router.put('/update', userController.updateUser);
 // router.delete('/delete', userController.deleteUser);

@@ -18,5 +18,9 @@
     "mysql2": "^3.11.3",
     "socket.io": "^4.8.0",
     "winston": "^3.16.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "http-server": "^14.1.1"
   }
 }

@@ -247,6 +247,7 @@ module.exports = {
                 res.json({
                     success: true,
                     message,
+                    userId: decodedToken.userId,
                     username: user.userNickname,
                     avatar: user.userImage,
                 });
@@ -400,6 +401,40 @@ module.exports = {
 
         res.json({ success: true, message: "amis supprimé" });
     },
+
+    getUserInfo: async (req, res) => {
+        const authHeader = req.headers["authorization"];
+
+        if (!authHeader) {
+            return res.status(401).json({ message: "Token manquant" });
+        }
+        const token = authHeader && authHeader.split(" ")[1];
+        const { valid, message, decodedToken } =
+            await AuthenticateAndDecodeToken(token);
+        if (!valid) {
+            return res.status(401).json({ message: "Token invalide" });
+        }
+        const reqUserId = req.query.userId;
+        if (!reqUserId) {
+            return res.status(400).json({ message: "userId manquant" });
+        }
+        try {
+            const user = await userModel.getUserInfoById(decodedToken.userId, reqUserId);
+            if (!user) {
+                return res.status(404).json({ message: "Utilisateur introuvable" });
+            }
+            return res.status(200).json(user);
+        }catch (error) {
+            logger.error(
+                "Erreur lors de la récupération des informations de l'utilisateur :\n" +
+                    error.stack
+            );
+            return res.status(500).json({
+                message: "Erreur lors de la récupération des informations de l'utilisateur",
+            });
+        }
+    },
+
     AuthenticateAndDecodeToken,
     setIo: (socketIo) => {
         io = socketIo;

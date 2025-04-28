@@ -73,4 +73,20 @@ export class UserAPI {
         }
         return response.data;
     }
+
+    static async getUser(token, userId) {
+        const response = await axios.get("/users/getUser", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            params: {
+                userId: userId,
+            },
+        });
+        if (response.status == 401) {
+            Auth.invalidateToken();
+        } else if (response.status == 200) {
+            return response.data;
+        }
+    }
 }

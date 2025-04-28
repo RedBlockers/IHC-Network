@@ -118,7 +118,7 @@ export async function handleFriendList(friendList, showPendings) {
                 "beforeend",
                 `
             <hr class="my-2">
-            <div id="User${f.user.userId}" class="d-flex flex-row rounded userInformations">
+            <div id="User${f.user.userId}" class="d-flex flex-row rounded userInformations" onclick="window.location.href = '/${f.channelId}'">
             <img id="userAvatar0" class="avatar" src="/images/${f.user.userImage}" alt="avatar">
             <div class="d-flex flex-column justify-content-center mx-2">
                 <div id="Username${f.user.userId}">
@@ -127,11 +127,6 @@ export async function handleFriendList(friendList, showPendings) {
                 <div id="userInfoStatus0">
                     placeholder
                 </div>
-            </div>
-            <div class="userToolsBox d-flex justify-content-end align-items-center flex-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16" onclick="window.location.href = '/${f.channelId}'">
-              <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-            </svg>
             </div>`
             );
             AddContextMenu(
@@ -205,7 +200,7 @@ function AddContextMenu(target, friend, channelId) {
         document.getElementById("contextMenu")
     );
     contextMenu.addContextAction("Profil", () => {
-        alert("Afficher le profil");
+        window.displayProfileInfo(target, friend.userId);
     });
     contextMenu.addContextAction("Ouvrir les MP", () => {
         window.location.href = `/${channelId}`;

@@ -12,8 +12,8 @@ import { handleMessageInput } from "./components/resizableTextArea.js";
 import { Messages } from "./api/messages.js";
 import { Listeners } from "./services/listeners.js";
 import { ContextMenu } from "./utils/contextMenuUtils.js";
-import { getAverageRGB } from "./utils/imageUtils.js";
 import { addLoader } from "./utils/imageUtils.js";
+import { UserUtils } from "./utils/UserUtils.js";
 
 //const listeners = new Listeners();
 const token = localStorage.getItem("token");
@@ -91,14 +91,13 @@ window.friendList = friendList;
 window.handleFriendList = handleFriendList;
 window.handleFriendActions = handleFriendActions;
 window.displayPrivateChannels = displayPrivateChannels;
+window.displayProfileInfo = UserUtils.positionProfileContainer
+
 document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
     "avatar"
 )}`;
 document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
 
-const rgb = getAverageRGB(document.getElementById("userProfilePicture"));
 
-document.getElementById(
-    "userProfileHeader"
-).style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
