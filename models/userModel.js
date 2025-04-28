@@ -231,6 +231,31 @@ module.exports = {
             [invite.id, userId]
         );
     },
+    getUserInfoById: async (userId,reqId) => {
+
+        isOwn = userId == reqId ? 1 : 0;
+        const [rows] = await db
+        .promise()
+        .execute(
+            "SELECT userNickname, userImage, userId, aboutMe, notes, presence FROM users WHERE userId = ?",
+            [reqId]
+        );
+        if (rows.length === 0) {
+            return new Error("User not found");
+        }
+
+        return rows.map((r) => ({
+            userId: r.userId,
+            username: r.userNickname,
+            userImage: r.userImage,
+            aboutMe: r.aboutMe,
+            notes: r.notes,
+            presence: r.presence,
+            isOwn: isOwn,
+        }))[0];
+    },
+
+
     JoinGuild: async (userId, guildId) => {
         const [rows] = await db
             .promise()

@@ -18,7 +18,7 @@ function genMsgContent(message) {
         <div class="message-info-container d-flex flex-row">
             <img class="avatar mr-3" src="../images/${
                 message.userImage
-            }" loading="lazy">
+            }" loading="lazy" onclick="window.displayProfileInfo(this, ${message.userId})" alt="Avatar de ${message.userNickname}">
             <span class="message-info d-flex flex-row align-items-top">
                 <p class="username mx-3">${message.userNickname}</p>
                 <p class="timestamp ">${formatTimestamp(message.sentDate)}</p>

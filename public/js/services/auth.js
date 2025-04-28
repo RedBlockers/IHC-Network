@@ -7,6 +7,7 @@ export class Auth {
             if (response.status === 200 && response.data.success) {
                 localStorage.setItem("username", response.data.username);
                 localStorage.setItem("avatar", response.data.avatar);
+                localStorage.setItem("userId", response.data.userId);
             } else {
                 this.invalidateToken();
             }

@@ -1,8 +1,18 @@
 # CHANGELOG
 
+## [1.0.2]
+
+### Nouvelles fonctionnalitées
+
+- Ajout de l'affichage du profils des utilisateurs
+
+### Correction de bug
+
+- Correction de la création d'un lien de partage de serveur sur la page principale
+
 ## [1.0.1]
 
-### Corrections du bug
+### Corrections de bug
 
 -   Correction de l'enregistrement de l'image lors de la création de comptes
 -   Correction du selecteur d'émoji ne fonctionnant pas dans les messages privées

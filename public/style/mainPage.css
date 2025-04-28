@@ -286,9 +286,10 @@ code {
 }
 
 .userProfileContainer {
-    position: absolute;
+    position: fixed;
+    display: none;
     top: 100px;
-    left: 100px;
+    left: 40%;
     border-radius: 20px;
     min-height: 100px;
     width: 375px;
@@ -360,7 +361,12 @@ code {
     height: 50px;
     background-color: #1d1d1dcc;
     overflow: hidden;
+    /* Ajoutez ces propriétés */
+    display: flex;
+    align-items: center; /* Centre verticalement le contenu */
+    padding: 0; /* Réinitialise tous les paddings */
 }
+
 
 #statusText {
     font-size: 0.85em;
