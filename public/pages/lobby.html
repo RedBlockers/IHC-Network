@@ -224,9 +224,9 @@
                         <!-- Contenu du modal -->
                         <form id="addServerForm">
                             <div class="mb-3">
-                                <label for="guildName" class="form-label"
-                                    >Nom du serveur</label
-                                >
+                                <label for="guildName" class="form-label"></label>
+                                    Nom du serveur
+                                </label>
                                 <input
                                     type="text"
                                     class="form-control bg-dark text-white"
@@ -236,9 +236,12 @@
                                 />
                             </div>
                             <div class="mb-3">
-                                <label for="guildDescription" class="form-label"
-                                    >Description</label
+                                <label
+                                    for="guildDescription"
+                                    class="form-label"
                                 >
+                                    Description
+                                </label>
                                 <textarea
                                     class="form-control bg-dark text-white"
                                     style="resize: none"
@@ -261,9 +264,11 @@
                                         class="form-label drop-container bg-dark text-white"
                                         id="dropcontainer"
                                     >
-                                        <span class="drop-title"
-                                            >Déposez vos fichiers<br />ou</span
-                                        >
+                                        <span class="drop-title">
+                                            Déposez vos fichiers
+                                            <br />
+                                            ou
+                                        </span>
                                         <input
                                             type="file"
                                             class="custom-form-control"
@@ -359,27 +364,37 @@
                 </div>
             </div>
             <div class="noteContainer">
-                <p class="mx-2 my-1">c'est le test, un long text qui continue, encore et encore et encore, et encore plus et maintenant le test
-                </p>
+                <p class="mx-2 my-1"></p>
             </div>
-            <h4 class="px-3">RedBlocker</h4>
-            <p id="statusText" class="pb-3 mx-2">
-                tngskfklgrkerlkrgklsmkrgnlmsgnlegnrdlkgnslmgndslkgneslgkngrsmdlnrdsknlrdlnrdlnmgrs
-            </p>
+            <h4 class="px-3"></h4>
+            <p id="statusText" class="pb-3 mx-2"></p>
             <div
-                class="profileButtonContainer mx-4 d-flex flex-column justify-content-around" id="auxProfileButtonContainer"
+                class="profileButtonContainer mx-4 d-flex flex-column justify-content-around"
+                id="auxProfileButtonContainer"
             >
-                <button class="text-white" id="editProfil">Modifier le profil</button>
+                <button class="text-white" id="editProfil">
+                    Modifier le profil
+                </button>
                 <hr class="m-0" />
-                <button class="text-white" id="changeAccount">Changer de compte</button>
+                <button
+                    class="text-white"
+                    id="changeAccount"
+                    onclick="localStorage.removeItem('token');window.location.href ='/pages/login.html'"
+                >
+                    Changer de compte
+                </button>
             </div>
             <div class="my-3"></div>
             <div
                 class="profileButtonContainer mx-4 d-flex flex-column justify-content-around"
             >
-                <button class="text-white" id="editPresence">Changer la présence</button>
+                <button class="text-white" id="editPresence">
+                    Changer la présence
+                </button>
                 <hr class="m-0" id="mainProfileHorisontalBar" />
-                <button class="text-white" id="copyIdentifier">Copier l'identifiant</button>
+                <button class="text-white" id="copyIdentifier">
+                    Copier l'identifiant
+                </button>
             </div>
         </div>
         <script src="/socket.io/socket.io.js"></script>
