@@ -170,22 +170,42 @@ export async function displayPrivateChannels() {
     }
     const secondaryContainer = document.getElementById("secondaryContainer");
     secondaryContainer.innerHTML = "";
+    const match = window.location.href.match("\\/(\\d+)$");
+    console.log("Match", match);
     channels.forEach((c) => {
-        secondaryContainer.insertAdjacentHTML(
-            "beforeend",
-            `
-                        <div id="UserChannel${c.user.userId}" class="d-flex flex-row rounded userInformations my-1" onclick="window.location.href = '/${c.channelId}'">
-                <img id="userChannelAvatar0" class="avatar" src="/images/${c.user.userImage}" alt="avatar">
-                <div class="d-flex flex-column justify-content-center mx-2">
-                    <div id="UsernameChannel${c.user.userId}">
-                        <span id="usernameChannelDisplay${c.user.userId}">${c.user.username}</span>
-                    </div>
-                    <div id="userInfoStatus0">
-                        placeholder
-                    </div>
-                </div>
+        if (match && c.channelId == match[1]) {
+            secondaryContainer.insertAdjacentHTML(
+                "beforeend",
                 `
-        );
+                            <div id="UserChannel${c.user.userId}" style="background-color: #ffffff40" class="d-flex flex-row rounded userInformations my-1" onclick="window.location.href = '/${c.channelId}'">
+                    <img id="userChannelAvatar0" class="avatar" src="/images/${c.user.userImage}" alt="avatar">
+                    <div class="d-flex flex-column justify-content-center mx-2">
+                        <div id="UsernameChannel${c.user.userId}">
+                            <span id="usernameChannelDisplay${c.user.userId}">${c.user.username}</span>
+                        </div>
+                        <div id="userInfoStatus0">
+                            placeholder
+                        </div>
+                    </div>
+                    `
+            );
+        } else {
+            secondaryContainer.insertAdjacentHTML(
+                "beforeend",
+                `
+                            <div id="UserChannel${c.user.userId}" class="d-flex flex-row rounded userInformations my-1" onclick="window.location.href = '/${c.channelId}'">
+                    <img id="userChannelAvatar0" class="avatar" src="/images/${c.user.userImage}" alt="avatar">
+                    <div class="d-flex flex-column justify-content-center mx-2">
+                        <div id="UsernameChannel${c.user.userId}">
+                            <span id="usernameChannelDisplay${c.user.userId}">${c.user.username}</span>
+                        </div>
+                        <div id="userInfoStatus0">
+                            placeholder
+                        </div>
+                    </div>
+                    `
+            );
+        }
         AddContextMenu(
             document.getElementById(`UserChannel${c.user.userId}`),
             c.user,

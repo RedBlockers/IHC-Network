@@ -91,13 +91,10 @@ window.friendList = friendList;
 window.handleFriendList = handleFriendList;
 window.handleFriendActions = handleFriendActions;
 window.displayPrivateChannels = displayPrivateChannels;
-window.displayProfileInfo = UserUtils.positionProfileContainer
+window.displayProfileInfo = UserUtils.positionProfileContainer;
 
 document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
     "avatar"
 )}`;
 document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
-
-
-

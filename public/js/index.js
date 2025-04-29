@@ -37,7 +37,7 @@ if (match) {
 }
 
 const channels = await Channels.getChannelsByGuildId(match[1]);
-channels.forEach((channel) => displayChannel(channel));
+channels.forEach((channel) => displayChannel(channel, match[2]));
 document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
     "avatar"
 )}`;
@@ -50,8 +50,7 @@ handleMessageInput();
 handleGuildCreation();
 displayIcons();
 
-window.displayProfileInfo = UserUtils.positionProfileContainer
-
+window.displayProfileInfo = UserUtils.positionProfileContainer;
 
 //// Modifier un message
 //function editMessage(messageId) {
