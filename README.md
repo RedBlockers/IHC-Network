@@ -1,5 +1,6 @@
 # NoScord - [1.0.3]
 
+
 **NoScord** est une application de chat en temps réel développée avec Node.js, Express, MySQL et Socket.IO. Ce projet permet de discuter en temps réel à travers des serveurs et des discussions privées. Le formatage Markdown permet une conversation plus ergonomique et agréable.
 
 ## Fonctionnalités
