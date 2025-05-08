@@ -16,8 +16,20 @@ module.exports = {
     getMessages: async (req, res) => {
         try {
             const { guildId, channelId } = req.params;
-            const token = req.headers.token;
-            channelId, guildId, token;
+
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const token = authHeader && authHeader.split(" ")[1];
+            if (!token) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            if (!guildId || !channelId) {
+                return res.status(400).json({
+                    error: "Le guildId ou le channelId est manquant",
+                });
+            }
 
             const { valid, message, decodedToken } =
                 await userController.AuthenticateAndDecodeToken(token);
@@ -61,7 +73,20 @@ module.exports = {
 
     postMessage: async (req, res) => {
         try {
-            const { token, messageContent, channel } = req.body.content;
+            const { messageContent, channel } = req.body;
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const token = authHeader && authHeader.split(" ")[1];
+            if (!token) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            if (!channel || !messageContent) {
+                return res
+                    .status(400)
+                    .json({ error: "Le channelId ou le message est manquant" });
+            }
 
             if (!messageContent) {
                 return res
@@ -101,8 +126,14 @@ module.exports = {
     getPrivateMessages: async (req, res) => {
         try {
             const { channelId } = req.params;
-            const token = req.headers.token;
-
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const token = authHeader && authHeader.split(" ")[1];
+            if (!token) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
             const { valid, message, decodedToken } =
                 await AuthenticateAndDecodeToken(token);
             if (!valid) {

@@ -4,8 +4,8 @@ const channelsController = require("../controllers/channelsController");
 const router = express.Router();
 
 router.post("/addChannel", channelsController.createChannel);
-router.post("/getChannelsByGuildId", channelsController.getChannelsByGuildId);
-router.post(
+router.get("/getChannelsByGuildId", channelsController.getChannelsByGuildId);
+router.get(
     "/getPrivateChannelsByUserId",
     channelsController.getPrivateChannelsByUserId
 );

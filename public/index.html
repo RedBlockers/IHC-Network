@@ -457,21 +457,12 @@
                     document.getElementById("channelDescription").value;
                 const channelType =
                     document.getElementById("channelType").value;
-                axios
-                    .post("/channels/addChannel", {
-                        type: channelType,
-                        name: channelName,
-                        description: channelDescription,
-                        guildId: parseInt(
-                            JSON.parse(localStorage.getItem("currentSession"))
-                                .guild,
-                            10
-                        ),
-                        token: localStorage.getItem("token"),
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
+                Channels.addChannel(
+                    channelType,
+                    channelName,
+                    channelDescription,
+                    parseInt(localStorage.getItem("guildId"), 10)
+                );
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("addChannelModal")
                 );

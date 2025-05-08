@@ -1,4 +1,5 @@
 const userModel = require("../models/userModel");
+const guildModel = require("../models/guildModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const logger = require("../utils/logger");
@@ -419,20 +420,42 @@ module.exports = {
             return res.status(400).json({ message: "userId manquant" });
         }
         try {
-            const user = await userModel.getUserInfoById(decodedToken.userId, reqUserId);
+            const user = await userModel.getUserInfoById(
+                decodedToken.userId,
+                reqUserId
+            );
             if (!user) {
-                return res.status(404).json({ message: "Utilisateur introuvable" });
+                return res
+                    .status(404)
+                    .json({ message: "Utilisateur introuvable" });
             }
             return res.status(200).json(user);
-        }catch (error) {
+        } catch (error) {
             logger.error(
                 "Erreur lors de la récupération des informations de l'utilisateur :\n" +
                     error.stack
             );
             return res.status(500).json({
-                message: "Erreur lors de la récupération des informations de l'utilisateur",
+                message:
+                    "Erreur lors de la récupération des informations de l'utilisateur",
             });
         }
+    },
+
+    isUserInGuild: async (guildId, userId) => {
+        // Récupération des guilds de l'utilisateur
+        guildId = parseInt(guildId);
+        const userGuilds = await guildModel.getGuildsByUser(userId);
+        const guild = userGuilds.find((guild) => guild.guildId == guildId);
+
+        // Vérification de l'appartenance à la guilde
+        if (!guild) {
+            logger.warn(
+                `L'utilisateur n°${userId} n'est pas dans la guilde n°${guildId}`
+            );
+            return false;
+        }
+        return { userInGuild: true, guild };
     },
 
     AuthenticateAndDecodeToken,

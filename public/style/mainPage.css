@@ -337,6 +337,8 @@ code {
     height: 30px;
     width: 100%;
     border-radius: 7px;
+    text-overflow: ellipsis;
+    overflow: hidden;    
 }
 
 .channel:hover {

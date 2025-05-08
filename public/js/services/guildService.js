@@ -1,3 +1,4 @@
+import { createGuild } from "../api/guilds.js";
 import { CropperModal } from "../components/cropperModal.js";
 
 export function handleGuildCreation() {
@@ -15,22 +16,6 @@ export function handleGuildCreation() {
         const guildDescription =
             document.getElementById("guildDescription").value;
         const guildImage = cropper.getCroppedImage();
-        axios
-            .post("/guilds/createGuild", {
-                token,
-                guildName,
-                guildDescription,
-                guildImage,
-            })
-            .then((response) => {
-                if (response.status === 200) {
-                    window.location.reload();
-                } else if (response.status === 401) {
-                    alert("Une erreur d'authentification est survenue");
-                    window.location.reload();
-                } else {
-                    alert("Une erreur survenue");
-                }
-            });
+        createGuild(guildName, guildDescription, guildImage);
     });
 }

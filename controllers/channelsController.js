@@ -4,11 +4,22 @@ const guildModel = require("../models/guildModel");
 const guildController = require("./guildController");
 const logger = require("../utils/logger");
 const { get } = require("../routes/userRoutes");
+const isUserInGuild = require("./userController").isUserInGuild;
 let io;
 
 module.exports = {
     getChannelsByGuildId: async (req, res) => {
-        const { guildId, token } = req.body;
+        //const { guildId, token } = req.body;
+
+        const authHeader = req.headers["authorization"];
+        if (!authHeader) {
+            return res.status(401).json({ message: "Token manquant" });
+        }
+        const token = authHeader && authHeader.split(" ")[1];
+        const guildId = req.query.guildId;
+        if (!guildId) {
+            return res.status(400).json({ error: "Guild ID is required" });
+        }
 
         const { valid, message, decodedToken } =
             await userController.AuthenticateAndDecodeToken(token);
@@ -16,15 +27,17 @@ module.exports = {
             return res.status(401).json({ error: message });
         }
 
-        const userGuilds = await guildModel.getGuildsByUser(
+        // Vérification de l'appartenance à la guilde
+
+        const { userInGuild, guild } = await isUserInGuild(
+            guildId,
             decodedToken.userId
         );
-        const guild = userGuilds.find((guild) => guild.guildId === guildId);
 
-        if (!userGuilds.find((guild) => guild.guildId === guildId)) {
-            return res
-                .status(401)
-                .json({ error: "You are not part of this guild" });
+        if (userInGuild == false || !guild) {
+            return res.status(404).json({
+                error: "Vous n'êtes pas sur le serveur ou il n'existe pas",
+            });
         }
 
         const channels = await channelModel.getChannelsByGuild(guild);
@@ -50,12 +63,22 @@ module.exports = {
         return true;
     },
 
-    // A faire : reidiriger l'utilisateur vers le premier salon de la guilde si aucun n'est trouvé
-
     createChannel: async (req, res) => {
         try {
             // Récupération des données depuis le corps de la requête
-            const { type, name, description, guildId, token } = req.body;
+            const { type, name, description, guildId } = req.body;
+
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const token = authHeader && authHeader.split(" ")[1];
+            if (!token) {
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            if (!type || !name || !description || !guildId) {
+                return res.status(400).json({ error: "Missing parameters" });
+            }
 
             // Authentification et validation du token
             const { valid, message, decodedToken } =
@@ -64,17 +87,17 @@ module.exports = {
                 return res.status(401).json({ error: message });
             }
 
-            // Récupération des guilds de l'utilisateur
-            const userGuilds = await guildModel.getGuildsByUser(
+            // Vérification de l'appartenance à la guilde
+
+            const { userInGuild, guild } = await isUserInGuild(
+                guildId,
                 decodedToken.userId
             );
-            const guild = userGuilds.find((guild) => guild.guildId === guildId);
 
-            // Vérification de l'appartenance à la guilde
-            if (!guild) {
-                return res
-                    .status(401)
-                    .json({ error: "You are not part of this guild" });
+            if (userInGuild == false || !guild) {
+                return res.status(404).json({
+                    error: "Vous n'êtes pas sur le serveur ou il n'existe pas",
+                });
             }
 
             // Création du canal
@@ -90,23 +113,32 @@ module.exports = {
             );
             // Envoi de la réponse avec succès
             io.emit(`newChannel/${guild.guildId}`, channel);
-            return res.status(200);
+            return res.status(201).json({
+                success: true,
+                message: "Channel created successfully",
+                data: channel,
+            });
         } catch (err) {
             // Gestion des erreurs
             logger.error("Erreur dans createChannel:", err);
 
             // Retourner une erreur HTTP avec statut 500 (Erreur Interne du Serveur)
-            return res
-                .status(500)
-                .json({
-                    error: "An unexpected error occurred",
-                    details: err.message,
-                });
+            return res.status(500).json({
+                error: "An unexpected error occurred",
+                details: err.message,
+            });
         }
     },
 
     getPrivateChannelsByUserId: async (req, res) => {
-        const { token } = req.body;
+        const authHeader = req.headers["authorization"];
+        if (!authHeader) {
+            return res.status(401).json({ message: "Token manquant" });
+        }
+        const token = authHeader && authHeader.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Token manquant" });
+        }
 
         const { valid, message, decodedToken } =
             await userController.AuthenticateAndDecodeToken(token);
