@@ -1,34 +1,44 @@
 export class Channels {
     static async getChannelsByGuildId(guildId) {
-        const response = await axios.get("/channels/getChannelsByGuildId", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            params: {
-                guildId: guildId,
-            },
-        });
-
-        if (response.status === 401) {
-            return;
-        } else if (response.status === 200) {
-            return response.data;
-        }
-    }
-    static async getPrivateChannelsByUserId() {
-        const response = await axios.get(
-            "/channels/getPrivateChannelsByUserId",
-            {
+        try {
+            const response = await axios.get("/channels/getChannelsByGuildId", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-            }
-        );
+                params: {
+                    guildId: guildId,
+                },
+            });
 
-        if (response.status === 401) {
-            return;
-        } else if (response.status === 200) {
             return response.data;
+        } catch (error) {
+            console.error(
+                "Erreur lors de la récupération des canaux de la guilde :",
+                error
+            );
+            return [];
+        }
+    }
+    static async getPrivateChannelsByUserId() {
+        try {
+            const response = await axios.get(
+                "/channels/getPrivateChannelsByUserId",
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            );
+
+            return response.data;
+        } catch (error) {
+            console.error(
+                "Erreur lors de la récupération des canaux privés :",
+                error
+            );
+            return [];
         }
     }
     static async addChannel(type, name, description, guildId) {

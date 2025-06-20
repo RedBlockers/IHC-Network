@@ -139,18 +139,25 @@ export class UserAPI {
     }
 
     static async getUser(token, userId) {
-        const response = await axios.get("/users/getUser", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            params: {
-                userId: userId,
-            },
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
-        } else if (response.status == 200) {
-            return response.data;
+        try {
+            const response = await axios.get("/users/getUser", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                params: {
+                    userId: userId,
+                },
+            });
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error(
+                    "Erreur lors de la récupération de l'utilisateur :",
+                    error
+                );
+            }
+            return null;
         }
     }
 }

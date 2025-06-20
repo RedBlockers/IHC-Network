@@ -8,6 +8,7 @@ export class Messages {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
+                timeout: 5000,
             })
             .then(async (response) => {
                 if (await response.data.redirect) {
@@ -22,8 +23,18 @@ export class Messages {
                     MessageRenderer.displayMessage(message);
                 });
                 const messageBox = document.getElementById("messageBox");
+            })
+            .catch((error) => {
+                console.error(
+                    "Erreur lors du chargement des messages :",
+                    error
+                );
+                const messageBox = document.getElementById("messageBox");
+                messageBox.innerHTML =
+                    "<p>Erreur lors du chargement des messages.</p>";
             });
     }
+
     static sendMessage() {
         const messageContent = document.getElementById("messageInput").value;
         let match = window.location.href.match("\\/(\\d+)\\/(\\d+)$");
@@ -54,6 +65,12 @@ export class Messages {
                     document.getElementById("messageInput").value = ""; // Vider le champ
                     const messageBox = document.getElementById("messageBox");
                     scrollToBottom(messageBox);
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de l'envoi du message :", error);
+                    const messageBox = document.getElementById("messageBox");
+                    messageBox.innerHTML =
+                        "<p>Erreur lors de l'envoi du message.</p>";
                 });
         }
     }
@@ -75,6 +92,15 @@ export class Messages {
                     MessageRenderer.displayMessage(message);
                 });
                 const messageBox = document.getElementById("messageBox");
+            })
+            .catch((error) => {
+                console.error(
+                    "Erreur lors du chargement des messages privés :",
+                    error
+                );
+                const messageBox = document.getElementById("messageBox");
+                messageBox.innerHTML =
+                    "<p>Erreur lors du chargement des messages privés.</p>";
             });
     }
 }

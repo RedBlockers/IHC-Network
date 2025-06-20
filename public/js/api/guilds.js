@@ -1,26 +1,35 @@
 export async function getGuilds(token) {
-    const response = await axios.post("/guilds/getGuilds", { token: token });
-    if (response.status == 401) {
-        localStorage.removeItem("token");
-        window.location.href = "pages/login.html";
-    } else if (response.status == 200) {
-        console.log(response.data);
+    try {
+        const response = await axios.post("/guilds/getGuilds", {
+            token: token,
+        });
         return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des guildes :", error);
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "pages/login.html";
+        }
     }
 }
 
 export async function getGuildsByUser() {
-    const response = await axios.get("/guilds/getGuildsByUser", {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-    });
-    if (response.status == 401) {
-        localStorage.removeItem("token");
-        window.location.href = "pages/login.html";
-    }
-    if (response.status == 200) {
+    try {
+        const response = await axios.get("/guilds/getGuildsByUser", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
         return response.data;
+    } catch (error) {
+        console.error(
+            "Erreur lors de la récupération des guildes de l'utilisateur :",
+            error
+        );
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "pages/login.html";
+        }
     }
 }
 
