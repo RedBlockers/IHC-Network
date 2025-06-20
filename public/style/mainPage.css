@@ -504,3 +504,8 @@ code {
         transform: rotate(360deg);
     }
 }
+
+#guildContainer{
+    max-height: 85vh;
+    overflow-y: auto;
+}

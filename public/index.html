@@ -435,39 +435,6 @@
         <script type="module" src="/js/index.js"></script>
         <script type="module" src="/js/components/emojiButton.js"></script>
         <script src="/js/utils/styleUtils.js"></script>
-        <script type="module">
-            const target = document.getElementById("secondaryContainer");
-            const _contextMenu = document.getElementById("context-menu");
-            import { ContextMenu } from "/js/utils/contextMenuUtils.js";
-            const contextMenu = new ContextMenu(target, _contextMenu);
-            contextMenu.addContextAction("Ajouter un salon", () => {
-                const modal = new bootstrap.Modal(
-                    document.getElementById("addChannelModal")
-                );
-                modal.show();
-            });
-            const addChannelAccept = document.getElementById(
-                "addChannelModalAccept"
-            );
-
-            addChannelAccept.addEventListener("click", () => {
-                const channelName =
-                    document.getElementById("channelName").value;
-                const channelDescription =
-                    document.getElementById("channelDescription").value;
-                const channelType =
-                    document.getElementById("channelType").value;
-                Channels.addChannel(
-                    channelType,
-                    channelName,
-                    channelDescription,
-                    parseInt(localStorage.getItem("guildId"), 10)
-                );
-                const modal = bootstrap.Modal.getInstance(
-                    document.getElementById("addChannelModal")
-                );
-                modal.hide();
-            });
-        </script>
+        <script type="module"></script>
     </body>
 </html>

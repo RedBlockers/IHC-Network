@@ -10,22 +10,51 @@ const messageRoutes = require("../routes/messagesRoutes");
 const logger = require("../utils/logger");
 const userController = require("./userController");
 const { url } = require("inspector");
+const { log } = require("console");
 let io;
 
 module.exports = {
     getMessages: async (req, res) => {
+        const startTime = Date.now();
         try {
             const { guildId, channelId } = req.params;
 
             const authHeader = req.headers["authorization"];
             if (!authHeader) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ message: "Token manquant" });
             }
             const token = authHeader && authHeader.split(" ")[1];
             if (!token) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ message: "Token manquant" });
             }
             if (!guildId || !channelId) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages sans guildId ou channelId",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 400,
+                });
                 return res.status(400).json({
                     error: "Le guildId ou le channelId est manquant",
                 });
@@ -34,13 +63,16 @@ module.exports = {
             const { valid, message, decodedToken } =
                 await userController.AuthenticateAndDecodeToken(token);
             if (!valid) {
-                return res.status(401).json({ error: message });
-            }
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Token invalide ou expiré",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
 
-            if (!channelId) {
-                return res
-                    .status(400)
-                    .json({ error: "Le channelId est manquant" });
+                return res.status(401).json({ error: message });
             }
 
             if (
@@ -49,9 +81,17 @@ module.exports = {
                 const firstChannel =
                     await channelController.getFirstChannelByGuildId(guildId);
 
-                logger.info(
-                    `Redirection de l'utilisateur vers le premier salon de la guilde n°${guildId}`
-                );
+                logger.info({
+                    path: req.path,
+                    method: req.method,
+                    message: `Redirection vers le premier channel de la guilde`,
+                    guildId: guildId,
+                    channelId: firstChannel.channelId,
+                    userId: decodedToken.userId,
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 200,
+                });
                 return res.status(200).json({
                     redirect: true,
                     url: `/${guildId}/${firstChannel.channelId}`,
@@ -62,42 +102,88 @@ module.exports = {
                 channelId,
                 guildId
             );
+            logger.info({
+                path: req.path,
+                method: req.method,
+                message: `Messages récupérés pour le channel`,
+                guildId: guildId,
+                channelId: channelId,
+                userId: decodedToken.userId,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 200,
+            });
             return res.status(200).json(messages);
         } catch (err) {
-            logger.error(
-                "Erreur lors de la récupération des messages :" + err.stack
-            );
+            logger.error({
+                path: req.path,
+                method: req.method,
+                message: "Erreur lors de la récupération des messages",
+                err: err.stack,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 500,
+            });
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
 
     postMessage: async (req, res) => {
+        const startTime = Date.now();
         try {
             const { messageContent, channel } = req.body;
             const authHeader = req.headers["authorization"];
             if (!authHeader) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Tentative d'ajout de message sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ message: "Token manquant" });
             }
             const token = authHeader && authHeader.split(" ")[1];
             if (!token) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Tentative d'ajout de message sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ message: "Token manquant" });
             }
             if (!channel || !messageContent) {
+                logger.warn({
+                    patrh: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative d'ajout de message sans channelId ou contenu",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 400,
+                });
                 return res
                     .status(400)
                     .json({ error: "Le channelId ou le message est manquant" });
-            }
-
-            if (!messageContent) {
-                return res
-                    .status(400)
-                    .json({ error: "Le contenu du message est manquant" });
             }
 
             const { valid, message, decodedToken } =
                 await AuthenticateAndDecodeToken(token);
 
             if (!valid) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative d'ajout de message avec un token invalide",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ error: message });
             }
 
@@ -113,46 +199,122 @@ module.exports = {
                 result.insertId
             );
             io.emit(`newMessage/${channel}`, newMessage);
+            logger.info({
+                path: req.path,
+                method: req.method,
+                message: "Message ajouté avec succès",
+                guildId: channel.guildId,
+                channelId: channel.channelId,
+                messageId: result.insertId,
+                userId: decodedToken.userId,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 200,
+            });
             res.status(200).json({
                 success: true,
                 message: "Message ajouté avec succès",
                 data: newMessage,
             });
         } catch (err) {
-            logger.error("Erreur lors de l'ajout du message :", err);
+            logger.error({
+                path: req.path,
+                method: req.method,
+                message: "Erreur lors de l'ajout du message",
+                err: err.stack,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 500,
+            });
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
     getPrivateMessages: async (req, res) => {
+        const startTime = Date.now();
         try {
             const { channelId } = req.params;
             const authHeader = req.headers["authorization"];
             if (!authHeader) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages privés sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
                 return res.status(401).json({ message: "Token manquant" });
             }
             const token = authHeader && authHeader.split(" ")[1];
             if (!token) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages privés sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
+
                 return res.status(401).json({ message: "Token manquant" });
             }
             const { valid, message, decodedToken } =
                 await AuthenticateAndDecodeToken(token);
             if (!valid) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages privés avec un token invalide",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
+
                 return res.status(401).json({ error: message });
             }
 
             if (!channelId) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Tentative de récupération des messages privés sans channelId",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 400,
+                });
+
                 return res
                     .status(400)
                     .json({ error: "Le channelId est manquant" });
             }
 
             const messages = await messageModel.getPrivateMessages(channelId);
+
+            logger.info({
+                path: req.path,
+                method: req.method,
+                message: "Messages privés récupérés avec succès",
+                channelId: channelId,
+                userId: decodedToken.userId,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 200,
+            });
             return res.status(200).json(messages);
         } catch (err) {
-            logger.error(
-                "Erreur lors de la récupération des messages privés :" +
-                    err.stack
-            );
+            logger.error({
+                path: req.path,
+                method: req.method,
+                message: "Erreur lors de la récupération des messages privés",
+                err: err.stack,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 500,
+            });
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },

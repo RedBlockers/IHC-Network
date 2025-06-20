@@ -1,19 +1,25 @@
 export class Auth {
     static async authenticateToken(token) {
         try {
-            const response = await axios.post("/users/authenticateToken", {
-                token: token,
+            const response = await axios.get("/users/authenticateToken", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             if (response.status === 200 && response.data.success) {
                 localStorage.setItem("username", response.data.username);
                 localStorage.setItem("avatar", response.data.avatar);
                 localStorage.setItem("userId", response.data.userId);
-            } else {
-                this.invalidateToken();
             }
         } catch (error) {
-            console.error("erreur lors de l'authentification", error);
-            invalidateToken();
+            if (error.response && error.response.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error(
+                    "Erreur lors de l'authentification du token:",
+                    error
+                );
+            }
         }
     }
     static invalidateToken() {

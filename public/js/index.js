@@ -7,6 +7,7 @@ import { displayIcons } from "./components/guildRenderer.js";
 import { Channels } from "./api/channels.js";
 import { displayChannel } from "./components/channelRenderer.js";
 import { UserUtils } from "./utils/UserUtils.js";
+import { handleChannelCreation } from "./services/channelService.js";
 
 const listeners = new Listeners();
 const token = localStorage.getItem("token");
@@ -48,6 +49,7 @@ listeners.listenForAll();
 Messages.loadMessageByChannelId(match[2], match[1]);
 handleMessageInput();
 handleGuildCreation();
+handleChannelCreation();
 displayIcons();
 
 window.displayProfileInfo = UserUtils.positionProfileContainer;

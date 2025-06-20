@@ -54,20 +54,22 @@ document
                 profileImage: croppedImage,
             })
             .then((response) => {
-                if (response.data.success) {
-                    console.log("Inscription réussie !", response.data);
-                    localStorage.setItem("token", response.data.token);
+                localStorage.setItem("token", response.data.token);
 
-                    window.location.href = "../../index.html";
-                } else {
-                    console.error(
-                        "Erreur lors de l'inscription :",
-                        response.data
-                    );
-                    alert(response.data.message);
-                }
+                window.location.href = "../../index.html";
             })
             .catch((error) => {
-                console.error("Erreur lors de l'inscription :", error);
+                if (error.response && error.response.status === 409) {
+                    alert(
+                        response.data.error ||
+                            "Nom d'utilisateur ou email déjà utilisé."
+                    );
+                } else if (error.response && error.response.status === 500) {
+                    alert(
+                        "Erreur interne du serveur. Veuillez réessayer plus tard."
+                    );
+                } else {
+                    alert("Une erreur s'est produite lors de l'inscription.");
+                }
             });
     });

@@ -10,19 +10,24 @@ document
         axios
             .post("/users/login", { username: username, password: password })
             .then((response) => {
-                if (response.data.success) {
-                    console.log("Inscription réussie !", response.data);
-                    localStorage.setItem("token", response.data.token);
-                    window.location.href = "../../index.html";
-                } else {
-                    console.error(
-                        "Erreur lors de la connexion :",
-                        response.data
-                    );
-                    alert(response.data.message);
-                }
+                console.log("Inscription réussie !", response.data);
+                localStorage.setItem("token", response.data.token);
+                window.location.href = "../../index.html";
             })
             .catch((error) => {
-                console.error("Erreur lors de l'inscription :", error);
+                if (error.response && error.response.status === 401) {
+                    alert("Identifiants incorrects. Veuillez réessayer.");
+                } else if (error.response && error.response.status === 409) {
+                    alert(
+                        error.response.data.message ||
+                            "Nom d'utilisateur ou mot de passe incorrect."
+                    );
+                } else if (error.response && error.response.status === 500) {
+                    alert(
+                        "Erreur interne du serveur. Veuillez réessayer plus tard."
+                    );
+                } else {
+                    alert("Une erreur est survenue. Veuillez réessayer.");
+                }
             });
     });

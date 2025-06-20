@@ -3,9 +3,7 @@ const logger = require("../utils/logger");
 
 module.exports = {
     getChannelsByGuild: async (guild) => {
-        logger.info(
-            `Récupération des channels pour la guilde avec l'ID ${guild.guildId}`
-        );
+        const startTime = Date.now();
         const [rows] = await db
             .promise()
             .execute("SELECT * FROM channels WHERE guildId = ?", [
@@ -22,11 +20,18 @@ module.exports = {
             };
             channels.push(channel);
         });
-        logger.info(`Channels récupérés pour la guilde avec l'ID ${guild.id}`);
+        logger.debug({
+            event: "DBQuery",
+            operation: "SELECT",
+            table: "channels",
+            querySummary: `SELECT * FROM channels WHERE guildId = ${guild.guildId}`,
+            duration: Date.now() - startTime,
+            success: true,
+        });
         return channels;
     },
     getChannelById: async (id, guild) => {
-        logger.info(`Récupération du channel avec l'ID ${id}`);
+        const startTime = Date.now();
         const [rows] = await db
             .promise()
             .execute("SELECT * FROM channels WHERE channelId = ? LIMIT 1", [
@@ -44,13 +49,18 @@ module.exports = {
             description: row.description,
             guild: guild,
         };
-        logger.info(`Channel récupéré avec l'ID ${id}`);
+        logger.debug({
+            event: "DBQuery",
+            operation: "SELECT",
+            table: "channels",
+            querySummary: `SELECT * FROM channels WHERE channelId = ${id}`,
+            duration: Date.now() - startTime,
+            success: true,
+        });
         return channel;
     },
     getFirstChannelByGuild: async (guild) => {
-        logger.info(
-            `Récupération du premier channel pour la guilde avec l'ID ${guild.guildId}`
-        );
+        const startTime = Date.now();
         const [rows] = await db
             .promise()
             .execute("SELECT * FROM channels WHERE guildId = ? LIMIT 1", [
@@ -64,13 +74,18 @@ module.exports = {
             description: row.description,
             guild: guild,
         };
-        logger.info(
-            `Premier channel récupéré pour la guilde avec l'ID ${guild.guildId}`
-        );
+        logger.debug({
+            event: "DBQuery",
+            operation: "SELECT",
+            table: "channels",
+            querySummary: `SELECT * FROM channels WHERE guildId = ${guild.guildId} LIMIT 1`,
+            duration: Date.now() - startTime,
+            success: true,
+        });
         return channel;
     },
     createChannel: async (type, name, description, guildId) => {
-        logger.info("Création d'un nouveau channel");
+        const startTime = Date.now();
         try {
             const [result] = await db
                 .promise()
@@ -78,17 +93,28 @@ module.exports = {
                     "INSERT INTO channels (type, name, description, guildId, isPrivate) VALUES (?, ?, ?, ?, 1)",
                     [type, name, description, guildId]
                 );
-            logger.info("Nouveau channel créé avec succès");
+            logger.debug({
+                event: "DBQuery",
+                operation: "INSERT",
+                table: "channels",
+                querySummary: `INSERT INTO channels (type, name, description, guildId) VALUES (?, ?, ?, ?)`,
+                parameters: [type, name, description, guildId],
+                duration: Date.now() - startTime,
+                success: true,
+            });
             return result.insertId;
         } catch (err) {
-            logger.error("Erreur lors de la création du channel :", err);
+            logger.error({
+                event: "DBError",
+                message: error.message,
+                stack: error.stack,
+                duration: `${Date.now() - startTime}ms`,
+            });
             throw err;
         }
     },
     getPrivateChannelsByUserId: async (userId) => {
-        logger.info(
-            `Récupération des channels privés pour l'utilisateur avec l'ID ${userId}`
-        );
+        const startTime = Date.now();
         const [rows] = await db
             .promise()
             .execute(
@@ -110,9 +136,15 @@ module.exports = {
             };
             channels.push(channel);
         });
-        logger.info(
-            `Channels privés récupérés pour l'utilisateur avec l'ID ${userId}`
-        );
+        logger.debug({
+            event: "DBQuery",
+            operation: "SELECT",
+            table: "channels",
+            querySummary: `SELECT u.userNickname, u.userId, u.userImage, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId`,
+            parameters: [userId, userId],
+            duration: Date.now() - startTime,
+            success: true,
+        });
         return channels;
     },
 };

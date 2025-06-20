@@ -10,23 +10,18 @@ router.post("/register", userController.register);
 router.post("/login", userController.connect);
 
 // Route pour vérifier un token
-router.post("/authenticateToken", userController.authenticateToken);
+router.get("/authenticateToken", userController.authenticateToken);
 
 // Route pour récupérer les amis
-router.post("/getFriends", userController.getFriends);
+router.get("/friends", userController.getFriends);
 
 // Route pour ajouter un ami
-router.post("/addFriend", userController.RequestFriend);
+router.post("/friends", userController.RequestFriend);
 
 // Route pour accepter une demande d'ami
-router.post("/acceptFriend", userController.acceptFriend);
+router.put("/acceptFriend", userController.acceptFriend);
 
-// Route pour refuser une demande d'ami
-router.delete("/refuseFriend", userController.refuseFriend);
-
-// Route pour annuler une demande d'ami
-router.delete("/cancelFriendRequest", userController.cancelFriendRequest);
-
+// Route pour refuser/annuler/supprimer une demande d'ami
 router.delete("/removeFriend", userController.removeFriend);
 
 // Route pour récupérer les informations d'un utilisateur

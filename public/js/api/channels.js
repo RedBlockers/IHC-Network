@@ -33,18 +33,23 @@ export class Channels {
     }
     static async addChannel(type, name, description, guildId) {
         axios
-            .post("/channels/addChannel", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+            .post(
+                "/channels/addChannel",
+
+                {
+                    type: type,
+                    name: name,
+                    description: description,
+                    guildId: guildId,
                 },
-                type: channelType,
-                name: channelName,
-                description: channelDescription,
-                guildId: parseInt(
-                    JSON.parse(localStorage.getItem("currentSession")).guild,
-                    10
-                ),
-            })
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
             .catch((err) => {
                 console.log(err);
             });

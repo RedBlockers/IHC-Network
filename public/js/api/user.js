@@ -2,76 +2,140 @@ import { Auth } from "../services/auth.js";
 
 export class UserAPI {
     static async getFriends(token) {
-        const response = await axios.post("/users/getFriends", {
-            token: token,
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
-        } else if (response.status == 200) {
+        try {
+            const response = await axios.get("/users/friends", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error(
+                    "Erreur lors de la récupération des amis :",
+                    error
+                );
+            }
+            return null;
         }
     }
 
     static async addFriend(token, username) {
-        const response = await axios.post("/users/addFriend", {
-            token: token,
-            username: username,
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
-        }
-        return response.data;
-    }
-
-    static async getFriends(token) {
-        const response = await axios.post("/users/getFriends", {
-            token: token,
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
-        } else if (response.status == 200) {
+        try {
+            const response = await axios.post(
+                "/users/friends",
+                {
+                    username: username,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
             return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else if (error.response?.status === 409) {
+                alert(
+                    "Vous avez déjà envoyé une demande d'ami à cet utilisateur ou il vous a déjà envoyé une demande."
+                );
+                console.error("Amitié déjà existante ou demande en attente.");
+            } else {
+                console.error("Erreur lors de l'ajout d'un ami :", error);
+            }
+            return null;
         }
     }
 
     static async acceptFriend(token, friendId) {
-        const response = await axios.post("/users/acceptFriend", {
-            token: token,
-            friendId: friendId,
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
+        try {
+            const response = await axios.put(
+                "/users/acceptFriend",
+                {
+                    friendId: friendId,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error("Erreur lors de l'acceptation de l'ami :", error);
+            }
+            return null;
         }
-        return response.data;
     }
 
     static async refuseFriend(token, friendId) {
-        const response = await axios.delete("/users/refuseFriend", {
-            data: { token: token, friendId: friendId },
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
+        try {
+            const response = await axios.delete("/users/removeFriend", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                data: { friendId: friendId, isSender: false },
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error("Erreur lors du refus de l'ami :", error);
+            }
+            return null;
         }
     }
 
     static async cancelFriend(token, friendId) {
-        const response = await axios.delete("/users/cancelFriendRequest", {
-            data: { token: token, friendId: friendId },
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
+        try {
+            const response = await axios.delete("/users/removeFriend", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                data: { friendId: friendId, isSender: true },
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error(
+                    "Erreur lors de l'annulation de la demande d'ami :",
+                    error
+                );
+            }
+            return null;
         }
-        return response.data;
     }
 
     static async removeFriend(token, friendId) {
-        const response = await axios.delete("/users/removeFriend", {
-            data: { token: token, friendId: friendId },
-        });
-        if (response.status == 401) {
-            Auth.invalidateToken();
+        try {
+            const response = await axios.delete("/users/removeFriend", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                data: { friendId: friendId },
+            });
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                Auth.invalidateToken();
+            } else {
+                console.error(
+                    "Erreur lors de la suppression de l'ami :",
+                    error
+                );
+            }
+            return null;
         }
-        return response.data;
     }
 
     static async getUser(token, userId) {
