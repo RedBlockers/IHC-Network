@@ -246,6 +246,7 @@ module.exports = {
         const startTime = Date.now();
         try {
             const { channelId } = req.params;
+            const { limit = 50, offset = 0 } = req.query;
             const authHeader = req.headers["authorization"];
             if (!authHeader) {
                 logger.warn({
@@ -305,19 +306,32 @@ module.exports = {
                     .json({ error: "Le channelId est manquant" });
             }
 
-            const messages = await messageModel.getPrivateMessages(channelId);
-
+            const { messages, hasMoreMessages } =
+                await messageModel.getPrivateMessages(
+                    channelId,
+                    parseInt(limit),
+                    parseInt(offset)
+                );
             logger.info({
                 path: req.path,
                 method: req.method,
                 message: "Messages privés récupérés avec succès",
                 channelId: channelId,
+                limit: limit,
+                offset: offset,
+                count: messages.length,
                 userId: decodedToken.userId,
                 ip: req.ip,
                 duration: Date.now() - startTime,
                 status: 200,
             });
-            return res.status(200).json(messages);
+
+            return res.status(200).json({
+                messages,
+                hasMoreMessages,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+            });
         } catch (err) {
             logger.error({
                 path: req.path,

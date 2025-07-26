@@ -89,25 +89,43 @@ module.exports = {
         };
     },
 
-    getPrivateMessages: async (channelId) => {
+    getPrivateMessages: async (channelId, limit, offset) => {
         const startTime = Date.now();
+
         const [rows] = await db.promise().execute(
             `
-            SELECT * 
-            FROM message_content mc 
-            INNER JOIN messages ON messages.messageId = mc.messageId 
-            WHERE messages.channelId = ?
+        SELECT SQL_CALC_FOUND_ROWS *
+        FROM message_content mc
+        INNER JOIN messages ON messages.messageId = mc.messageId
+        INNER JOIN channels ON channels.channelId = messages.channelId
+        WHERE messages.channelId = ?
+        ORDER BY messages.messageId DESC
+        LIMIT ? OFFSET ?
         `,
-            [channelId]
+            [channelId, limit, offset]
         );
+
+        // Récupération du nombre total pour savoir s'il y a plus de messages
+        const [countRows] = await db
+            .promise()
+            .execute(`SELECT FOUND_ROWS() as total`);
+        const total = countRows[0].total;
+        const hasMoreMessages = offset + limit < total;
+
         logger.debug({
             event: "DBQuery",
             operation: "SELECT",
             table: "messages",
-            querySummary: `SELECT * FROM message_content mc INNER JOIN messages ON messages.messageId = mc.messageId WHERE messages.channelId = ${channelId}`,
+            querySummary: `Messages paginés pour channel privé ${channelId}`,
             duration: Date.now() - startTime,
             success: true,
+            limit,
+            offset,
+            count: rows.length,
         });
-        return rows;
+        return {
+            messages: rows,
+            hasMoreMessages,
+        };
     },
 };

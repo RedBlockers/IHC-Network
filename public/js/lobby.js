@@ -74,7 +74,8 @@ if (match) {
   </div>
     `;
     handleMessageInput();
-    Messages.loadPrivateMessages();
+    Messages.loadPrivateMessages(100, 0);
+    Messages.setupInfiniteScroll(channel, "private");
     const listener = new Listeners();
     listener.listenForMessages();
 } else {

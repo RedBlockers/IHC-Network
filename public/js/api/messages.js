@@ -11,7 +11,6 @@ export class Messages {
         const messageBox = document.getElementById("messageBox");
         const messageList = document.getElementById("messageList");
         let isLoading = false;
-        let lastScrollHeight = 0;
 
         messageBox.addEventListener("scroll", async () => {
             // Vérifier si on est en haut et qu'on peut charger plus de messages
@@ -27,12 +26,19 @@ export class Messages {
 
                 try {
                     // Charger les messages
-                    await this.loadMessageByChannelId(
-                        channelId,
-                        guildId,
-                        this.limit,
-                        this.currentOffset + this.limit
-                    );
+                    if (guildId === "private") {
+                        await this.loadPrivateMessages(
+                            this.limit,
+                            this.currentOffset + this.limit
+                        );
+                    } else {
+                        await this.loadMessageByChannelId(
+                            channelId,
+                            guildId,
+                            this.limit,
+                            this.currentOffset + this.limit
+                        );
+                    }
 
                     // Mettre à jour l'offset
                     this.currentOffset += this.limit;
@@ -142,23 +148,36 @@ export class Messages {
         }
     }
 
-    static loadPrivateMessages() {
+    static loadPrivateMessages(limit, offset) {
         const match = window.location.href.match("\\/(\\d+)$");
         const channel = match[1];
+        this.limit = limit;
+        this.currentOffset = offset;
         axios
             .get(`/messages/messages/${channel}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
+                params: {
+                    limit: limit || 100,
+                    offset: offset || 0,
+                },
+                timeout: 5000,
             })
             .then(async (response) => {
-                const messages = await response.data;
-                const messageList = document.getElementById("messageList");
-                messageList.innerHTML = "";
-                messages.forEach((message) => {
-                    MessageRenderer.displayMessage(message);
-                });
-                const messageBox = document.getElementById("messageBox");
+                const messages = response.data.messages;
+                this.hasMoreMessages = response.data.hasMoreMessages;
+
+                // Afficher les messages dans l'ordre inverse pour qu'ils s'affichent correctement
+                if (offset === 0) {
+                    messages.reverse().forEach((message) => {
+                        MessageRenderer.displayMessage(message);
+                    });
+                } else {
+                    messages.forEach((message) => {
+                        MessageRenderer.displayMessage(message, true); // true pour prepend
+                    });
+                }
             })
             .catch((error) => {
                 console.error(
