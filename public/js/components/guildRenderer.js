@@ -26,8 +26,18 @@ export const displayIcons = async () => {
         guilds.forEach((guild) => {
             guildContainer.insertAdjacentHTML(
                 "afterbegin",
-                `<div class="mb-2" data-bs-toggle="tooltip" data-bs-placement="right" title="${guild.guildName}" id="guild_${guild.guildId}" onclick="window.location.href = '/${guild.guildId}/0'">
-                     <img class="avatar guild" src="../images/${guild.guildImage}" >
+                `<div class="mb-2" data-bs-toggle="tooltip" data-bs-placement="right" title="${
+                    guild.guildName
+                }" id="guild_${
+                    guild.guildId
+                }" onclick="window.location.href = '/${guild.guildId}/${
+                    JSON.parse(localStorage.getItem("lastVisitedChannels"))[
+                        guild.guildId
+                    ] || 0
+                }'">
+                     <img class="avatar guild" src="../images/${
+                         guild.guildImage
+                     }" >
                 </div>`
             );
 

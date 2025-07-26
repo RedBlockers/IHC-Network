@@ -23,22 +23,20 @@ await Auth.authenticateToken(token);
 
 // Rediriger l'utilisateur vers son ancienne page si il ne vas pas sur une nouvelle
 const match = window.location.href.match("\\/(\\d+)\\/(\\d+)$");
-if (match) {
-    const guild = match[1];
-    const channels = match[2];
-    localStorage.setItem(
-        "currentSession",
-        JSON.stringify({ guild: guild, channel: channels })
-    );
-} else if (
-    localStorage.getItem("currentSession") &&
-    !window.location.href.match("\\/(.+)$")
-) {
-    const currentSession = JSON.parse(localStorage.getItem("currentSession"));
-    window.location.href = `/${currentSession.guild}/${currentSession.channel}`;
-} else {
+if (!match) {
     window.location.href = "/pages/lobby.html";
 }
+
+const lastVisitedChannels = JSON.parse(
+    localStorage.getItem("lastVisitedChannels") || "{}"
+);
+
+// Mettre à jour le dernier canal visité pour le serveur actuel
+lastVisitedChannels[match[1]] = match[2];
+localStorage.setItem(
+    "lastVisitedChannels",
+    JSON.stringify(lastVisitedChannels)
+);
 
 const channels = await Channels.getChannelsByGuildId(match[1]);
 channels.forEach((channel) => displayChannel(channel, match[2]));

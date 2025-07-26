@@ -5,6 +5,7 @@
 ### Nouvelles fonctionnalitées
 
 -   Ajout de l'affichage des membres présent sur un serveur
+-   Conservation du dernier salon visité par serveur
 
 ### Améliorations
 
