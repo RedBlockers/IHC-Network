@@ -3,7 +3,10 @@ import { Listeners } from "./services/listeners.js";
 import { Messages } from "./api/messages.js";
 import { handleMessageInput } from "./components/resizableTextArea.js";
 import { handleGuildCreation } from "./services/guildService.js";
-import { displayIcons } from "./components/guildRenderer.js";
+import {
+    displayIcons,
+    displayGuildMembers,
+} from "./components/guildRenderer.js";
 import { Channels } from "./api/channels.js";
 import { displayChannel } from "./components/channelRenderer.js";
 import { UserUtils } from "./utils/UserUtils.js";
@@ -52,5 +55,5 @@ handleMessageInput();
 handleGuildCreation();
 handleChannelCreation();
 displayIcons();
-
+displayGuildMembers(match[1]);
 window.displayProfileInfo = UserUtils.positionProfileContainer;

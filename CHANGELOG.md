@@ -2,10 +2,18 @@
 
 ## [1.1.0]
 
+### Nouvelles fonctionnalitées
+
+-   Ajout de l'affichage des membres présent sur un serveur
+
 ### Améliorations
 
 -   Envoie des messages par tronçons
 -   Amélioration de l'ajout des messages au DOM
+
+### Correction de bug
+
+-   Correcttion d'un défaut mineur dans le postionnement des messages privées
 
 ## [1.0.3]
 

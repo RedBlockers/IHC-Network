@@ -7,14 +7,12 @@ async function editProfileContainerInfo(userId) {
         localStorage.getItem("token"),
         userId
     );
-    console.log(userInfo);
 
     const userProfilePictureElement =
         document.getElementById("userProfilePicture");
     const userNameProfileElement = container.querySelector("h4");
     const userNoteElement = container.querySelector(".noteContainer p");
     const userStatusElement = document.getElementById("statusText");
-    console.log(userNameProfileElement);
     userProfilePictureElement.src = "/images/" + userInfo.userImage;
     userProfilePictureElement.alt = userInfo.username;
 

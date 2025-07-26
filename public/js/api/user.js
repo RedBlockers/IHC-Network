@@ -148,6 +148,7 @@ export class UserAPI {
                     userId: userId,
                 },
             });
+            return response.data;
         } catch (error) {
             if (error.response?.status === 401) {
                 Auth.invalidateToken();

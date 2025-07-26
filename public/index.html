@@ -151,6 +151,7 @@
                     <div
                         id="messageBox"
                         class="rounded mb-3 bg-dark text-white"
+                        style="width: calc(100% - 320px); overflow-y: auto"
                     >
                         <ul
                             id="messageList"
@@ -158,7 +159,7 @@
                         ></ul>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group" style="width: calc(100% - 320px)">
                         <textarea
                             id="messageInput"
                             class="form-control bg-dark text-white"
@@ -281,6 +282,8 @@
                 </div>
             </div>
         </div>
+
+        <div id="guildMembers" class="sideEndbar container pt-3 px-3"></div>
 
         <div
             class="modal fade"

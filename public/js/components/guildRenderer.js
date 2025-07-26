@@ -1,5 +1,5 @@
 import { ContextMenu } from "../utils/contextMenuUtils.js";
-import { CreateInvite, getGuildsByUser } from "../api/guilds.js";
+import { CreateInvite, getGuildsByUser, getGuildById } from "../api/guilds.js";
 
 export const displayIcons = async () => {
     try {
@@ -161,4 +161,47 @@ export const displayIcons = async () => {
             error
         );
     }
+};
+
+export const displayGuildMembers = async (guildId) => {
+    const guildMembersContainer = document.getElementById("guildMembers");
+    const guild = await getGuildById(localStorage.getItem("token"), guildId);
+    guildMembersContainer.innerHTML = `            
+        <div
+            class="d-flex flex-row rounded userInformations"
+            onclick="window.displayProfileInfo(this, ${guild.owner.userId})"
+        >
+            <img
+                class="avatar"
+                src="/images/${guild.owner.image}"
+                alt="User Avatar"
+            />
+            <div class="d-flex flex-column justify-content-center mx-2">
+                <div id="userInfoUsername">
+                    <span id="usernameDisplay">${guild.owner.nickname}</span>
+                </div>
+                <div id="userInfoStatus">To implement</div>
+            </div>
+        </div>`;
+    guild.members.forEach((member) => {
+        guildMembersContainer.insertAdjacentHTML(
+            "beforeend",
+            `<div
+                class="d-flex flex-row rounded userInformations"
+                onclick="window.displayProfileInfo(this, ${member.userId})"
+            >
+                <img
+                    class="avatar"
+                    src="/images/${member.image}"
+                    alt="User Avatar"
+                />
+                <div class="d-flex flex-column justify-content-center mx-2">
+                    <div id="userInfoUsername">
+                        <span id="usernameDisplay">${member.nickname}</span>
+                    </div>
+                    <div id="userInfoStatus">To implement</div>
+                </div>
+            </div>`
+        );
+    });
 };

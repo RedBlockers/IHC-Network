@@ -73,6 +73,9 @@ th {
     .input-group {
         width: auto !important;
     }
+    #messageBox {
+        width: calc(100% - 21px) !important;
+    }
 }
 
 .container-sidebar-right {

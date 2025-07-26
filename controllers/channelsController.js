@@ -1,7 +1,6 @@
 const channelModel = require("../models/channelModel");
 const userController = require("./userController");
 const guildModel = require("../models/guildModel");
-const guildController = require("./guildController");
 const logger = require("../utils/logger");
 const { get } = require("../routes/userRoutes");
 const isUserInGuild = require("./userController").isUserInGuild;
@@ -89,7 +88,7 @@ module.exports = {
     },
 
     getFirstChannelByGuildId: async (guildId) => {
-        const guild = await guildController.getGuildById(guildId);
+        const guild = await guildModel.getGuildById(guildId);
         const channel = await channelModel.getFirstChannelByGuild(guild);
         return channel;
     },

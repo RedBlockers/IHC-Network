@@ -58,14 +58,14 @@ if (match) {
     <div class="container mt-2 container-sidebar-right" id="mainContainer">
         
     </div>
-      <div class="container mt-5">
-    <div id="messageContainer">
-      <div id="messageBox" class="rounded mb-3 bg-dark text-white">
+      <div class="container mt-4">
+    <div id="messageContainer"">
+      <div id="messageBox" class="rounded mb-3 bg-dark text-white" style="width: calc(100% - 320px); overflow-y: auto">
         <ul id="messageList" class="list-group bg-dark text-white">
         </ul>
       </div>
 
-      <div class="input-group" style="width: calc(100% - 320px); margin-top: -25px;">
+      <div class="input-group" style="width: calc(100% - 320px); margin-top: -0px;">
         <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="4096"></textarea>
         <button id="emojiButton" class="btn" style="border:1px solid #ced4da;">😀</button>
         <button id="sendMessage" class="btn btn-primary">Envoyer</button>

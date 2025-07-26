@@ -1,7 +1,12 @@
-export async function getGuilds(token) {
+export async function getGuildById(token, guildId) {
     try {
-        const response = await axios.post("/guilds/getGuilds", {
-            token: token,
+        const response = await axios.get("/guilds/getGuildById", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            params: {
+                guildId: guildId,
+            },
         });
         return response.data;
     } catch (error) {

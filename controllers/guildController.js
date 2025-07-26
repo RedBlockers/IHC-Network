@@ -79,13 +79,101 @@ module.exports = {
         }
     },
 
-    getGuildById: async (guildId) => {
+    getGuildById: async (req, res) => {
+        const startTime = Date.now();
         try {
-            const guild = await guildModel.getGuildById(guildId);
-            return guild;
+            const authHeader = req.headers["authorization"];
+            if (!authHeader) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Tentative de récupération de guilde sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const token = authHeader && authHeader.split(" ")[1];
+            if (!token) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Tentative de récupération de guilde sans token",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
+                return res.status(401).json({ message: "Token manquant" });
+            }
+            const { guildId } = req.query;
+            if (!guildId) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Tentative de récupération de guilde sans guildId",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 400,
+                });
+                return res.status(400).json({ error: "Guild ID manquant" });
+            }
+            const { valid, message, decodedToken } =
+                await AuthenticateAndDecodeToken(token);
+            if (!valid) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message: "Token invalide lors de la récupération de guilde",
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 401,
+                });
+                return res.status(401).json({ error: message });
+            }
+            const { userInGuild, guild } = await isUserInGuild(
+                guildId,
+                decodedToken.userId
+            );
+            if (userInGuild == false || !guild) {
+                logger.warn({
+                    path: req.path,
+                    method: req.method,
+                    message:
+                        "Utilisateur non membre de la guilde ou guilde inexistante",
+                    userId: decodedToken.userId,
+                    guildId: guildId,
+                    ip: req.ip,
+                    duration: Date.now() - startTime,
+                    status: 404,
+                });
+                return res.status(404).json({
+                    error: "Vous n'êtes pas sur le serveur ou il n'existe pas",
+                });
+            }
+            const guildData = await guildModel.getGuildById(guildId);
+            logger.info({
+                path: req.path,
+                method: req.method,
+                message: "Récupération de la guilde réussie",
+                guildId: guildId,
+                userId: decodedToken.userId,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 200,
+            });
+            return res.status(200).json(guildData);
         } catch (err) {
-            logger.error(err);
-            return false;
+            logger.error({
+                path: req.path,
+                method: req.method,
+                message: "Erreur lors de la récupération de la guilde",
+                err: err.stack,
+                ip: req.ip,
+                duration: Date.now() - startTime,
+                status: 500,
+            });
+            return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
 

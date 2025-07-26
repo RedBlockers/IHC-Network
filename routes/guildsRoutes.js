@@ -4,6 +4,7 @@ const guildController = require("../controllers/guildController");
 const router = express.Router();
 
 router.get("/getGuildsByUser", guildController.getGuildsByUser);
+router.get("/getGuildById", guildController.getGuildById);
 router.post("/createGuild", guildController.createGuild);
 router.post("/createInvite", guildController.createInvite);
 router.get("/invite", guildController.inviteByCode);
