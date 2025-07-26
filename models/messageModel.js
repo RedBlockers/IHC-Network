@@ -47,28 +47,48 @@ module.exports = {
             return false;
         }
     },
-    getMessagesByChannelId: async (channelId, guildId) => {
+    getMessagesByChannelId: async (channelId, guildId, limit, offset) => {
         const startTime = Date.now();
+
+        // Requête avec pagination
         const [rows] = await db.promise().execute(
             `
-            SELECT * 
-            FROM message_content mc 
-            INNER JOIN messages ON messages.messageId = mc.messageId 
-            INNER JOIN channels ON channels.channelId = messages.channelId 
-            WHERE messages.channelId = ? AND channels.guildId = ?
+        SELECT SQL_CALC_FOUND_ROWS *
+        FROM message_content mc
+        INNER JOIN messages ON messages.messageId = mc.messageId
+        INNER JOIN channels ON channels.channelId = messages.channelId
+        WHERE messages.channelId = ? AND channels.guildId = ?
+        ORDER BY messages.messageId DESC
+        LIMIT ? OFFSET ?
         `,
-            [channelId, guildId]
+            [channelId, guildId, limit, offset]
         );
+
+        // Récupération du nombre total pour savoir s'il y a plus de messages
+        const [countRows] = await db
+            .promise()
+            .execute(`SELECT FOUND_ROWS() as total`);
+        const total = countRows[0].total;
+        const hasMoreMessages = offset + limit < total;
+
         logger.debug({
             event: "DBQuery",
             operation: "SELECT",
             table: "messages",
-            querySummary: `SELECT * FROM message_content mc INNER JOIN messages ON messages.messageId = mc.messageId INNER JOIN channels ON channels.channelId = messages.channelId WHERE messages.channelId = ${channelId} AND channels.guildId = ${guildId}`,
+            querySummary: `Messages paginés pour channel ${channelId}`,
             duration: Date.now() - startTime,
             success: true,
+            limit,
+            offset,
+            count: rows.length,
         });
-        return rows;
+
+        return {
+            messages: rows,
+            hasMoreMessages,
+        };
     },
+
     getPrivateMessages: async (channelId) => {
         const startTime = Date.now();
         const [rows] = await db.promise().execute(

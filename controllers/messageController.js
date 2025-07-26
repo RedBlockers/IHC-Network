@@ -18,6 +18,7 @@ module.exports = {
         const startTime = Date.now();
         try {
             const { guildId, channelId } = req.params;
+            const { limit = 50, offset = 0 } = req.query;
 
             const authHeader = req.headers["authorization"];
             if (!authHeader) {
@@ -98,22 +99,34 @@ module.exports = {
                 });
             }
 
-            const messages = await messageModel.getMessagesByChannelId(
-                channelId,
-                guildId
-            );
+            const { messages, hasMoreMessages } =
+                await messageModel.getMessagesByChannelId(
+                    channelId,
+                    guildId,
+                    parseInt(limit),
+                    parseInt(offset)
+                );
             logger.info({
                 path: req.path,
                 method: req.method,
                 message: `Messages récupérés pour le channel`,
                 guildId: guildId,
                 channelId: channelId,
+                limit: limit,
+                offset: offset,
+                count: messages.length,
                 userId: decodedToken.userId,
                 ip: req.ip,
                 duration: Date.now() - startTime,
                 status: 200,
             });
-            return res.status(200).json(messages);
+
+            return res.status(200).json({
+                messages,
+                hasMoreMessages,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+            });
         } catch (err) {
             logger.error({
                 path: req.path,

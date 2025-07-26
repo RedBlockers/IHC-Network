@@ -46,30 +46,11 @@ document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
 
 listeners.listenForAll();
-Messages.loadMessageByChannelId(match[2], match[1]);
+Messages.loadMessageByChannelId(match[2], match[1], 100, 0);
+Messages.setupInfiniteScroll(match[2], match[1]);
 handleMessageInput();
 handleGuildCreation();
 handleChannelCreation();
 displayIcons();
 
 window.displayProfileInfo = UserUtils.positionProfileContainer;
-
-//// Modifier un message
-//function editMessage(messageId) {
-//  const newContent = prompt('Modifier votre message :');
-//  if (newContent) {
-//    axios.put(`/messages/${messageId}`, { content: newContent }).then(() => {
-//      loadMessages();
-//    });
-//  }
-//}
-//
-//
-//// Supprimer un message
-//function deleteMessage(messageId) {
-//  if (confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
-//    axios.delete(`/messages/${messageId}`).then(() => {
-//      loadMessages();
-//    });
-//  }
-//}
