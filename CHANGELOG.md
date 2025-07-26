@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [1.1.0]
+
+### Améliorations
+
+-   Envoie des messages par tronçons
+-   Amélioration de l'ajout des messages au DOM
+
 ## [1.0.3]
 
 ### Nouvelles fonctionnalitées
