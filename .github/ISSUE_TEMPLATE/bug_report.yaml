@@ -57,8 +57,3 @@ body:
         - OS: [e.g. iOS]
         - Navigateur: [e.g. chrome, safari]
         - Version: [e.g. 22]
-
-  - type: textarea
-    id: additional
-    attributes:
-      label: Con
