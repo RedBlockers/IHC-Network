@@ -4,7 +4,7 @@
 ```md
 Licence MIT
 
-Copyright (c) 2024 [Votre Nom]
+Copyright (c) 2024 [RedBlocker]
 
 La permission est accordée, gratuitement, à toute personne obtenant une copie
 de ce logiciel et des fichiers de documentation associés (le "Logiciel"), de traiter
