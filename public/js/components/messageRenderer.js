@@ -3,8 +3,16 @@ import { formatTimestamp } from "../utils/formatTimestamp.js";
 import { addLoader } from "../utils/imageUtils.js";
 import { newlineBreaks } from "../extensions/newlineBreaks.js";
 import { handleAnchor } from "./anchorHandler.js";
+import { createEmojiExtension } from "../extensions/emojiTranslator.js";
+
+const emojiMap = {
+    "Cute kitty": "https://i.giphy.com/l0MYt5jPR6QX5pnqM.webp",
+};
 
 marked.use(newlineBreaks);
+marked.use({
+    extensions: [createEmojiExtension((name) => emojiMap[name])],
+});
 marked.use({
     async: false,
     pedantic: false,
@@ -45,7 +53,7 @@ export class MessageRenderer {
             messageElement.style.backgroundColor = "#e7b9111f";
         }
 
-        if (Validation.containsSingleEmoji(message.content)) {
+        if (Validation.containsOnlyEmojis(message.content)) {
             message.content = "# " + message.content;
         }
 

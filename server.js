@@ -4,17 +4,12 @@ const http = require("http");
 const https = require("https");
 const socketIo = require("socket.io");
 const path = require("path");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const crypto = require("crypto");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messagesRoutes");
 const guildRoutes = require("./routes/guildsRoutes");
 const channelsRoutes = require("./routes/channelsRoutes");
-const messageController = require("./controllers/messageController");
-const channelController = require("./controllers/channelsController");
-const userController = require("./controllers/userController");
+const { setIo, connectedUsers } = require("./utils/sharedState");
 
 const app = express();
 let server;
@@ -62,11 +57,38 @@ if (process.env.USE_SSL === "true") {
     });
 }
 
-// Configurer Socket.IO avec le serveur HTTPS
-const io = socketIo(server);
-messageController.setIo(io);
-channelController.setIo(io);
-userController.setIo(io);
+// Configurer Socket.IO avec le serveur
+const io = require("socket.io")(server);
+setIo(io);
+
+// Tu peux manipuler connectedUsers ici
+
+io.on("connection", (socket) => {
+    console.log("Nouvelle connexion :", socket.id);
+
+    socket.on("register", (userId) => {
+        connectedUsers.set(userId, socket.id);
+        socket.join(`user-${userId}`); // Room privée
+        console.log(
+            `Utilisateur ${userId} enregistré avec socket ${socket.id}`
+        );
+    });
+
+    socket.on("disconnect", () => {
+        for (const [userId, id] of connectedUsers.entries()) {
+            if (id === socket.id) {
+                connectedUsers.delete(userId);
+                console.log(`Utilisateur ${userId} déconnecté`);
+                break;
+            }
+        }
+    });
+});
+
+//messageController.setIo(io, connectedUsers);
+//channelController.setIo(io, connectedUsers);
+//userController.setIo(io, connectedUsers);
+//guildController.setIo(io, connectedUsers);
 
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
@@ -78,6 +100,23 @@ app.use("/users", userRoutes);
 app.use("/messages", messageRoutes);
 app.use("/guilds", guildRoutes);
 app.use("/channels", channelsRoutes);
+
+app.get(
+    "^\\/invite\\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$",
+    (req, res, next) => {
+        console.log("invite");
+        const requestedPath = path.join(__dirname, "public", req.url);
+        if (fs.existsSync(requestedPath)) {
+            // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
+            return next();
+        }
+
+        // Servir le fichier inviteRedirect.html
+        res.sendFile(
+            path.join(__dirname, "public", "pages", "inviteRedirect.html")
+        );
+    }
+);
 
 app.get("^\\/(\\d+)\\/(\\d+)$", (req, res, next) => {
     const requestedPath = path.join(__dirname, "public", req.url);
@@ -103,22 +142,10 @@ app.get("^\\/(\\d+)$", (req, res, next) => {
     res.sendFile(path.join(__dirname, "public", "pages", "lobby.html"));
 });
 
-app.get(
-    "^\\/invite\\/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$",
-    (req, res, next) => {
-        console.log("invite");
-        const requestedPath = path.join(__dirname, "public", req.url);
-        if (fs.existsSync(requestedPath)) {
-            // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
-            return next();
-        }
-
-        // Servir le fichier inviteRedirect.html
-        res.sendFile(
-            path.join(__dirname, "public", "pages", "inviteRedirect.html")
-        );
-    }
-);
+module.exports = {
+    io,
+    connectedUsers,
+};
 
 // Middleware pour les erreurs 404 A implémenter
 //app.use((req, res) => {

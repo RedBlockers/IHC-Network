@@ -4,17 +4,21 @@
 
 ### Nouvelles fonctionnalitées
 
+-   Ajout de la possibilité d'envoyer des emoji custom
 -   Ajout de l'affichage des membres présent sur un serveur
 -   Conservation du dernier salon visité par serveur
 
 ### Améliorations
 
+-   Amélioration de l'affichage des emoji
+-   Sécurisation des émssions de sockets ciblés
+-   Refresh de la page lorsque l'utilisateur rejoint un serveur
 -   Envoie des messages par tronçons
 -   Amélioration de l'ajout des messages au DOM
 
 ### Correction de bug
 
--   Correcttion d'un défaut mineur dans le postionnement des messages privées
+-   Correction d'un défaut mineur dans le positionnement des messages privées
 
 ## [1.0.3]
 

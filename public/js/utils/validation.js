@@ -29,12 +29,22 @@ export class Validation {
         return processedText;
     }
 
-    static containsSingleEmoji(message) {
-        const singleEmojiRegex =
-            /^(?:\p{Emoji_Presentation}|\p{Extended_Pictographic})$/u;
-        return singleEmojiRegex.test(message.trim());
-    }
+    static containsOnlyEmojis(message) {
+        const unicodeEmojiRegex =
+            /(?:\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
+        const customEmojiRegex = /:([a-zA-Z0-9_\s-]+):/g;
+        const variationSelectorRegex = /\uFE0F/g;
+        const zwjRegex = /\u200D/g;
 
+        const cleaned = message.trim().replace(/\s+/g, "");
+        const withoutUnicode = cleaned.replace(unicodeEmojiRegex, "");
+        const withoutCustom = withoutUnicode.replace(customEmojiRegex, "");
+        const final = withoutCustom
+            .replace(variationSelectorRegex, "")
+            .replace(zwjRegex, "");
+
+        return final.length === 0;
+    }
     static sanitizebr(texte) {
         texte = texte.replace(/^(?:\s*<br>\s*)+/, ""); // supprime les balises br au début
         texte = texte.replace(/(?:\s*<br>\s*)+$/, ""); // supprime les balises br à la fin

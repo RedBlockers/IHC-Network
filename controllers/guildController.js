@@ -4,11 +4,12 @@ const { AuthenticateAndDecodeToken } = require("./userController");
 const logger = require("../utils/logger");
 const { saveImage } = require("../services/fileServices");
 const channelModel = require("../models/channelModel");
-const { get } = require("../routes/userRoutes");
 const crypto = require("crypto");
 const userModel = require("../models/userModel");
-const { channel } = require("diagnostics_channel");
 const path = require("path");
+const { getIo, connectedUsers } = require("../utils/sharedState");
+const { emitToUser } = require("../utils/socketUtils");
+const { emit } = require("process");
 
 module.exports = {
     getGuildsByUser: async (req, res) => {
@@ -486,6 +487,21 @@ module.exports = {
                 duration: Date.now() - startTime,
                 status: 200,
             });
+
+            // Émettre un événement Socket.IO pour afficher la guilde dans la liste de l'utilisateur
+            const userSocketId = connectedUsers.get(
+                String(decodedToken.userId)
+            );
+            console.log(`userSocketId: ${userSocketId}`, connectedUsers);
+            getIo().to(userSocketId).emit("requestRefresh");
+
+            // Émettre un événement Socket.IO pour mettre à jour la liste des utilisateurs dans la guilde
+            const guild = await guildModel.getGuildById(invite.guildId);
+            emitToUser(guild.owner.userId, `guildJoined/${invite.guildId}`, {});
+            guild.members.forEach((member) => {
+                emitToUser(member.userId, `guildJoined/${invite.guildId}`, {});
+            });
+
             return res.status(200).json(invite);
         } catch (err) {
             logger.error({

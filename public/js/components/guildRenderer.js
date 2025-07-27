@@ -31,9 +31,11 @@ export const displayIcons = async () => {
                 }" id="guild_${
                     guild.guildId
                 }" onclick="window.location.href = '/${guild.guildId}/${
-                    JSON.parse(localStorage.getItem("lastVisitedChannels"))[
-                        guild.guildId
-                    ] || 0
+                    JSON.parse(localStorage.getItem("lastVisitedChannels"))
+                        ? JSON.parse(
+                              localStorage.getItem("lastVisitedChannels")
+                          )[guild.guildId]
+                        : 0
                 }'">
                      <img class="avatar guild" src="../images/${
                          guild.guildImage

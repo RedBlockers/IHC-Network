@@ -160,14 +160,15 @@
                     </div>
 
                     <div class="input-group" style="width: calc(100% - 320px)">
-                        <textarea
+                        <p class="custom-placeholder">Envoyez un message</p>
+
+                        <div
                             id="messageInput"
                             class="form-control bg-dark text-white"
-                            style="resize: none"
-                            placeholder="Envoyez un message"
-                            rows="1"
-                            maxlength="4096"
-                        ></textarea>
+                            contenteditable="true"
+                            style="resize: none; min-height: 40px; padding: 8px"
+                        ></div>
+
                         <button
                             id="emojiButton"
                             class="btn"

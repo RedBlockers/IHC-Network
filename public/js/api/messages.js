@@ -109,7 +109,26 @@ export class Messages {
     }
 
     static sendMessage() {
-        const messageContent = document.getElementById("messageInput").value;
+        const inputElement = document.getElementById("messageInput");
+        if (!inputElement) {
+            console.error("Champ de message introuvable !");
+            return;
+        }
+
+        const rawContent = inputElement.innerHTML;
+        const cleanText = rawContent.replace(/&nbsp;/g, " ");
+
+        // Remplacer les emojis custom par leur alt
+        const cleanedContent = cleanText.replace(
+            /<img[^>]*alt="([^"]+)"[^>]*>/g,
+            ":$1:"
+        );
+
+        // Optionnel : nettoyer le reste du HTML
+        const messageContent = cleanedContent
+            .replace(/<\/?[^>]+(>|$)/g, "")
+            .trim();
+
         let match = window.location.href.match("\\/(\\d+)\\/(\\d+)$");
         let channel = null;
         if (match) {
@@ -135,7 +154,7 @@ export class Messages {
                     }
                 )
                 .then(() => {
-                    document.getElementById("messageInput").value = ""; // Vider le champ
+                    inputElement.innerHTML = ""; // Vider le champ
                     const messageBox = document.getElementById("messageBox");
                     scrollToBottom(messageBox);
                 })

@@ -1,10 +1,12 @@
 import { MessageRenderer } from "../components/messageRenderer.js";
 import { scrollToBottom } from "../utils/scrollUtils.js";
 import { displayChannel } from "../components/channelRenderer.js";
+import { displayGuildMembers } from "../components/guildRenderer.js";
 
 export class Listeners {
     constructor() {
         this.socket = io();
+        this.socket.emit("register", window.localStorage.getItem("userId"));
     }
     listenForMessages() {
         let match = window.location.href.match("\\/(\\d+)\\/(\\d+)$");
@@ -30,11 +32,10 @@ export class Listeners {
         }
     }
     listenForUserEvent() {
-        const username = window.localStorage.getItem("username");
-        console.log(username);
-        this.socket.on(`user${username}/updateFriendList`, async (data) => {
+        this.socket.on("updateFriendList", async (data) => {
             console.log(window.displayMode);
             window.friendList.friends = data;
+
             if (window.displayMode === "pendingDemands") {
                 await window.handleFriendList(data, true);
                 await window.displayPrivateChannels();
@@ -44,6 +45,25 @@ export class Listeners {
             }
         });
     }
+
+    listenForGuildJoin() {
+        const match = window.location.href.match("\\/(\\d+)\\/(\\d+)$");
+        if (!match) {
+            console.error("Guild ID and Channel ID not found in URL");
+            return;
+        }
+
+        this.socket.on(`guildJoined/${match[1]}`, async (data) => {
+            displayGuildMembers(match[1]);
+        });
+    }
+
+    listenForRefresh() {
+        this.socket.on(`requestRefresh`, async () => {
+            window.location.reload();
+        });
+    }
+
     listenForAll() {
         const methods = Object.getOwnPropertyNames(
             Object.getPrototypeOf(this)

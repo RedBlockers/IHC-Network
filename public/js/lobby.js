@@ -65,10 +65,26 @@ if (match) {
         </ul>
       </div>
 
-      <div class="input-group" style="width: calc(100% - 320px); margin-top: -0px;">
-        <textarea id="messageInput" class="form-control bg-dark text-white" style="resize: none;" placeholder="Envoyez un message" rows="1" maxlength="4096"></textarea>
-        <button id="emojiButton" class="btn" style="border:1px solid #ced4da;">😀</button>
-        <button id="sendMessage" class="btn btn-primary">Envoyer</button>
+      <div class="input-group" style="width: calc(100% - 320px)">
+          <p class="custom-placeholder">Envoyez un message</p>
+
+          <div
+              id="messageInput"
+              class="form-control bg-dark text-white"
+              contenteditable="true"
+              style="resize: none; min-height: 40px; padding: 8px"
+          ></div>
+
+          <button
+              id="emojiButton"
+              class="btn"
+              style="border: 1px solid #ced4da"
+          >
+              😀
+          </button>
+          <button id="sendMessage" class="btn btn-primary">
+              Envoyer
+          </button>
       </div>
     </div>
   </div>
@@ -88,6 +104,7 @@ if (match) {
 }
 const listener = new Listeners();
 listener.listenForUserEvent();
+listener.listenForRefresh();
 window.friendList = friendList;
 window.handleFriendList = handleFriendList;
 window.handleFriendActions = handleFriendActions;
@@ -99,3 +116,18 @@ document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
 )}`;
 document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
+
+const messageInput = document.getElementById("messageInput");
+const placeholder = document.querySelector(".custom-placeholder");
+
+function togglePlaceholder() {
+    const text = messageInput.textContent.trim();
+    placeholder.style.display = text ? "none" : "block";
+}
+
+messageInput.addEventListener("input", togglePlaceholder);
+messageInput.addEventListener("focus", togglePlaceholder);
+messageInput.addEventListener("blur", togglePlaceholder);
+
+// Initial check
+togglePlaceholder();

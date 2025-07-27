@@ -4,7 +4,7 @@ const guildModel = require("../models/guildModel");
 const logger = require("../utils/logger");
 const { get } = require("../routes/userRoutes");
 const isUserInGuild = require("./userController").isUserInGuild;
-let io;
+const { getIo, connectedUsers } = require("../utils/sharedState");
 
 module.exports = {
     getChannelsByGuildId: async (req, res) => {
@@ -200,7 +200,7 @@ module.exports = {
                 guild
             );
             // Envoi de la réponse avec succès
-            io.emit(`newChannel/${guild.guildId}`, channel);
+            getIo().emit(`newChannel/${guild.guildId}`, channel);
             logger.info({
                 path: req.path,
                 method: req.method,
@@ -291,9 +291,5 @@ module.exports = {
             status: 200,
         });
         return res.status(200).json(channels);
-    },
-
-    setIo: (socketIo) => {
-        io = socketIo;
     },
 };

@@ -9,9 +9,7 @@ const userRoutes = require("../routes/userRoutes");
 const messageRoutes = require("../routes/messagesRoutes");
 const logger = require("../utils/logger");
 const userController = require("./userController");
-const { url } = require("inspector");
-const { log } = require("console");
-let io;
+const { getIo, connectedUsers } = require("../utils/sharedState");
 
 module.exports = {
     getMessages: async (req, res) => {
@@ -211,7 +209,7 @@ module.exports = {
             const newMessage = await messageModel.getMessageById(
                 result.insertId
             );
-            io.emit(`newMessage/${channel}`, newMessage);
+            getIo().emit(`newMessage/${channel}`, newMessage);
             logger.info({
                 path: req.path,
                 method: req.method,
@@ -344,8 +342,5 @@ module.exports = {
             });
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
-    },
-    setIo: (socketIo) => {
-        io = socketIo;
     },
 };

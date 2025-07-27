@@ -54,4 +54,18 @@ handleGuildCreation();
 handleChannelCreation();
 displayIcons();
 displayGuildMembers(match[1]);
-window.displayProfileInfo = UserUtils.positionProfileContainer;
+
+const messageInput = document.getElementById("messageInput");
+const placeholder = document.querySelector(".custom-placeholder");
+
+function togglePlaceholder() {
+    const text = messageInput.textContent.trim();
+    placeholder.style.display = text ? "none" : "block";
+}
+
+messageInput.addEventListener("input", togglePlaceholder);
+messageInput.addEventListener("focus", togglePlaceholder);
+messageInput.addEventListener("blur", togglePlaceholder);
+
+// Initial check
+togglePlaceholder();

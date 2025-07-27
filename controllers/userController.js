@@ -6,7 +6,7 @@ const logger = require("../utils/logger");
 const { saveImage } = require("../services/fileServices");
 const socketIo = require("socket.io");
 const e = require("express");
-let io;
+const { getIo, connectedUsers } = require("../utils/sharedState");
 
 function CreateToken(username, userId, passwordUpdatedAt, profilePicture) {
     return jwt.sign(
@@ -61,9 +61,13 @@ async function AuthenticateAndDecodeToken(token) {
 
 async function UpdateUsersFriendList(user1, user2) {
     let friends = await userModel.getFriends(user1.userId);
-    io.emit(`user${user1.username}/updateFriendList`, friends);
+    //io.emit(`user${user1.username}/updateFriendList`, friends);
+    const user1SocketId = connectedUsers.get(String(user1.userId));
+    getIo().to(user1SocketId).emit("updateFriendList", friends);
     friends = await userModel.getFriends(user2.userId);
-    io.emit(`user${user2.userNickname}/updateFriendList`, friends);
+    //io.emit(`user${user2.userNickname}/updateFriendList`, friends);
+    const user2SocketId = connectedUsers.get(String(user2.userId));
+    getIo().to(user2SocketId).emit("updateFriendList", friends);
 }
 
 module.exports = {
@@ -895,7 +899,4 @@ module.exports = {
     },
 
     AuthenticateAndDecodeToken,
-    setIo: (socketIo) => {
-        io = socketIo;
-    },
 };

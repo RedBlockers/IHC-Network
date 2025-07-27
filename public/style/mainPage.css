@@ -512,3 +512,35 @@ code {
     max-height: 85vh;
     overflow-y: auto;
 }
+
+img.emoji {
+    display: inline-block !important;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: text-bottom;
+    margin: 0 0.1em;
+    object-fit: contain;
+    display: inline;
+    border: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.input-group {
+  position: relative;
+}
+
+.custom-placeholder {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  color: #aaa;
+  pointer-events: none;
+  z-index: 3;
+  font-size: 0.9em;
+}
+
+#messageInput:focus + .custom-placeholder,
+#messageInput:not(:empty) + .custom-placeholder {
+  display: none;
+}
