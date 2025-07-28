@@ -54,6 +54,7 @@ handleGuildCreation();
 handleChannelCreation();
 displayIcons();
 displayGuildMembers(match[1]);
+window.displayProfileInfo = UserUtils.positionProfileContainer;
 
 const messageInput = document.getElementById("messageInput");
 const placeholder = document.querySelector(".custom-placeholder");

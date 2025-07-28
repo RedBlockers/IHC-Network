@@ -99,7 +99,6 @@ th {
     width: 300px;
     color: white;
     overflow-y: hidden;
-    z-index: 1000;
     background-color: #25292d;
 }
 
@@ -518,7 +517,7 @@ img.emoji {
     width: 1.2em;
     height: 1.2em;
     vertical-align: text-bottom;
-    margin: 0 0.1em;
+    margin: 0;
     object-fit: contain;
     display: inline;
     border: none;

@@ -4,68 +4,129 @@ const customEmojis = [
     {
         name: "Cute kitty",
         shortcodes: ["cute", "cat", "kitty"],
-        url: "https://i.giphy.com/l0MYt5jPR6QX5pnqM.webp", // ✅ GIF animé
+        url: "https://i.giphy.com/l0MYt5jPR6QX5pnqM.webp",
     },
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
+
     const button = document.querySelector("#emojiButton");
-    const messageInput = document.querySelector("#messageInput"); // contenteditable div
+    const messageInput = document.querySelector("#messageInput");
 
     if (!button || !messageInput) return;
 
-    // Crée le picker
     const picker = new Picker({
         theme: "auto",
         customEmoji: customEmojis,
     });
 
-    // Ajoute le picker au DOM mais le cache initialement
     picker.style.position = "absolute";
     picker.style.display = "none";
     document.body.appendChild(picker);
 
-    // Positionne le picker au clic
-    button.addEventListener("click", () => {
+    let isPickerVisible = false;
+
+    function positionPicker() {
         const rect = button.getBoundingClientRect();
+        const pickerHeight = picker.offsetHeight;
+        const pickerWidth = picker.offsetWidth;
 
-        // Affiche temporairement le picker pour mesurer sa hauteur
-        picker.style.display = "block";
-        picker.style.visibility = "hidden";
+        const top = rect.top + window.scrollY - pickerHeight;
+        let left;
 
-        // Attendre que le DOM calcule la hauteur
-        requestAnimationFrame(() => {
-            const pickerHeight = picker.offsetHeight;
+        if (window.innerWidth <= 1000) {
+            // Affiche à gauche du bouton
+            left = rect.left + window.scrollX - pickerWidth + rect.width;
+        } else {
+            // Affiche à droite du bouton
+            left = rect.left + window.scrollX;
+        }
 
-            picker.style.top = `${rect.top + window.scrollY - pickerHeight}px`;
-            picker.style.left = `${rect.left + window.scrollX}px`;
-            picker.style.visibility = "visible";
-        });
+        picker.style.top = `${top}px`;
+        picker.style.left = `${left}px`;
+    }
+
+    function togglePicker() {
+        if (isPickerVisible) {
+            picker.style.display = "none";
+            isPickerVisible = false;
+        } else {
+            picker.style.display = "block";
+            picker.style.visibility = "hidden";
+
+            requestAnimationFrame(() => {
+                positionPicker();
+                picker.style.visibility = "visible";
+                isPickerVisible = true;
+            });
+        }
+    }
+
+    button.addEventListener("click", (e) => {
+        e.stopPropagation(); // Empêche la fermeture immédiate
+        togglePicker();
     });
 
-    // Insère l'emoji dans le champ contenteditable
+    document.addEventListener("click", (e) => {
+        if (
+            isPickerVisible &&
+            !picker.contains(e.target) &&
+            e.target !== button
+        ) {
+            picker.style.display = "none";
+            isPickerVisible = false;
+        }
+    });
+
+    window.addEventListener("resize", () => {
+        if (isPickerVisible) {
+            positionPicker();
+        }
+    });
+
     picker.addEventListener("emoji-click", (event) => {
         const detail = event.detail;
+        let node;
 
         if (detail.unicode) {
-            // Emoji natif
-            const span = document.createElement("span");
-            span.textContent = detail.unicode;
-            messageInput.appendChild(span);
+            node = document.createElement("span");
+            node.textContent = detail.unicode;
         } else if (detail.emoji?.url) {
-            // Emoji custom
-            const img = document.createElement("img");
-            img.src = detail.emoji.url;
-            img.alt = detail.emoji.name;
-            img.style.width = "1.2em";
-            img.style.height = "1.2em";
-            img.style.verticalAlign = "middle";
-            img.classList.add("emoji");
-            messageInput.appendChild(img);
+            node = document.createElement("img");
+            node.src = detail.emoji.url;
+            node.alt = detail.emoji.name;
+            node.style.width = "1.2em";
+            node.style.height = "1.2em";
+            node.style.verticalAlign = "middle";
+            node.classList.add("emoji");
+        }
+
+        if (node) {
+            insertAtCursor(node);
         }
 
         picker.style.display = "none";
+        isPickerVisible = false;
         messageInput.focus();
     });
+
+    function insertAtCursor(node) {
+        const selection = window.getSelection();
+
+        if (!selection || selection.rangeCount === 0) {
+            messageInput.appendChild(node); // fallback
+            return;
+        }
+
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(node);
+
+        // Repositionne le curseur juste après le nœud inséré
+        range.setStartAfter(node);
+        range.setEndAfter(node);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
 });
