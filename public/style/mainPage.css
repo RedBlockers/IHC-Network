@@ -543,3 +543,10 @@ img.emoji {
 #messageInput:not(:empty) + .custom-placeholder {
   display: none;
 }
+
+
+.container{
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+}
