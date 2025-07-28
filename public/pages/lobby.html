@@ -410,57 +410,7 @@
         <script src="/js/utils/styleUtils.js"></script>
         <script type="module" src="/js/components/emojiButton.js"></script>
         <script src="/js/lobby.js" type="module"></script>
-        <script>
-            function isMobileDevice() {
-                return /Mobi|Android|iPhone|iPad|iPod/i.test(
-                    navigator.userAgent
-                );
-            }
-            document.addEventListener("DOMContentLoaded", () => {
-                const sidebar = document.querySelector(".sidebar");
-                const mainContent = document.querySelector(".main-content");
-
-                if (!sidebar || !mainContent) return;
-
-                let touchStartX = 0;
-
-                document.addEventListener("touchstart", (e) => {
-                    touchStartX = e.touches[0].clientX;
-                });
-
-                document.addEventListener("touchend", (e) => {
-                    const touchEndX = e.changedTouches[0].clientX;
-                    const deltaX = touchEndX - touchStartX;
-
-                    // Vérifie si l'appareil est mobile
-                    if (!isMobileDevice()) return;
-
-                    if (deltaX > 100) {
-                        // Swipe vers la droite → ouvrir la sidebar
-                        sidebar.classList.add("open");
-                        mainContent.classList.add("hide-on-mobile");
-                    } else if (deltaX < -100) {
-                        // Swipe vers la gauche → fermer la sidebar
-                        sidebar.classList.remove("open");
-                        mainContent.classList.remove("hide-on-mobile");
-                    }
-                });
-
-                function isMobileDevice() {
-                    return /Mobi|Android|iPhone|iPad|iPod/i.test(
-                        navigator.userAgent
-                    );
-                }
-
-                function updateMobileMode() {
-                    const isMobile =
-                        isMobileDevice() && window.innerWidth <= 1000;
-                    document.body.classList.toggle("mobile-mode", isMobile);
-                }
-
-                window.addEventListener("DOMContentLoaded", updateMobileMode);
-                window.addEventListener("resize", updateMobileMode);
-            });
-        </script>
+        <script src="/js/utils/mobileLayout.js"></script>
+        <script src="/js/utils/layoutManager.js"></script>
     </body>
 </html>

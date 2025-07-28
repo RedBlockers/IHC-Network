@@ -12,9 +12,7 @@
     border-radius: 6px;
 }
 
-body {
-    cursor: default;
-}
+
 
 body::-webkit-scrollbar {
     display: none;
@@ -544,6 +542,10 @@ img.emoji {
   display: none;
 }
 
+#messageInput {
+    cursor: text;
+}
+
 
 .container{
     margin-left: 0 !important;
@@ -575,8 +577,7 @@ body.mobile-mode .sidebar.open {
 body.mobile-mode .main-content {
     margin-left: 0;
     width: 100%;
-    margin: 0 !important;
-
+    padding-top: 20px !important;
 }
 body.mobile-mode #messageBox {
     margin: 0 !important;
@@ -584,24 +585,9 @@ body.mobile-mode #messageBox {
 
 body.mobile-mode {
     overflow: hidden;
-
+    height: 100vh;
 }
 
 body.mobile-mode .main-content.hide-on-mobile {
     display: none !important;
 }
-
-.btn-toggle-sidebar {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 1100;
-    background-color: #3a3a3a;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
-}
-
