@@ -550,3 +550,58 @@ img.emoji {
     margin-right: 0 !important;
     max-width: 100% !important;
 }
+
+body.mobile-mode .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #25292d;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+body.mobile-mode .main-content {
+    position: relative;
+    top: -74px;
+}
+
+body.mobile-mode .sidebar.open {
+    transform: translateX(0);
+}
+
+body.mobile-mode .main-content {
+    margin-left: 0;
+    width: 100%;
+    margin: 0 !important;
+
+}
+body.mobile-mode #messageBox {
+    margin: 0 !important;
+}
+
+body.mobile-mode {
+    overflow: hidden;
+
+}
+
+body.mobile-mode .main-content.hide-on-mobile {
+    display: none !important;
+}
+
+.btn-toggle-sidebar {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1100;
+    background-color: #3a3a3a;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
