@@ -1,8 +1,7 @@
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const https = require("https");
-const socketIo = require("socket.io");
 const path = require("path");
 const fs = require("fs");
 const userRoutes = require("./routes/userRoutes");
@@ -85,11 +84,6 @@ io.on("connection", (socket) => {
     });
 });
 
-//messageController.setIo(io, connectedUsers);
-//channelController.setIo(io, connectedUsers);
-//userController.setIo(io, connectedUsers);
-//guildController.setIo(io, connectedUsers);
-
 // Servir les fichiers statiques (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({ limit: "10mb" }));
@@ -120,9 +114,7 @@ app.get(
 
 app.get("^\\/(\\d+)\\/(\\d+)$", (req, res, next) => {
     const requestedPath = path.join(__dirname, "public", req.url);
-    //const { 0: guildId, 1: channelId } = req.params;
     if (fs.existsSync(requestedPath)) {
-        // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
         return next();
     }
 
@@ -134,7 +126,6 @@ app.get("^\\/(\\d+)$", (req, res, next) => {
     const requestedPath = path.join(__dirname, "public", req.url);
     //const { 0: channelId } = req.params;
     if (fs.existsSync(requestedPath)) {
-        // Si le fichier existe, ne pas utiliser cette route, passer au middleware statique
         return next();
     }
 

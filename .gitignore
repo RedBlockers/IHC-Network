@@ -136,4 +136,6 @@ dist
 public/images/profiles/
 public/images/guilds/
 
+# Ignore VS code counter
+.VSCodeCounter/
 

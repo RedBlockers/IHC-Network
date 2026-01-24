@@ -1,4 +1,29 @@
 /* Styles de la scrollbar */
+
+
+:root {
+    --bg-primary: #25292d;
+    --bg-secondary: #272727;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+}
+
+/* Thème clair */
+[data-theme="light"] {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+}
+
+/* Thème bleu nuit */
+[data-theme="blue-night"] {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --text-primary: #e6e6e6;
+    --text-secondary: #a8a8a8;
+}
+
 ::-webkit-scrollbar {
     width: 12px;
 }
@@ -10,6 +35,15 @@
 ::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 6px;
+}
+
+
+.bg-dark, .bg-primary, .bg-secondary, .bg-light, .bg-white {
+    background-color: var(--bg-primary) !important;
+}
+
+.text-light, .text-white, .text-dark {
+    color: var(--text-primary) !important;
 }
 
 

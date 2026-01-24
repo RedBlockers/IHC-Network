@@ -25,7 +25,15 @@ dropContainer.addEventListener("drop", (e) => {
     fileInput.dispatchEvent(new Event("change"));
 });
 
+const avatarImage = document.getElementById("previewContainer");
 const cropper = new CropperModal(fileInput);
+
+document.addEventListener("onCropperDone", (e) => {
+    const imagePreviewBox = document.getElementById("dropcontainer");
+    if (imagePreviewBox) {
+        imagePreviewBox.style.backgroundImage = `url('${cropper.getCroppedImage()}')`;
+    }
+});
 
 document
     .getElementById("registerForm")

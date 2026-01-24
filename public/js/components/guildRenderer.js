@@ -24,24 +24,23 @@ export const displayIcons = async () => {
 
         // Rendu des guildes
         guilds.forEach((guild) => {
-            guildContainer.insertAdjacentHTML(
-                "afterbegin",
-                `<div class="mb-2" data-bs-toggle="tooltip" data-bs-placement="right" title="${
-                    guild.guildName
-                }" id="guild_${
-                    guild.guildId
-                }" onclick="window.location.href = '/${guild.guildId}/${
-                    JSON.parse(localStorage.getItem("lastVisitedChannels"))
-                        ? JSON.parse(
-                              localStorage.getItem("lastVisitedChannels")
-                          )[guild.guildId]
-                        : 0
-                }'">
-                     <img class="avatar guild" src="../images/${
-                         guild.guildImage
-                     }" >
-                </div>`
-            );
+            const lastVisitedChannels =
+                JSON.parse(localStorage.getItem("lastVisitedChannels")) || {};
+            const lastChannelId = lastVisitedChannels[guild.guildId] ?? 0;
+
+            const guildHTML = `
+    <div class="mb-2"
+         data-bs-toggle="tooltip"
+         data-bs-placement="right"
+         title="${guild.guildName}"
+         id="guild_${guild.guildId}"
+         onclick="window.location.href = '/${guild.guildId}/${lastChannelId}'">
+        <img class="avatar guild" src="../images/${guild.guildImage}">
+    </div>
+`;
+
+            // Insérer le HTML dans le conteneur
+            guildContainer.insertAdjacentHTML("afterbegin", guildHTML);
 
             guildBarContainer.insertAdjacentHTML(
                 "afterbegin",

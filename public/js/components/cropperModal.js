@@ -1,101 +1,166 @@
+/**
+ * CropperModal
+ * -------------
+ * Utilitaire de recadrage d'image sans dépendance Bootstrap.
+ * Utilise CropperJS et un modal custom isolé.
+ *
+ * Événements émis :
+ * - onCropperCreation : quand CropperJS est initialisé
+ * - onCropperDone     : quand l'image est recadrée et validée
+ *
+ * Dépendances :
+ * - CropperJS (https://fengyuanchen.github.io/cropperjs/)
+ *
+ * Exemple d'utilisation :
+ * ```js
+ * const input = document.getElementById("avatarInput");
+ * const cropper = new CropperModal(input);
+ *
+ * document.addEventListener("onCropperDone", (e) => {
+ *   console.log(e.detail.base64);
+ * });
+ * ```
+ */
 export class CropperModal {
+    /**
+     * @param {HTMLInputElement} fileInput Input file utilisé pour charger l'image
+     */
     constructor(fileInput) {
         this.fileInput = fileInput;
+        this.croppedImage = null;
+
         this.createCropper();
-        this.cropModal = new bootstrap.Modal(
-            document.getElementById("cropModal")
-        );
+        this.bindElements();
         this.handleCropper();
     }
 
+    /**
+     * Injecte le HTML du modal de recadrage dans le DOM
+     * @private
+     */
     createCropper() {
         document.body.insertAdjacentHTML(
             "beforeend",
             `
-        <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-              <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="cropModalLabel">Recadrer la photo de profil</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="cropper-overlay" id="cropperOverlay">
+                <div class="cropper-modal">
+                    <div class="cropper-header">
+                        <h3>Recadrer la photo de profil</h3>
+                        <button class="cropper-close" id="cropperClose">✕</button>
+                    </div>
+
+                    <div class="cropper-body">
+                        <img id="imageToCrop" alt="Image à recadrer" />
+                    </div>
+
+                    <div class="cropper-footer">
+                        <button class="cropper-btn cancel" id="cropCancel">Annuler</button>
+                        <button class="cropper-btn confirm" id="cropAccept">Accepter</button>
+                    </div>
                 </div>
-                <div class="modal-body d-flex justify-content-center">
-                  <img id="imageToCrop" class="img-fluid" style="max-width: 100%;" />
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                  <button type="button" class="btn btn-primary" id="cropAccept">Accepter</button>
-                </div>
-              </div>
             </div>
-          </div>
-      `
+
+            `
         );
     }
 
+    /**
+     * Récupère les éléments DOM du modal et bind les événements
+     * @private
+     */
+    bindElements() {
+        this.overlay = document.getElementById("cropperOverlay");
+        this.imageToCrop = document.getElementById("imageToCrop");
+        this.closeBtn = document.getElementById("cropperClose");
+        this.cancelBtn = document.getElementById("cropCancel");
+        this.acceptBtn = document.getElementById("cropAccept");
+
+        this.closeBtn.onclick = () => this.close();
+        this.cancelBtn.onclick = () => this.close();
+    }
+
+    /**
+     * Ouvre le modal
+     */
+    open() {
+        this.overlay.classList.add("active");
+    }
+
+    /**
+     * Ferme le modal et détruit l'instance CropperJS
+     */
+    close() {
+        this.overlay.classList.remove("active");
+
+        if (this.cropper) {
+            this.cropper.destroy();
+            this.cropper = null;
+        }
+    }
+
+    /**
+     * Gère la sélection de fichier et l'initialisation du cropper
+     * @private
+     */
     handleCropper() {
         this.fileInput.addEventListener("change", (event) => {
             const file = event.target.files[0];
-            const imageToCrop = document.getElementById("imageToCrop");
+            if (!file) return;
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imageToCrop.src = e.target.result;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imageToCrop.src = e.target.result;
+                this.open();
 
-                    // Ouvrir la modale de recadrage
-                    this.cropModal.show();
-
-                    // Créer un cropper pour l'image
-                    if (this.cropper) {
-                        this.cropper.destroy();
-                    }
-                    this.cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        minContainerWidth: 600,
-                        minContainerHeight: 600,
-                    });
-                    const cropperCreationEvent = new CustomEvent(
-                        "onCropperCreation",
-                        {
-                            detail: { cropper: this.cropper },
-                        }
-                    );
-                    document.dispatchEvent(cropperCreationEvent);
-                };
-
-                reader.readAsDataURL(file); // Charger l'image
-            }
-        });
-
-        document.getElementById("cropAccept").addEventListener("click", () => {
-            // Récupérer l'image recadrée
-            if (this.cropper) {
-                const canvas = this.cropper.getCroppedCanvas({
-                    width: 300,
-                    height: 300,
-                    imageSmoothingEnabled: false,
-                    imageSmoothingQuality: "high",
+                this.cropper = new Cropper(this.imageToCrop, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
                 });
 
-                // Convertir l'image en base64
-                this.croppedImage = canvas.toDataURL("image/png");
+                document.dispatchEvent(
+                    new CustomEvent("onCropperCreation", {
+                        detail: { cropper: this.cropper },
+                    })
+                );
+            };
 
-                // Ajouter l'image recadrée au formulaire (ou à une balise img)
-                const imagePreviewBox =
-                    document.getElementById("dropcontainer");
-                if (imagePreviewBox) {
-                    imagePreviewBox.style.backgroundImage = `url('${this.croppedImage}')`;
-                }
+            reader.readAsDataURL(file);
+        });
 
-                // Fermer la modale
-                this.cropModal.hide();
-            }
+        this.acceptBtn.addEventListener("click", () => {
+            if (!this.cropper) return;
+
+            const canvas = this.cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+                imageSmoothingQuality: "high",
+            });
+
+            this.croppedImage = canvas.toDataURL("image/png");
+
+            /**
+             * 🔔 Événement déclenché quand l'image est prête
+             */
+            document.dispatchEvent(
+                new CustomEvent("onCropperDone", {
+                    detail: {
+                        base64: this.croppedImage,
+                        canvas,
+                        cropper: this.cropper,
+                    },
+                })
+            );
+
+            this.close();
         });
     }
+
+    /**
+     * Retourne l'image recadrée en base64
+     * @returns {string|null}
+     */
     getCroppedImage() {
-        return this.croppedImage || null;
+        return this.croppedImage;
     }
 }

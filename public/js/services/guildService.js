@@ -4,11 +4,18 @@ import { CropperModal } from "../components/cropperModal.js";
 export function handleGuildCreation() {
     const modal = new bootstrap.Modal(document.getElementById("addGuildModal"));
     const guildCreationModal = document.getElementById("openAddGuildModal");
+
     guildCreationModal.addEventListener("click", () => {
         modal.show();
     });
     let fileInput = document.getElementById("guildIcon");
     const cropper = new CropperModal(fileInput);
+    document.addEventListener("onCropperDone", (e) => {
+        const imagePreviewBox = document.getElementById("dropcontainer");
+        if (imagePreviewBox) {
+            imagePreviewBox.style.backgroundImage = `url('${cropper.getCroppedImage()}')`;
+        }
+    });
     const guildCreationButton = document.getElementById("addGuildModalAccept");
     guildCreationButton.addEventListener("click", () => {
         const token = localStorage.getItem("token");

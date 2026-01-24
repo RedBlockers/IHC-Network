@@ -117,7 +117,7 @@ document.getElementById("userAvatar").src = `/images/${localStorage.getItem(
 document.getElementById("usernameDisplay").textContent =
     localStorage.getItem("username");
 
-const messageInput = document.getElementById("messageInput");
+const messageInput = document.getElementById("messageInput") || null;
 const placeholder = document.querySelector(".custom-placeholder");
 
 function togglePlaceholder() {
@@ -125,9 +125,10 @@ function togglePlaceholder() {
     placeholder.style.display = text ? "none" : "block";
 }
 
-messageInput.addEventListener("input", togglePlaceholder);
-messageInput.addEventListener("focus", togglePlaceholder);
-messageInput.addEventListener("blur", togglePlaceholder);
-
-// Initial check
-togglePlaceholder();
+if (messageInput !== null) {
+    messageInput.addEventListener("input", togglePlaceholder);
+    messageInput.addEventListener("focus", togglePlaceholder);
+    messageInput.addEventListener("blur", togglePlaceholder);
+    // Initial check
+    togglePlaceholder();
+}

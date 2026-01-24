@@ -60,7 +60,7 @@ const messageInput = document.getElementById("messageInput");
 const placeholder = document.querySelector(".custom-placeholder");
 
 function togglePlaceholder() {
-    const text = messageInput.textContent.trim();
+    const text = messageInput.innerHTML.trim();
     placeholder.style.display = text ? "none" : "block";
 }
 
@@ -70,3 +70,18 @@ messageInput.addEventListener("blur", togglePlaceholder);
 
 // Initial check
 togglePlaceholder();
+
+document
+    .getElementById("theme-selector")
+    .addEventListener("change", function () {
+        const selectedTheme = this.value;
+        document.documentElement.setAttribute("data-theme", selectedTheme);
+        localStorage.setItem("theme", selectedTheme);
+    });
+
+// Charger le thème sauvegardé
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    document.getElementById("theme-selector").value = savedTheme;
+}

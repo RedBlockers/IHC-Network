@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
     "nodemon": "^3.1.10",
+    "react-icons": "^5.5.0",
     "socket.io": "^4.8.0",
     "winston": "^3.16.0"
   },
