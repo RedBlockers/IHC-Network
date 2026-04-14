@@ -73,7 +73,7 @@ hr {
 .profile-header {
     width: 660px;
     height: 100px;
-    background-color: red;
+    background-color: transparent;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }

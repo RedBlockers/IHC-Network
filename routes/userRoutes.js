@@ -1,30 +1,31 @@
 const express = require("express");
 const userController = require("../controllers/userController");
+const guildController = require("../controllers/guildController");
+const validate = require("../middlewares/validate");
+const { registerSchema, loginSchema } = require("../validators/userValidator");
+const auth = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-// Route pour l'inscription
-router.post("/register", userController.register);
+router.post("/register", validate(registerSchema), userController.register);
 
-// Route pour la connexion
-router.post("/login", userController.connect);
+router.post("/login", validate(loginSchema), userController.login);
 
-// Route pour vérifier un token
-router.get("/authenticateToken", userController.authenticateToken);
+//OLD router.get("/authenticateToken", userController.authenticateToken);
+router.get("/me", auth, userController.getMe);
 
-// Route pour récupérer les amis
-router.get("/friends", userController.getFriends);
+router.get("/me/friends", auth, userController.getFriends);
 
-// Route pour ajouter un ami
-router.post("/friends", userController.RequestFriend);
+router.post("/me/friends/:friendHandle", auth, userController.addFriendRequest);
 
-// Route pour accepter une demande d'ami
-router.put("/acceptFriend", userController.acceptFriend);
+router.patch("/me/friends/:friendId", auth, userController.acceptFriendRequest);
 
-// Route pour refuser/annuler/supprimer une demande d'ami
-router.delete("/removeFriend", userController.removeFriend);
+router.delete("/me/friends/:friendId", auth, userController.removeFriend);
 
-// Route pour récupérer les informations d'un utilisateur
-router.get("/getUser", userController.getUserInfo);
+router.get("/:userId", auth, userController.getUser);
+
+router.get("/me/channels/private", auth, userController.getPrivateChannels);
+
+router.get("/me/guilds", auth, guildController.getGuildsByUser);
 
 module.exports = router;

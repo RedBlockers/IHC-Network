@@ -1,150 +1,164 @@
 const db = require("./connDB");
-const logger = require("../utils/logger");
+const { logDB } = require("../utils/helpers/logHelper");
+const mappers = require("../utils/mappers");
 
 module.exports = {
-    getChannelsByGuild: async (guild) => {
-        const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM channels WHERE guildId = ?", [
-                guild.guildId,
-            ]);
-        const channels = [];
-        rows.forEach((row) => {
-            const channel = {
-                channelId: row.channelId,
-                type: row.type,
-                name: row.name,
-                description: row.description,
-                guild: guild,
-            };
-            channels.push(channel);
-        });
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "channels",
-            querySummary: `SELECT * FROM channels WHERE guildId = ${guild.guildId}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return channels;
-    },
-    getChannelById: async (id, guild) => {
-        const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM channels WHERE channelId = ? LIMIT 1", [
-                id,
-            ]);
-        if (rows.length === 0) {
-            logger.info(`Aucun channel trouvé avec l'ID ${id}`);
-            return null;
-        }
-        const row = rows[0];
-        const channel = {
-            channelId: row.channelId,
-            type: row.type,
-            name: row.name,
-            description: row.description,
-            guild: guild,
-        };
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "channels",
-            querySummary: `SELECT * FROM channels WHERE channelId = ${id}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return channel;
-    },
-    getFirstChannelByGuild: async (guild) => {
-        const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM channels WHERE guildId = ? LIMIT 1", [
-                guild.guildId,
-            ]);
-        const row = rows[0];
-        const channel = {
-            channelId: row.channelId,
-            type: row.type,
-            name: row.name,
-            description: row.description,
-            guild: guild,
-        };
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "channels",
-            querySummary: `SELECT * FROM channels WHERE guildId = ${guild.guildId} LIMIT 1`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return channel;
-    },
-    createChannel: async (type, name, description, guildId) => {
+    getChannelsByGuildId: async (guildId) => {
         const startTime = Date.now();
         try {
-            const [result] = await db
+            const [rows] = await db
                 .promise()
-                .execute(
-                    "INSERT INTO channels (type, name, description, guildId, isPrivate) VALUES (?, ?, ?, ?, 1)",
-                    [type, name, description, guildId]
-                );
-            logger.debug({
-                event: "DBQuery",
-                operation: "INSERT",
-                table: "channels",
-                querySummary: `INSERT INTO channels (type, name, description, guildId) VALUES (?, ?, ?, ?)`,
-                parameters: [type, name, description, guildId],
-                duration: Date.now() - startTime,
-                success: true,
-            });
-            return result.insertId;
-        } catch (err) {
-            logger.error({
-                event: "DBError",
-                message: error.message,
-                stack: error.stack,
-                duration: `${Date.now() - startTime}ms`,
-            });
-            throw err;
+                .execute("SELECT * FROM channels WHERE guildId = ?", [guildId]);
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                true,
+                `SELECT * FROM channels WHERE guildId = ${guildId}`
+            );
+            return rows.map((row) =>
+                mappers.channelMapper(row, Number(guildId))
+            );
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                false,
+                `SELECT * FROM channels WHERE guildId = ${guildId}`,
+                error
+            );
+            throw error;
         }
     },
+
+    getChannelById: async (channelId) => {
+        const startTime = Date.now();
+        try {
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM channels WHERE channelId = ?", [
+                    channelId,
+                ]);
+
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                true,
+                `SELECT * FROM channels WHERE channelId = ${channelId}`
+            );
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                false,
+                `SELECT * FROM channels WHERE channelId = ${channelId}`,
+                error
+            );
+            throw error;
+        }
+    },
+
+    getFirstChannelByGuildId: async (guildId) => {
+        try {
+            const startTime = Date.now();
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM channels WHERE guildId = ? LIMIT 1", [
+                    guildId,
+                ]);
+
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                true,
+                `SELECT * FROM channels WHERE guildId = ${guildId} LIMIT 1`
+            );
+
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                false,
+                `SELECT * FROM channels WHERE guildId = ${guild.guildId} LIMIT 1`,
+                error
+            );
+            throw error;
+        }
+    },
+
+    createChannel: async (
+        type,
+        name,
+        description,
+        guildId = null,
+        friendId = null,
+        connection = db.promise()
+    ) => {
+        const startTime = Date.now();
+        try {
+            const [result] = await connection.execute(
+                "INSERT INTO channels (type, name, description, guildId, friendId) VALUES (?, ?, ?, ?, ?)",
+                [type, name, description, guildId, friendId]
+            );
+
+            const [channel] = await connection.execute(
+                "SELECT * FROM channels WHERE channelId = ?",
+                [result.insertId]
+            );
+
+            logDB("INSERT", "channels", startTime, true, "Création channel", {
+                guildId,
+                friendId,
+            });
+            return channel[0];
+        } catch (error) {
+            logDB(
+                "INSERT",
+                "channels",
+                startTime,
+                false,
+                "Erreur création channel",
+                error
+            );
+            throw error;
+        }
+    },
+
     getPrivateChannelsByUserId: async (userId) => {
         const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute(
-                "SELECT u.userNickname, u.userId, u.userImage, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId ",
+        try {
+            const [rows] = await db
+                .promise()
+                .execute(
+                    "SELECT u.*, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId ",
+                    [userId, userId]
+                );
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                true,
+                `SELECT u.*, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId`,
                 [userId, userId]
             );
-        const channels = [];
-        rows.forEach((row) => {
-            const channel = {
-                channelId: row.channelId,
-                type: row.type,
-                name: row.userNickname,
-                description: row.description,
-                user: {
-                    userId: row.userId,
-                    username: row.userNickname,
-                    userImage: row.userImage,
-                },
-            };
-            channels.push(channel);
-        });
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "channels",
-            querySummary: `SELECT u.userNickname, u.userId, u.userImage, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId`,
-            parameters: [userId, userId],
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return channels;
+            rows.map((row) => mappers.privateChannelMapper(row));
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "channels",
+                startTime,
+                false,
+                `SELECT u.*, c.* FROM users as u INNER JOIN friends as f ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?) INNER JOIN channels as c ON f.id = c.friendId`,
+                error
+            );
+            throw error;
+        }
     },
 };

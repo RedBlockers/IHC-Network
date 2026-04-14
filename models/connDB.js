@@ -15,11 +15,14 @@ const pool = mysql.createPool({
 // Connexion à la base de données
 pool.getConnection((err, connection) => {
     if (err) {
-        logger.error(err);
-        throw err;
+        logger.error("Erreur de connexion à la base de données MySQL :", err);
+        // Ne pas throw l'erreur pour éviter de casser le code derrière
+        return;
     }
-    if (connection) connection.release();
-    logger.info("Connecté à la base de données MySQL");
+    if (connection) {
+        connection.release();
+        logger.info("Connecté à la base de données MySQL");
+    }
 });
 
 module.exports = pool;

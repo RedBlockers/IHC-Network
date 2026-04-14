@@ -1,15 +1,10 @@
 const messageModel = require("../models/messageModel");
-const channelController = require("./channelsController");
+const channelController = require("./channelController");
 const { AuthenticateAndDecodeToken } = require("./userController");
-const socketIo = require("socket.io");
-const express = require("express");
-const http = require("http");
-const path = require("path");
-const userRoutes = require("../routes/userRoutes");
-const messageRoutes = require("../routes/messagesRoutes");
 const logger = require("../utils/logger");
 const userController = require("./userController");
-const { getIo, connectedUsers } = require("../utils/sharedState");
+const { getIo } = require("../utils/sharedState");
+const channelModel = require("../models/channelModel");
 
 module.exports = {
     getMessages: async (req, res) => {
@@ -142,66 +137,15 @@ module.exports = {
     postMessage: async (req, res) => {
         const startTime = Date.now();
         try {
-            const { messageContent, channel } = req.body;
-            const authHeader = req.headers["authorization"];
-            if (!authHeader) {
-                logger.warn({
-                    path: req.path,
-                    method: req.method,
-                    message: "Tentative d'ajout de message sans token",
-                    ip: req.ip,
-                    duration: Date.now() - startTime,
-                    status: 401,
-                });
-                return res.status(401).json({ message: "Token manquant" });
-            }
-            const token = authHeader && authHeader.split(" ")[1];
-            if (!token) {
-                logger.warn({
-                    path: req.path,
-                    method: req.method,
-                    message: "Tentative d'ajout de message sans token",
-                    ip: req.ip,
-                    duration: Date.now() - startTime,
-                    status: 401,
-                });
-                return res.status(401).json({ message: "Token manquant" });
-            }
-            if (!channel || !messageContent) {
-                logger.warn({
-                    patrh: req.path,
-                    method: req.method,
-                    message:
-                        "Tentative d'ajout de message sans channelId ou contenu",
-                    ip: req.ip,
-                    duration: Date.now() - startTime,
-                    status: 400,
-                });
-                return res
-                    .status(400)
-                    .json({ error: "Le channelId ou le message est manquant" });
-            }
+            const { messageContent } = req.body;
+            const { channelId } = req.params;
 
-            const { valid, message, decodedToken } =
-                await AuthenticateAndDecodeToken(token);
-
-            if (!valid) {
-                logger.warn({
-                    path: req.path,
-                    method: req.method,
-                    message:
-                        "Tentative d'ajout de message avec un token invalide",
-                    ip: req.ip,
-                    duration: Date.now() - startTime,
-                    status: 401,
-                });
-                return res.status(401).json({ error: message });
-            }
+            const channel = await channelModel.getChannelById(channelId);
 
             const result = await messageModel.insertMessage(
-                decodedToken.userId,
+                req.user.userId,
                 messageContent,
-                channel
+                channelId
             );
             if (!result) {
                 throw new Error(`Erreur lors de l'enregistrement du messages`);
@@ -209,7 +153,7 @@ module.exports = {
             const newMessage = await messageModel.getMessageById(
                 result.insertId
             );
-            getIo().emit(`newMessage/${channel}`, newMessage);
+            getIo().emit(`newMessage/${channelId}`, newMessage);
             logger.info({
                 path: req.path,
                 method: req.method,
@@ -217,7 +161,7 @@ module.exports = {
                 guildId: channel.guildId,
                 channelId: channel.channelId,
                 messageId: result.insertId,
-                userId: decodedToken.userId,
+                userId: req.user.userId,
                 ip: req.ip,
                 duration: Date.now() - startTime,
                 status: 200,

@@ -1,141 +1,188 @@
 const db = require("./connDB");
-const bcrypt = require("bcrypt");
-const logger = require("../utils/logger");
-const e = require("express");
+const { logDB } = require("../utils/helpers/logHelper");
+const mappers = require("../utils/mappers");
 
 module.exports = {
-    getUserByUsername: async (username) => {
-        const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM users WHERE userNickname = ?", [username]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "users",
-            querySummary: `SELECT * FROM users WHERE userNickname = ${username}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-
-        return rows;
-    },
-
-    getUserByMail: async (mail) => {
-        const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM users WHERE userEmail = ?", [mail]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "users",
-            querySummary: `SELECT * FROM users WHERE userEmail = ${mail}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return rows;
-    },
-
     getUserById: async (userId) => {
         const startTime = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute("SELECT * FROM users WHERE userId = ?", [userId]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "users",
-            querySummary: `SELECT * FROM users WHERE userId = ${userId}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return rows[0];
-    },
-
-    createUser: async (username, password, mail, profileImagePath) => {
-        const startTime = Date.now();
-
         try {
-            // Hachage du mot de passe
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM users WHERE userId = ?", [userId]);
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                true,
+                `SELECT * FROM users WHERE userId = ${userId}`
+            );
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                false,
+                `SELECT * FROM users WHERE userId = ${userId}`,
+                error
+            );
+            throw error;
+        }
+    },
+    getUserByHandle: async (handle) => {
+        const startTime = Date.now();
+        try {
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM users WHERE handle = ?", [handle]);
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                true,
+                `SELECT * FROM users WHERE handle = ${handle}`
+            );
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                false,
+                `SELECT * FROM users WHERE handle = ${handle}`,
+                error
+            );
+            throw error;
+        }
+    },
+    getUserByDisplayName: async (displayName) => {
+        const startTime = Date.now();
+        try {
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM users WHERE displayName = ?", [
+                    displayName,
+                ]);
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                true,
+                `SELECT * FROM users WHERE displayName = ${displayName}`
+            );
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                false,
+                `SELECT * FROM users WHERE displayName = ${displayName}`,
+                error
+            );
+            throw error;
+        }
+    },
+    getUserByEmail: async (email) => {
+        const startTime = Date.now();
+        try {
+            const [rows] = await db
+                .promise()
+                .execute("SELECT * FROM users WHERE email = ?", [email]);
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                true,
+                `SELECT * FROM users WHERE email = ${email}`
+            );
+            return rows[0];
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "users",
+                startTime,
+                false,
+                `SELECT * FROM users WHERE email = ${email}`,
+                error
+            );
+            throw error;
+        }
+    },
+    createUser: async (userData) => {
+        const startTime = Date.now();
+        try {
             const currentDateTime = new Date();
-            username, hashedPassword, mail, profileImagePath, currentDateTime;
-            // Exécution de la requête d'insertion
+
             const [result] = await db
                 .promise()
                 .execute(
-                    "INSERT INTO users (userNickname, password, userEmail, userImage, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO users (handle, displayName, email, avatar, password, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?, ?)",
                     [
-                        username,
-                        hashedPassword,
-                        mail,
-                        profileImagePath,
+                        userData.handle,
+                        userData.displayName,
+                        userData.email,
+                        userData.avatar,
+                        userData.password,
                         currentDateTime,
                     ]
                 );
-
-            logger.debug({
-                event: "DBQuery",
-                operation: "INSERT",
-                table: "users",
-                querySummary: `INSERT INTO users (userNickname, password, userEmail, userImage, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?)`,
-                duration: Date.now() - startTime,
-                success: true,
-            });
-            // Retourner l'ID de l'utilisateur créé
+            logDB(
+                "INSERT",
+                "users",
+                startTime,
+                true,
+                `INSERT INTO users (handle, displayName, email, avatar, password, passwordUpdatedAt) VALUES (?, ?, ?, ?, ?, ?)`
+            );
             return {
-                success: true,
                 userId: result.insertId,
-                currentDateTime: currentDateTime,
+                userName: userData.handle,
+                userNickname: userData.nickname,
+                userEmail: userData.email,
+                userImage: userData.image,
+                passwordUpdatedAt: currentDateTime,
+                presence: "offline", // Valeur par défaut en DB
+                aboutMe: null,
+                isBot: 0,
             };
         } catch (error) {
-            logger.error({
-                event: "DBError",
-                message: error.message,
-                stack: error.stack,
-                duration: `${Date.now() - start}ms`,
-            });
-            return {
-                success: false,
-                message: "Erreur lors de la création de l'utilisateur.",
-            };
+            logDB(
+                "INSERT",
+                "users",
+                startTime,
+                false,
+                `Created user handle: ${userData.handle}`,
+                error
+            );
+            return null;
         }
-    },
-
-    checkPassword: async (existingUser, password) => {
-        if (existingUser.length === 0) {
-            return {
-                success: false,
-                message: "Nom d'utilisateur ou mot de passe incorrect.",
-            };
-        }
-        const isPasswordCorrect = await bcrypt.compare(
-            password,
-            existingUser[0].password
-        );
-        if (!isPasswordCorrect) {
-            return {
-                success: false,
-                message: "Nom d'utilisateur ou mot de passe incorrect.",
-            };
-        }
-        return { success: true };
     },
 
     addUserAttempt: async (ip) => {
-        const startTime = Date.now();
-        await db
-            .promise()
-            .execute("INSERT INTO user_attempts (ip) VALUES (?)", [ip]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "INSERT",
-            table: "user_attempts",
-            querySummary: `INSERT INTO user_attempts (ip) VALUES (?)`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
+        try {
+            const startTime = Date.now();
+            await db
+                .promise()
+                .execute("INSERT INTO user_attempts (ip) VALUES (?)", [ip]);
+            logDB(
+                "INSERT",
+                "user_attempts",
+                startTime,
+                true,
+                `INSERT INTO user_attempts (ip) VALUES (${ip})`
+            );
+            return true;
+        } catch (error) {
+            logDB(
+                "INSERT",
+                "user_attempts",
+                startTime,
+                false,
+                `INSERT INTO user_attempts (ip) VALUES (${ip})`,
+                error
+            );
+            throw error;
+        }
     },
 
     getUserAttempts: async (ip) => {
@@ -143,14 +190,13 @@ module.exports = {
         const [result] = await db
             .promise()
             .execute("SELECT * FROM user_attempts WHERE ip = ?", [ip]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "user_attempts",
-            querySummary: `SELECT * FROM user_attempts WHERE ip = ${ip}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
+        logDB(
+            "SELECT",
+            "user_attempts",
+            startTime,
+            true,
+            `SELECT * FROM user_attempts WHERE ip = ${ip}`
+        );
         return result;
     },
 
@@ -159,333 +205,278 @@ module.exports = {
         await db
             .promise()
             .execute("DELETE FROM user_attempts WHERE ip = ?", [ip]);
-        logger.debug({
-            event: "DBQuery",
-            operation: "DELETE",
-            table: "user_attempts",
-            querySummary: `DELETE FROM user_attempts WHERE ip = ${ip}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
+        logDB(
+            "DELETE",
+            "user_attempts",
+            startTime,
+            true,
+            `DELETE FROM user_attempts WHERE ip = ${ip}`
+        );
+        return true;
     },
 
     checkPendingFriendRequest: async (userId, friendId) => {
         const startTime = Date.now();
-        const [result] = await db
-            .promise()
-            .execute(
-                "SELECT * FROM friends WHERE userId = ? AND friendId = ? AND isPending = 1",
-                [userId, friendId]
+        try {
+            const [result] = await db
+                .promise()
+                .execute(
+                    "SELECT * FROM friends WHERE userId = ? AND friendId = ? AND isPending = 1",
+                    [userId, friendId]
+                );
+            logDB(
+                "SELECT",
+                "friends",
+                startTime,
+                true,
+                `SELECT * FROM friends WHERE userId = ${userId} AND friendId = ${friendId} AND isPending = 1`
             );
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "friends",
-            querySummary: `SELECT * FROM friends WHERE userId = ${userId} AND friendId = ${friendId} AND isPending = 1`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return result.length > 0;
+            return result.length > 0;
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "friends",
+                startTime,
+                false,
+                `SELECT * FROM friends WHERE userId = ${userId} AND friendId = ${friendId} AND isPending = 1`,
+                error
+            );
+            throw error;
+        }
     },
 
     addFriendRequest: async (userId, friendId) => {
         const startTime = Date.now();
-        const hasPendingRequest =
-            await module.exports.checkPendingFriendRequest(userId, friendId);
-        if (hasPendingRequest) {
-            return {
-                success: false,
-                message: "Une demande d'amis est déjà en cours.",
-            };
-        }
-        await db
-            .promise()
-            .execute(
-                "INSERT INTO friends (userId, friendId, isPending) VALUES (?, ?, 1)",
-                [userId, friendId]
+        try {
+            await db
+                .promise()
+                .execute(
+                    "INSERT INTO friends (userId, friendId, isPending) VALUES (?, ?, 1)",
+                    [userId, friendId]
+                );
+            logDB(
+                "INSERT",
+                "friends",
+                startTime,
+                true,
+                `INSERT INTO friends (userId, friendId, isPending) VALUES (${userId}, ${friendId}, 1)`
             );
-        logger.debug({
-            event: "DBQuery",
-            operation: "INSERT",
-            table: "friends",
-            querySummary: `INSERT INTO friends (userId, friendId, isPending) VALUES (${userId}, ${friendId}, 1)`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return { success: true };
+            return true;
+        } catch (error) {
+            logDB(
+                "INSERT",
+                "friends",
+                startTime,
+                false,
+                `INSERT INTO friends (userId, friendId, isPending) VALUES (${userId}, ${friendId}, 1)`,
+                error
+            );
+            return false;
+        }
     },
 
     getFriends: async (userId) => {
         const startTime = Date.now();
         const [result] = await db.promise().execute(
             `
-          SELECT u.userId, u.userNickname, u.userImage, f.isPending, f.UserId = ? AS isSender
+          SELECT u.userId, u.handle, u.displayName, u.avatar, u.aboutMe, u.notes, u.presence, u.isBot, u.email, u.isEmailVerified, u.isBanned, u.banDayDuration , f.isPending, f.UserId = ? AS isSender
           FROM friends f
           JOIN users u ON (f.friendId = u.userId AND f.userId = ?) OR (f.userId = u.userId AND f.friendId = ?)
       `,
             [userId, userId, userId]
         );
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "friends",
-            querySummary: `SELECT u.userId, u.userNickname, u.userImage, f.isPending, f.UserId = ${userId} AS isSender FROM friends f JOIN users u ON (f.friendId = u.userId AND f.userId = ${userId}) OR (f.userId = u.userId AND f.friendId = ${userId})`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return result.map((r) => ({
-            userId: r.userId,
-            username: r.userNickname,
-            userImage: r.userImage,
-            isPending: r.isPending,
-            isSender: r.isSender,
-        }));
+        logDB(
+            "SELECT",
+            "friends",
+            startTime,
+            true,
+            `SELECT u.*, f.isPending, f.UserId = ${userId} AS isSender FROM friends f JOIN users u ON (f.friendId = u.userId AND f.userId = ${userId}) OR (f.userId = u.userId AND f.friendId = ${userId})`
+        );
+        return result.map((row) => mappers.friendshipMapper(row));
     },
 
-    acceptFriendRequest: async (userId, friendId) => {
-        const start = Date.now();
-
+    acceptFriendRequest: async (
+        userId,
+        friendId,
+        connection = db.promise()
+    ) => {
         try {
-            const t0 = Date.now();
-            const [updateRes] = await db
-                .promise()
-                .execute(
-                    "UPDATE friends SET isPending = 0 WHERE userId = ? AND friendId = ?",
-                    [friendId, userId]
-                );
-            logger.debug({
-                event: "DBQuery",
-                operation: "UPDATE",
-                table: "friends",
-                querySummary:
-                    "SET isPending = 0 WHERE userId = ? AND friendId = ?",
-                duration: `${Date.now() - t0}ms`,
-                success: true,
-            });
-
-            if (updateRes.affectedRows === 0) {
-                return {
-                    success: false,
-                    message: "Demande d'ami introuvable.",
-                };
-            }
-
-            const t1 = Date.now();
-            const [rows] = await db
-                .promise()
-                .execute(
-                    "SELECT id FROM friends WHERE userId = ? AND friendId = ? AND isPending = 0",
-                    [friendId, userId]
-                );
-            logger.debug({
-                event: "DBQuery",
-                operation: "SELECT",
-                table: "friends",
-                querySummary:
-                    "SELECT id WHERE userId = ? AND friendId = ? AND isPending = 0",
-                duration: `${Date.now() - t1}ms`,
-                success: true,
-            });
-
-            const t2 = Date.now();
-            await db
-                .promise()
-                .execute(
-                    "INSERT INTO channels(type, name, description, guildId, isPrivate, friendId) VALUES (?,?,?,?,?,?)",
-                    ["text", "Private chat", "Chat privé", null, 1, rows[0].id]
-                );
-            logger.debug({
-                event: "DBQuery",
-                operation: "INSERT",
-                table: "channels",
-                querySummary: "INSERT private chat channel for friendId",
-                duration: `${Date.now() - t2}ms`,
-                success: true,
-            });
-
-            return { success: true };
-        } catch (error) {
-            logger.error({
-                event: "DBError",
-                message: error.message,
-                stack: error.stack,
-                duration: `${Date.now() - start}ms`,
-            });
-            return {
-                success: false,
-                message: "Erreur lors de l'acceptation de la demande.",
-            };
-        }
-    },
-
-    refuseFriendRequest: async (userId, friendId) => {
-        const startTime = Date.now();
-        const res = await db
-            .promise()
-            .execute(
-                "DELETE FROM friends WHERE userId = ? AND friendId = ? AND isPending = 1",
+            const startTime = Date.now();
+            const [result] = await connection.execute(
+                "UPDATE friends SET isPending = 0 WHERE userId = ? AND friendId = ?",
                 [friendId, userId]
             );
-        if (res[0].affectedRows === 0) {
-            return { success: false, message: "Demande d'ami introuvable." };
-        }
-        logger.debug({
-            event: "DBQuery",
-            operation: "DELETE",
-            table: "friends",
-            querySummary: `DELETE FROM friends WHERE userId = ${friendId} AND friendId = ${userId} AND isPending = 1`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return { success: true };
-    },
-    cancelFriendRequest: async (userId, friendId) => {
-        const startTime = Date.now();
-        const res = await db
-            .promise()
-            .execute(
-                "DELETE FROM friends WHERE userId = ? AND friendId = ? AND isPending = 1",
-                [userId, friendId]
-            );
-        if (res[0].affectedRows === 0) {
-            return { success: false, message: "Demande d'ami introuvable." };
-        }
-        logger.debug({
-            event: "DBQuery",
-            operation: "DELETE",
-            table: "friends",
-            querySummary: `DELETE FROM friends WHERE userId = ${userId} AND friendId = ${friendId} AND isPending = 1`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return { success: true };
-    },
-    RemoveFriend: async (userId, friendId) => {
-        const startTime = Date.now();
-        const connection = await db.promise().getConnection();
-        try {
-            await connection.beginTransaction();
-            await connection.execute("SET foreign_key_checks = 0");
-            const [res] = await connection.execute(
-                "DELETE FROM friends WHERE ((userId = ? AND friendId = ?) OR ( userId = ? AND friendId = ? )) AND isPending = 0",
+
+            if (result.affectedRows === 0) return false;
+
+            const [rows] = await connection.execute(
+                "SELECT id FROM friends WHERE (userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?)",
                 [userId, friendId, friendId, userId]
             );
-            logger.debug({
-                event: "DBQuery",
-                operation: "DELETE",
-                table: "friends",
-                querySummary: `DELETE FROM friends WHERE ((userId = ${userId} AND friendId = ${friendId}) OR (userId = ${friendId} AND friendId = ${userId})) AND isPending = 0`,
-                duration: `${Date.now() - startTime}ms`,
-                success: true,
-            });
-            await connection.execute("SET foreign_key_checks = 1");
-            if (res.affectedRows === 0) {
-                await connection.rollback();
-                return { success: false, message: "Ami introuvable." };
-            }
-            await connection.commit();
-            return { success: true };
+
+            logDB(
+                "UPDATE",
+                "friends",
+                startTime,
+                true,
+                `UPDATE friends SET isPending = 0 WHERE userId = ${friendId} AND friendId = ${userId}`
+            );
+            return rows[0].id;
         } catch (error) {
-            await connection.rollback();
-            logger.error({
-                event: "DBError",
-                message: error.message,
-                stack: error.stack,
-                duration: `${Date.now() - startTime}ms`,
-            });
+            logDB(
+                "UPDATE",
+                "friends",
+                startTime,
+                false,
+                `UPDATE friends SET isPending = 0 WHERE userId = ${friendId} AND friendId = ${userId}`,
+                error
+            );
             throw error;
-        } finally {
-            connection.release();
         }
     },
+
+    removeFriend: async (userId, friendId) => {
+        const startTime = Date.now();
+        try {
+            const [result] = await db
+                .promise()
+                .execute(
+                    "DELETE FROM friends WHERE ((userId = ? AND friendId = ?) OR ( userId = ? AND friendId = ? ))",
+                    [userId, friendId, friendId, userId]
+                );
+            logDB(
+                "DELETE",
+                "friends",
+                startTime,
+                true,
+                `DELETE FROM friends WHERE ((userId = ${userId} AND friendId = ${friendId}) OR (userId = ${friendId} AND friendId = ${userId}))`
+            );
+            return result.affectedRows > 0;
+        } catch (error) {
+            logDB(
+                "DELETE",
+                "friends",
+                startTime,
+                false,
+                `DELETE FROM friends WHERE ((userId = ${userId} AND friendId = ${friendId}) OR (userId = ${friendId} AND friendId = ${userId}))`,
+                error
+            );
+            return false;
+        }
+    },
+
+    isAlreadyFriendOrPending: async (userId, friendId) => {
+        const startTime = Date.now();
+        try {
+            const [result] = await db
+                .promise()
+                .execute(
+                    "SELECT * FROM friends WHERE ((userId = ? AND friendId = ?) OR (userId = ? AND friendId = ?))",
+                    [userId, friendId, friendId, userId]
+                );
+            logDB(
+                "SELECT",
+                "friends",
+                startTime,
+                true,
+                `SELECT * FROM friends WHERE ((userId = ${userId} AND friendId = ${friendId}) OR (userId = ${friendId} AND friendId = ${userId}))`
+            );
+            return result.length > 0;
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "friends",
+                startTime,
+                false,
+                `SELECT * FROM friends WHERE ((userId = ${userId} AND friendId = ${friendId}) OR (userId = ${friendId} AND friendId = ${userId}))`,
+                error
+            );
+            return false;
+        }
+    },
+
     AddUserInvite: async (invite, userId) => {
         const startTime = Date.now();
-        await db.promise().execute(
-            `
+        try {
+            await db.promise().execute(
+                `
         INSERT INTO users_invited (invite, user, used_at) 
-        VALUES (?, ?, NOW()) 
+        VALUES (?, ?, NOW())
         ON DUPLICATE KEY UPDATE used_at = NOW()
       `,
-            [invite.id, userId]
-        );
-        logger.debug({
-            event: "DBQuery",
-            operation: "INSERT",
-            table: "users_invited",
-            querySummary: `INSERT INTO users_invited (invite, user, used_at) VALUES (${invite.id}, ${userId}, NOW()) ON DUPLICATE KEY UPDATE used_at = NOW()`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-    },
-    getUserInfoById: async (userId, reqId) => {
-        const startTime = Date.now();
-        isOwn = userId == reqId ? 1 : 0;
-        const [rows] = await db
-            .promise()
-            .execute(
-                "SELECT userNickname, userImage, userId, aboutMe, notes, presence FROM users WHERE userId = ?",
-                [reqId]
+                [invite.id, userId]
             );
-        if (rows.length === 0) {
-            return null;
+            logDB(
+                "INSERT",
+                "users_invited",
+                startTime,
+                true,
+                `INSERT INTO users_invited (invite, user, used_at) VALUES (${invite.id}, ${userId}, NOW()) ON DUPLICATE KEY UPDATE used_at = NOW()`
+            );
+        } catch (error) {
+            logDB(
+                "INSERT",
+                "users_invited",
+                startTime,
+                false,
+                `INSERT INTO users_invited (invite, user, used_at) VALUES (${invite.id}, ${userId}, NOW()) ON DUPLICATE KEY UPDATE used_at = NOW()`,
+                error
+            );
         }
-
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "users",
-            querySummary: `SELECT userNickname, userImage, userId, aboutMe, notes, presence FROM users WHERE userId = ${reqId}`,
-            duration: Date.now() - startTime,
-            success: true,
-        });
-        return rows.map((r) => ({
-            userId: r.userId,
-            username: r.userNickname,
-            userImage: r.userImage,
-            aboutMe: r.aboutMe,
-            notes: r.notes,
-            presence: r.presence,
-            isOwn: isOwn,
-        }))[0];
     },
 
     JoinGuild: async (userId, guildId) => {
-        const t0 = Date.now();
-        const [rows] = await db
-            .promise()
-            .execute(
-                "SELECT * FROM guilds_user WHERE guildId = ? AND userId = ?",
-                [guildId, userId]
+        const startTime = Date.now();
+        try {
+            const [rows] = await db
+                .promise()
+                .execute(
+                    "INSERT INTO guilds_joined (guildId, userId) VALUES (?, ?)",
+                    [guildId, userId]
+                );
+            logDB(
+                "INSERT",
+                "guilds_joined",
+                startTime,
+                true,
+                `INSERT INTO guilds_joined (guildId, userId) VALUES (${guildId}, ${userId})`
             );
-        logger.debug({
-            event: "DBQuery",
-            operation: "SELECT",
-            table: "guilds_user",
-            querySummary: `SELECT * FROM guilds_user WHERE guildId = ${guildId} AND userId = ${userId}`,
-            duration: Date.now() - t0,
-            success: true,
-        });
-        if (rows.length > 0) {
-            return {
-                success: false,
-                message: "User already joined the guild.",
-            };
+            return rows;
+        } catch (error) {
+            logDB("INSERT", "guilds_joined", startTime, false, error);
+            throw error;
         }
-        const t1 = Date.now();
-        await db
-            .promise()
-            .execute(
-                "INSERT INTO guilds_joined (guildId, userId) VALUES (?, ?)",
-                [guildId, userId]
+    },
+
+    getUsersByGuildId: async (guildId) => {
+        const startTime = Date.now();
+        try {
+            const [rows] = await db.promise().execute(
+                `SELECT u.userId, u.handle, u.displayName, u.avatar, u.aboutMe, u.notes, u.presence, u.isBot
+                    FROM guilds_joined gj
+                    JOIN users u ON gj.userId = u.userId
+                    WHERE gj.guildId = ?`,
+                [guildId]
             );
-        logger.debug({
-            event: "DBQuery",
-            operation: "INSERT",
-            table: "guilds_joined",
-            querySummary: `INSERT INTO guilds_joined (guildId, userId) VALUES (${guildId}, ${userId})`,
-            duration: Date.now() - t1,
-            success: true,
-        });
-        return { success: true };
+            logDB(
+                "SELECT",
+                "users, guilds_joined",
+                startTime,
+                true,
+                `SELECT u.userId, u.handle, u.displayName, u.avatar, u.aboutMe, u.notes, u.presence, u.isBot FROM guilds_joined gj JOIN users u ON gj.userId = u.userId WHERE gj.guildId = ${guildId}`,
+                [guildId]
+            );
+            return rows;
+        } catch (error) {
+            logDB(
+                "SELECT",
+                "users, guilds_joined",
+                startTime,
+                false,
+                `SELECT u.userId, u.handle, u.displayName, u.avatar, u.aboutMe, u.notes, u.presence, u.isBot, u.email FROM guilds_joined gj JOIN users u ON gj.userId = u.userId WHERE gj.guildId = ${guildId}`,
+                error
+            );
+            throw error;
+        }
     },
 };

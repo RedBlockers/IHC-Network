@@ -177,6 +177,7 @@
         }
     </script>
     <script type="module">
+        // Importation du module CropperModal
         import { CropperModal } from "../js/components/cropperModal.js";
         const avatarInput = document.getElementById("avatarInput");
         const avatarImage = document.getElementById("userAvatar");
@@ -185,5 +186,25 @@
             const { base64, canvas, cropper } = e.detail;
             avatarImage.src = base64;
         });
+
+        // Affichage des éléments dynamiques
+        import { getAverageRGB } from "../js/utils/imageUtils.js";
+
+        avatarImage.onload = () => {
+            UpdatebannerColor();
+        };
+        function UpdatebannerColor() {
+            const userProfileHeader =
+                document.getElementById("userProfileHeader");
+            const userProfilePicture = document.getElementById("userAvatar");
+            console.log(
+                "Calculating average color for:",
+                userProfilePicture.src
+            );
+            const averageColor = getAverageRGB(userProfilePicture);
+            userProfileHeader.style.backgroundColor = `rgb(${averageColor.r}, ${averageColor.g}, ${averageColor.b})`;
+        }
+
+        UpdatebannerColor();
     </script>
 </html>
