@@ -1,0 +1,89 @@
+.user-card {
+  position: fixed;
+  display: grid;
+  grid-template-columns:
+    calc(var(--avatar-size-small) + var(--spacing-small) * 2 + 94px)
+    1fr;
+  bottom: 16px;
+  left: 16px;
+  height: 58px;
+  width: 248px;
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius-small);
+  color: var(--text-primary);
+}
+
+.user-card .user-avatar {
+  width: var(--avatar-size-small);
+  height: var(--avatar-size-small);
+  margin: var(--spacing-small);
+  grid-column: 1;
+  border: none;
+}
+
+.user-card .user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  grid-column: 2;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  height: 100%;
+  width: 100%;
+}
+
+.user-card .user-name {
+  font-size: var(--standard-font-size);
+  font-weight: var(--username-font-weight);
+  color: var(--text-primary);
+}
+
+.user-card .notes {
+  font-size: var(--small-font-size);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-card .user-info-container {
+  display: grid;
+  grid-column: 1;
+  grid-template-columns:
+    calc(var(--avatar-size-small) + var(--spacing-small) * 2)
+    94px;
+  border-radius: var(--border-radius-small) var(--border-radius-xsmall)
+    var(--border-radius-xsmall) var(--border-radius-small);
+  cursor: pointer;
+
+  transition: background-color var(--transition-slow);
+}
+
+.user-card .user-info-container:hover {
+  background-color: var(--hover-color);
+}
+
+.user-card .user-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+.user-card .user-actions button {
+  height: var(--action-button-standard-size);
+  width: var(--action-button-standard-size);
+  border: none;
+  background-color: transparent;
+  margin: 0 calc(var(--spacing-small) / 2);
+  color: var(--border-color);
+  cursor: pointer;
+  border-radius: var(--border-radius-small);
+  transition: background-color var(--transition-slow);
+}
+
+.user-card .user-actions button:hover {
+  background-color: var(--hover-color);
+}

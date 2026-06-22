@@ -1,0 +1,12 @@
+.context-header h1 {
+  font-family: var(--username-font-family);
+  font-weight: var(--username-font-weight);
+  font-size: var(--standard-font-size);
+}
+
+.context-header-icon {
+  width: var(--guild-icon-size-small);
+  height: var(--guild-icon-size-small);
+  border-radius: var(--border-radius-xsmall);
+  margin-right: var(--spacing-medium);
+}

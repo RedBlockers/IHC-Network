@@ -1,0 +1,39 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test npm run db:seed && cross-env NODE_ENV=test node -r dotenv/config server.js dotenv_config_path=.env.test",
+    "test:conserve": "cross-env NODE_ENV=test npm run db:seed:conserve && cross-env NODE_ENV=test node -r dotenv/config server.js dotenv_config_path=.env.test",
+    "test:githubActions": "cross-env NODE_ENV=test npm run db:seed:githubActions && cross-env NODE_ENV=test node server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "db:seed": "node -r dotenv/config scripts/seed.js dotenv_config_path=.env.test",
+    "db:seed:conserve": "node -r dotenv/config scripts/seed.js dotenv_config_path=.env.test --conserve-database",
+    "db:seed:githubActions": "node scripts/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1058.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.1.1",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.0",
+    "sqlite3": "^6.0.1",
+    "winston": "^3.16.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^10.1.0",
+    "http-server": "^14.1.1"
+  }
+}

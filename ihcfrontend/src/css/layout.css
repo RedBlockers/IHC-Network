@@ -1,0 +1,53 @@
+@import "./variables.css";
+::-webkit-scrollbar {
+  width: 0;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 72px 208px 1fr 328px;
+  grid-template-rows: 36px 60px 1fr;
+  height: 100vh;
+  background: var(--secondary-color);
+}
+
+.context-header {
+  grid-column: 2 / span 3;
+  grid-row: 1;
+  background: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guild-sidebar {
+  grid-row: 1 / span 4;
+  background: var(--secondary-color);
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.toolbar {
+  grid-column: 3 / span 3;
+  grid-row: 2;
+  background: var(--tertiary-color);
+  box-shadow: inset 0px 20px 10px -10px rgba(0, 0, 0, 0.3);
+}
+
+.navigation-sidebar {
+  grid-row: 2 / span 3;
+  background: var(--tertiary-color);
+  border-radius: var(--navigation-border-radius);
+  box-shadow: inset 20px 20px 10px -10px rgba(0, 0, 0, 0.3);
+}
+
+.activity-sidebar {
+  grid-column: 4;
+  grid-row: 3;
+  background: var(--primary-color);
+}
+
+.main {
+  grid-column: 3;
+  grid-row: 3;
+  background: var(--background-color);
+}

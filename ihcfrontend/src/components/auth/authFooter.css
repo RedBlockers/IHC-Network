@@ -1,0 +1,20 @@
+.auth-footer-container {
+  display: grid;
+  grid-template-columns: 1fr 50px;
+}
+
+.auth-step {
+  color: var(--text-secondary);
+  font-size: var(--small-font-size);
+  text-align: right;
+  padding-top: var(--spacing-small);
+}
+
+.auth-back-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--small-font-size);
+  transition: color var(--transition-fast);
+  cursor: pointer;
+  padding-top: var(--spacing-small);
+}

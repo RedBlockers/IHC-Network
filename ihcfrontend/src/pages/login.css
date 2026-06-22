@@ -1,0 +1,285 @@
+.auth-container {
+  height: 100vh;
+  width: 100%;
+  background: var(--auth-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.auth-card {
+  width: var(--auth-card-width);
+  padding: var(--auth-card-padding);
+  background: var(--secondary-color);
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--shadow-strong);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-large);
+  animation: fadeIn var(--transition-medium);
+}
+
+.auth-title {
+  color: var(--text-primary);
+  font-size: 24px;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}
+
+.auth-form label {
+  color: var(--text-secondary);
+  font-size: var(--standard-font-size);
+}
+
+.auth-form input {
+  padding: var(--spacing-small);
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--border-color);
+  background: var(--surface-muted);
+  color: var(--primary-color);
+  transition:
+    border var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.auth-form input:focus {
+  border-color: var(--accent-color);
+  background: var(--surface-color);
+  outline: none;
+}
+
+.auth-form textarea {
+  resize: auto;
+  min-height: 32px;
+  max-height: 150px;
+  border-radius: var(--border-radius-small);
+}
+
+.auth-button {
+  margin-top: var(--spacing-medium);
+  padding: var(--spacing-medium);
+  background: var(--accent-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  font-size: var(--standard-font-size);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-slow);
+}
+
+.auth-button:disabled {
+  background: var(--accent-color);
+  opacity: 0.4;
+  cursor: not-allowed;
+  transition: opacity var(--transition-slow);
+}
+
+.auth-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.auth-register {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.auth-register a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.auth-register a:hover {
+  color: var(--accent-hover);
+}
+
+.avatar-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-medium);
+  padding: var(--spacing-large);
+  cursor: pointer;
+  transition: border var(--transition-fast);
+}
+
+.avatar-upload:hover {
+  border-color: var(--accent-color);
+}
+
+.avatar-input {
+  cursor: pointer;
+}
+
+.cropper-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-medium);
+}
+
+.auth-button.secondary {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.auth-button.secondary:hover {
+  background: var(--surface-color);
+}
+
+/* ── Upload zone ──────────────────────────────────────── */
+.avatar-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.avatar-upload-icon {
+  opacity: 0.5;
+  margin-bottom: 10px;
+}
+
+.avatar-upload-text {
+  font-size: var(--standard-font-size);
+  margin: 0;
+}
+
+.avatar-upload-subtext {
+  font-size: var(--small-font-size);
+  opacity: 0.6;
+  margin-top: 6px;
+}
+
+/* ── Spinner bouton ───────────────────────────────────── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.avatar-preview-container {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-large);
+}
+
+.avatar-preview {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-soft);
+  object-fit: cover;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ── Message d'erreur ─────────────────────────────────── */
+.auth-error {
+  color: var(--error-color, #e53e3e);
+  font-size: var(--small-font-size);
+  text-align: center;
+  margin: 0;
+  margin-top: -10px;
+  padding: 0;
+}
+
+.user-info {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 1rem 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.user-banner {
+  width: 100%;
+  aspect-ratio: var(--banner-ratio);
+  background-size: cover;
+  background-position: center;
+  background-color: red;
+}
+
+.user-avatar {
+  width: var(--avatar-size-large);
+  height: var(--avatar-size-large);
+  border-radius: var(--avatar-border-radius);
+  background-size: cover;
+  background-position: center;
+  border: var(--avatar-border-size-large) solid var(--secondary-color);
+  margin-top: calc(
+    -1 * var(--avatar-size-large) / 2 - var(--avatar-border-size-large) * 2
+  );
+  margin-left: var(--spacing-small);
+  background-color: var(--secondary-color);
+}
+
+.display-name {
+  font-size: var(--large-font-size);
+  font-weight: var(--username-font-weight);
+  margin: 0;
+  padding: 0;
+}
+
+.handle {
+  font-size: var(--small-font-size);
+  margin: 0;
+  padding: 0;
+}
+
+.bio {
+  font-size: var(--standard-font-size);
+  font-weight: var(--userNotes-font-weight);
+  white-space: pre-wrap;
+  margin: 0;
+  padding-top: var(--spacing-medium);
+}
+
+.required {
+  color: var(--error-color);
+  font-size: var(--small-font-size);
+  margin-top: var(--spacing-small);
+  margin-left: var(--spacing-xsmall);
+  -webkit-touch-callout: none; /* iOS Safari long-press menu */
+  -webkit-user-select: none; /* Chrome, Safari, Opera */
+  -khtml-user-select: none; /* Old Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Standard syntax */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.secondary-button {
+  background-color: var(--tertiary-color);
+}

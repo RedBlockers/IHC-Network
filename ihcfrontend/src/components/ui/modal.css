@@ -1,0 +1,57 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-primary);
+  width: var(--action-button-standard-size);
+  height: var(--action-button-standard-size);
+  border-radius: var(--border-radius-small);
+
+  transition: background-color var(--transition-slow);
+}
+
+.modal-header button:hover {
+  background-color: var(--hover-color);
+}
+
+.modal-content {
+  background: var(--primary-color);
+  color: var(--text-primary);
+  padding: 24px;
+  border-radius: 12px;
+  width: min(90%, 420px);
+  animation: scaleIn 0.2s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

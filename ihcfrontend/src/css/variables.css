@@ -1,0 +1,104 @@
+:root {
+  /* ---------- COLORS ---------- */
+  --background-color: #f7f8fa;
+  --primary-color: #1a1a23;
+  --secondary-color: #16161a;
+  --tertiary-color: #2e2e37;
+
+  --surface-color: #ffffff;
+  --surface-muted: #f0f1f3;
+
+  --border-color: #e3e6eb;
+
+  --error-color: #e53935;
+  --success-color: #4caf50;
+  --warning-color: #f4b400;
+
+  --accent-color: #5865f2; /* Discord-like */
+  --accent-hover: #4752c4;
+
+  --semi-transparent-color: rgba(255, 255, 255, 0.03);
+  --hover-color: rgba(255, 255, 255, 0.15);
+
+  /* ---------- TEXT ---------- */
+  --text-primary: #c6c9d0;
+  --text-secondary: #6b7680;
+  --text-inverse: #ffffff;
+  --text-link: #5865f2;
+
+  --username-font-family: "Source Sans Pro", sans-serif;
+  --username-font-weight: 600;
+
+  --small-font-size: 10px;
+  --standard-font-size: 14px;
+  --large-font-size: 18px;
+
+  --userNotes-font-family: "Source Sans Pro", sans-serif;
+  --userNotes-font-weight: 200 Italic;
+  --userNotes-font-size: 10px;
+
+  /* ---------- SPACING ---------- */
+  --spacing-xsmall: 4px;
+  --spacing-small: 8px;
+  --spacing-medium: 12px;
+  --spacing-large: 16px;
+  --spacing-xlarge: 24px;
+
+  /* ---------- RADIUS ---------- */
+  --border-radius-xsmall: 4px;
+  --border-radius-small: 8px;
+  --border-radius-medium: 16px;
+  --border-radius-large: 24px;
+  --border-radius-xlarge: 30px;
+
+  --avatar-border-radius: 50%;
+  --guild-icon-border-radius: 8px;
+  --navigation-border-radius: 30px 0 0 0;
+
+  /* ---------- SIZES ---------- */
+  --avatar-size-small: 42px;
+  --avatar-size-medium: 64px;
+  --avatar-size-large: 100px;
+
+  --avatar-border-size-small: 2px;
+  --avatar-border-size-large: 8px;
+
+  --guild-icon-size-small: 16px;
+  --guild-icon-size-medium: 48px;
+  --guild-icon-size-large: 96px;
+
+  --action-icon-size: 24px;
+
+  /* ---------- GUILD STATE ---------- */
+  --guild-state-max-height: 48px;
+  --guild-state-hovered-height: calc(var(--guild-state-max-height) / 2);
+  --guild-state-unread-height: 8px;
+  --guild-state-border-radius: 0 16px 16px 0;
+  --guild-state-width: 4px;
+
+  /* ---------- SHADOWS ---------- */
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-inset-top: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.3);
+  --shadow-inset-left: inset -10px 0 10px -10px rgba(0, 0, 0, 0.3);
+
+  /* ---------- TRANSITIONS ---------- */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.15s var(--ease-smooth);
+  --transition-medium: 0.3s var(--ease-smooth);
+  --transition-slow: 0.5s var(--ease-smooth);
+
+  /* ---------- auth PAGES ---------- */
+  --auth-card-width: 380px;
+  --auth-card-padding: 32px;
+  --auth-background: var(--primary-color);
+
+  /* ---------- USERS ---------- */
+  --user-status-online: #43b581;
+  --user-status-idle: #faa61a;
+  --user-status-offline: #747f8d;
+  --user-status-dnd: #f04747;
+  --banner-ratio: 2.88 / 1;
+
+  --action-button-standard-size: 24px;
+}

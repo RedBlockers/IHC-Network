@@ -1,0 +1,45 @@
+.guild-state {
+  background-color: transparent;
+  width: var(--guild-state-width);
+  grid-column: 1;
+  border-radius: var(--guild-state-border-radius);
+  height: var(--guild-state-unread-height);
+  margin: calc(
+      var(--spacing-medium) + var(--guild-state-max-height) / 2 -
+        var(--guild-state-unread-height) / 2
+    )
+    0;
+  transition:
+    height 0.5s var(--ease-smooth),
+    margin 0.5s var(--ease-smooth),
+    background-color 0.3s var(--ease-smooth);
+}
+
+.guild-state.selected,
+.guild-state.unread,
+.guild-state.hovered {
+  background-color: var(--surface-color);
+}
+
+.guild-state.selected {
+  height: var(--guild-state-max-height);
+  margin: var(--spacing-medium) 0;
+}
+
+.guild-state.unread {
+  height: var(--guild-state-unread-height);
+  margin: calc(
+      var(--spacing-medium) + var(--guild-state-max-height) / 2 -
+        var(--guild-state-unread-height) / 2
+    )
+    0;
+}
+
+.guild-state.hovered {
+  height: var(--guild-state-hovered-height);
+  margin: calc(
+      var(--spacing-medium) + var(--guild-state-max-height) / 2 -
+        var(--guild-state-hovered-height) / 2
+    )
+    0;
+}

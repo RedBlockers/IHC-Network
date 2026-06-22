@@ -1,0 +1,62 @@
+[
+    {
+        "id": "1",
+        "name": "Guild 1",
+        "icon": "https://placehold.co/48x48/000000/ff0000/png",
+        "unread": true
+    },
+    {
+        "id": "2",
+        "name": "Guild 2",
+        "icon": "https://placehold.co/48x48/000000/ffff00/png",
+        "unread": false
+    },
+    {
+        "id": "3",
+        "name": "Guild 3",
+        "icon": "https://placehold.co/48x48/000000/ff00ff/png",
+        "unread": true
+    },
+    {
+        "id": "4",
+        "name": "Guild 4",
+        "icon": "https://placehold.co/48x48/000000/00ffff/png",
+        "unread": false
+    },
+    {
+        "id": "5",
+        "name": "Guild 5",
+        "icon": "https://placehold.co/48x48/000000/00ff00/png",
+        "unread": true
+    },
+    {
+        "id": "6",
+        "name": "Guild 6",
+        "icon": "https://placehold.co/48x48/000000/ff0000/png",
+        "unread": false
+    },
+    {
+        "id": "7",
+        "name": "Guild 7",
+        "icon": "https://placehold.co/48x48/000000/ffff00/png",
+        "unread": true
+    },
+    {
+        "id": "8",
+        "name": "Guild 8",
+        "icon": "https://placehold.co/48x48/transparent/ff00ff/png",
+        "unread": false
+    },
+    {
+        "id": "9",
+        "name": "Guild 9",
+        "icon": "https://placehold.co/48x48/transparent/00ffff/png",
+        "unread": true
+    },
+    {
+        "id": "10",
+        "name": "Guild 10",
+        "icon": "https://placehold.co/48x48/transparent/ff00ff/png",
+        "unread": false
+    }
+]

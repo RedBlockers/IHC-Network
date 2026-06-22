@@ -1,0 +1,45 @@
+.guild-item {
+  display: grid;
+  grid-template-columns: 4px 100%;
+}
+
+.guild-icon-container {
+  grid-column: 2;
+
+  width: var(--guild-icon-size-medium);
+  height: var(--guild-icon-size-medium);
+  border-radius: var(--guild-icon-border-radius);
+  background-color: var(--semi-transparent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--spacing-medium);
+  margin-left: calc(var(--spacing-medium) - var(--guild-state-width));
+}
+
+.guild-icon {
+  border-radius: var(--guild-icon-border-radius);
+  width: var(--guild-icon-size-medium);
+  height: var(--guild-icon-size-medium);
+  object-fit: cover;
+}
+
+.guild-add {
+  transition: all var(--transition-slow);
+}
+
+.guild-add:hover {
+  background-color: var(--accent-color);
+}
+
+.guild-sidebar-separator {
+  height: 1px;
+  background-color: var(--border-color);
+  margin-left: var(--spacing-medium);
+  margin-right: var(--spacing-medium);
+  border-radius: var(--guild-icon-border-radius);
+}
+
+.guild-list {
+  margin-bottom: 100%;
+}
