@@ -15,7 +15,7 @@ async function saveTempAvatar(file) {
 
         await s3.send(
             new PutObjectCommand({
-                Bucket: "ihcnetwork",
+                Bucket: process.env.S3_BUCKET,
                 Key: key,
                 Body: file.buffer,
                 ACL: "public-read",
@@ -24,7 +24,7 @@ async function saveTempAvatar(file) {
         logger.info(
             `Avatar de l'utilisateur sauvegardé avec succès dans S3 à l'emplacement: ${key}`
         );
-        return `${process.env.S3_URL}:${process.env.S3_PORT}/ihcnetwork/${key}`;
+        return `${process.env.S3_URL}:${process.env.S3_PORT}/${process.env.S3_BUCKET}/${key}`;
     } catch (error) {
         logger.error(
             `Echec de la sauvegarde de l'avatar de l'utilisateur  dans S3. ${error.stack}`
@@ -37,7 +37,7 @@ async function deleteTempAvatar(key) {
     try {
         await s3.send(
             new DeleteObjectCommand({
-                Bucket: "ihcnetwork",
+                Bucket: process.env.S3_BUCKET,
                 Key: key,
             })
         );
@@ -55,8 +55,8 @@ async function copyTempAvatar(sourceKey, destinationKey) {
     try {
         await s3.send(
             new CopyObjectCommand({
-                Bucket: "ihcnetwork",
-                CopySource: `ihcnetwork/${sourceKey}`,
+                Bucket: process.env.S3_BUCKET,
+                CopySource: `${process.env.S3_BUCKET}/${sourceKey}`,
                 Key: destinationKey,
                 ACL: "public-read",
             })
@@ -64,7 +64,7 @@ async function copyTempAvatar(sourceKey, destinationKey) {
         logger.info(
             `Avatar de l'utilisateur copié avec succès dans S3 de ${sourceKey} à ${destinationKey}`
         );
-        return `${process.env.S3_URL}:${process.env.S3_PORT}/ihcnetwork/${destinationKey}`;
+        return `${process.env.S3_URL}:${process.env.S3_PORT}/${process.env.S3_BUCKET}/${destinationKey}`;
     } catch (error) {
         logger.error(
             `Echec de la copie de l'avatar de l'utilisateur  dans S3 de ${sourceKey} à ${destinationKey}. ${error.message}`
@@ -80,7 +80,7 @@ async function saveAvatar(sourceKey, destinationKey) {
         logger.info(
             `Avatar de l'utilisateur déplacé avec succès dans S3 de ${sourceKey} à ${destinationKey}`
         );
-        return `${process.env.S3_URL}:${process.env.S3_PORT}/ihcnetwork/${destinationKey}`;
+        return `${process.env.S3_URL}:${process.env.S3_PORT}/${process.env.S3_BUCKET}/${destinationKey}`;
     } catch (error) {
         logger.error(
             `Echec du déplacement de l'avatar de l'utilisateur  dans S3 de ${sourceKey} à ${destinationKey}. ${error.message}`
@@ -89,7 +89,28 @@ async function saveAvatar(sourceKey, destinationKey) {
     }
 }
 
+async function saveGuildIcon(file) {
+    try {
+        const ext = file.mimetype.split("/")[1];
+        const key = `guilds/${crypto.randomUUID()}/icon.${ext}`;
+        await s3.send(
+            new PutObjectCommand({
+                Bucket: process.env.S3_BUCKET,
+                Key: key,
+                Body: file.buffer,
+                ACL: "public-read",
+            })
+        );
+        logger.info(`Icône de guilde sauvegardée dans S3: ${key}`);
+        return `${process.env.S3_URL}:${process.env.S3_PORT}/${process.env.S3_BUCKET}/${key}`;
+    } catch (error) {
+        logger.error(`Échec de la sauvegarde de l'icône de guilde dans S3. ${error.stack}`);
+        return null;
+    }
+}
+
 module.exports = {
     saveTempAvatar,
     saveAvatar,
+    saveGuildIcon,
 };

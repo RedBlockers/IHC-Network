@@ -3,11 +3,14 @@ import AuthFooter from "../../components/auth/authFooter.jsx";
 import { useState, useEffect } from "react";
 import { useRegister } from "../../context/registerContext.jsx";
 import { FastAverageColor } from "fast-average-color";
+import { api } from "../../api/api";
 
 export default function RegisterStep3({ step, setStep, totalSteps }) {
   const { formData } = useRegister();
   const { updateFormData } = useRegister();
   const [userBannerColor, setUserBannerColor] = useState("#ffffff");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!formData.avatar) return;
@@ -24,22 +27,25 @@ export default function RegisterStep3({ step, setStep, totalSteps }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const form = new FormData();
-    form.append("email", formData.email);
-    form.append("password", formData.password);
-    form.append("handle", formData.handle);
-    form.append("displayName", formData.displayName);
-    form.append("bio", formData.bio);
-    form.append("avatar", formData.avatar);
+    setError(null);
+    setLoading(true);
+    try {
+      const form = new FormData();
+      form.append("email", formData.email);
+      form.append("password", formData.password);
+      form.append("handle", formData.handle);
+      form.append("displayName", formData.displayName);
+      form.append("bio", formData.bio);
+      form.append("avatar", formData.avatar);
 
-    const res = await fetch("http://localhost:3000/users/register", {
-      method: "POST",
-      body: form,
-    });
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-    console.log(data);
-    window.location.href = "/";
+      const data = await api("/users/register", { method: "POST", body: form });
+      localStorage.setItem("token", data.token);
+      window.location.href = "/";
+    } catch (err) {
+      setError(err.error || err.message || "Une erreur est survenue lors de l'inscription.");
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <div className="auth-container">
@@ -69,9 +75,10 @@ export default function RegisterStep3({ step, setStep, totalSteps }) {
             <p className="bio">{formData.bio}</p>
           </div>
 
-          <button type="submit" className="auth-button">
-            terminer et créer mon compte
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? "Création en cours..." : "Terminer et créer mon compte"}
           </button>
+          {error && <p className="auth-error">⚠ {error}</p>}
         </form>
 
         <AuthFooter step={step} totalSteps={totalSteps} setStep={setStep} />

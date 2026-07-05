@@ -4,8 +4,7 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import AuthFooter from "../../components/auth/authFooter.jsx";
 import { useRegister } from "../../context/registerContext.jsx";
-
-const API_URL = "http://localhost:3001";
+import { API_URL } from "../../api/api";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -130,7 +129,7 @@ export default function RegisterStep2({ step, setStep, totalSteps }) {
       formData.append("width", data.width);
       formData.append("height", data.height);
 
-      const response = await fetch(`${API_URL}/api/avatar/crop`, {
+      const response = await fetch(`${API_URL}/avatar/crop`, {
         method: "POST",
         body: formData,
       });

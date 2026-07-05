@@ -1,6 +1,13 @@
 .guild-item {
   display: grid;
   grid-template-columns: 4px 100%;
+  height: 50px;
+  margin-bottom: var(--spacing-small);
+}
+
+.guild-item:first-of-type {
+  height: 72px;
+  margin: 0;
 }
 
 .guild-icon-container {
@@ -22,6 +29,19 @@
   width: var(--guild-icon-size-medium);
   height: var(--guild-icon-size-medium);
   object-fit: cover;
+}
+
+.guild-icon-letter {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.guild-icon-container {
+  cursor: pointer;
+  transition: border-radius var(--transition-slow);
 }
 
 .guild-add {

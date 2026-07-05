@@ -8,6 +8,7 @@ const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messagesRoutes");
 const guildRoutes = require("./routes/guildsRoutes");
 const channelsRoutes = require("./routes/channelsRoutes");
+const cropRoutes = require("./routes/cropRoutes");
 const { setIo, connectedUsers } = require("./utils/sharedState");
 const cors = require("cors");
 
@@ -92,10 +93,11 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Routes
-app.use("/users", userRoutes);
-app.use("/messages", messageRoutes);
-app.use("/guilds", guildRoutes);
-app.use("/channels", channelsRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/messages", messageRoutes);
+app.use("/api/v1/guilds", guildRoutes);
+app.use("/api/v1/channels", channelsRoutes);
+app.use("/api/v1/avatar", cropRoutes);
 
 module.exports = {
     io,

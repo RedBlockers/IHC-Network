@@ -6,22 +6,28 @@ import { useAuth } from "./context/authContext";
 import ContextHeader from "./components/context header/contextHeader";
 import UserCard from "./components/userCard/userCard";
 import LoadingScreen from "./components/ui/loadingScreen";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "./api/api";
 import "./css/global.css";
 import "./css/layout.css";
 
 function App() {
   const { user, setUser } = useAuth();
+  const [guilds, setGuilds] = useState([]);
+
+  const refreshGuilds = useCallback(async () => {
+    const data = await api("/users/me/guilds");
+    setGuilds(data);
+  }, []);
+
   useEffect(() => {
     async function loadUser() {
       const me = await api("/users/me");
       setUser(me.user);
-      const guilds = await api("/users/me/guilds");
-      console.log(guilds);
+      await refreshGuilds();
     }
     loadUser();
-  }, [setUser]);
+  }, [setUser, refreshGuilds]);
 
   if (!user) return <LoadingScreen />;
 
@@ -30,7 +36,7 @@ function App() {
       <div className="layout">
         <ContextHeader />
 
-        <GuildsSidebar />
+        <GuildsSidebar guilds={guilds} onGuildCreated={refreshGuilds} />
         <aside className="navigation-sidebar">navigation</aside>
         <header className="toolbar"></header>
 

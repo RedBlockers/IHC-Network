@@ -7,7 +7,7 @@ export default function ContextHeader() {
   return (
     <header className="context-header">
       <img
-        src={selectedGuild.icon}
+        src={selectedGuild.image}
         alt={`${selectedGuild.name} icon`}
         className="context-header-icon"
       />

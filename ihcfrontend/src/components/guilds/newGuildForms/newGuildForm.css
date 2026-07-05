@@ -1,0 +1,195 @@
+.new-guild-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+  color: var(--text-primary);
+}
+
+/* ── Avatar ── */
+.guild-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-small);
+}
+
+.guild-avatar-upload {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px dashed var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 10px;
+  gap: 2px;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.guild-avatar-upload:hover {
+  border-color: var(--accent-color);
+  background: var(--hover-color);
+  color: var(--accent-color);
+}
+
+.guild-avatar-upload-plus {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.guild-avatar-upload-text {
+  text-align: center;
+}
+
+.guild-cropper-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.guild-cropper-actions {
+  display: flex;
+  gap: var(--spacing-small);
+  justify-content: flex-end;
+}
+
+.guild-avatar-preview-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-medium);
+}
+
+.guild-avatar-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--guild-icon-border-radius);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.guild-avatar-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xsmall);
+}
+
+.guild-avatar-change {
+  background: none;
+  border: none;
+  color: var(--text-link);
+  cursor: pointer;
+  font-size: var(--standard-font-size);
+  padding: 0;
+  text-align: left;
+}
+
+.guild-avatar-change:hover {
+  text-decoration: underline;
+}
+
+.guild-avatar-remove {
+  color: var(--error-color);
+}
+
+/* ── Champs ── */
+.new-guild-form label {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.required {
+  color: var(--error-color);
+  margin-left: 2px;
+}
+
+.new-guild-form input,
+.new-guild-form textarea {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border-radius: var(--border-radius-small);
+  border: 1px solid transparent;
+  background: var(--secondary-color);
+  color: var(--text-primary);
+  font-size: var(--standard-font-size);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.new-guild-form input:focus,
+.new-guild-form textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+.new-guild-form textarea {
+  resize: vertical;
+  min-height: 72px;
+  max-height: 120px;
+}
+
+/* ── Erreur ── */
+.guild-form-error {
+  color: var(--error-color);
+  font-size: var(--standard-font-size);
+  margin: 0;
+}
+
+/* ── Actions ── */
+.guild-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-small);
+  margin-top: var(--spacing-small);
+}
+
+.guild-btn-primary {
+  padding: var(--spacing-small) var(--spacing-large);
+  background: var(--accent-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  font-size: var(--standard-font-size);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+
+.guild-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.guild-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.guild-btn-secondary {
+  padding: var(--spacing-small) var(--spacing-large);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--tertiary-color);
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  font-size: var(--standard-font-size);
+  transition: background var(--transition-fast);
+}
+
+.guild-btn-secondary:hover:not(:disabled) {
+  background: var(--hover-color);
+}
+
+.guild-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

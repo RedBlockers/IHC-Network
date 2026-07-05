@@ -15,7 +15,7 @@ module.exports = {
                 description,
                 guildId
             );
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 201, startTime, true);
 
             getIo().emit(`newChannel/${guildId}`, channel);
 
@@ -24,7 +24,7 @@ module.exports = {
                 data: channel,
             });
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({
                 error: "An unexpected error occurred",
                 details: err.message,
@@ -40,6 +40,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     "Guild not found"
@@ -51,11 +52,11 @@ module.exports = {
 
             const channels = await channelModel.getChannelsByGuildId(guildId);
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res.status(200).json(channels);
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },

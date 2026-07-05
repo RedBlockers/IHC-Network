@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 export const HOME = {
   id: "home",
   name: "Home",
-  icon: "/qweillo_monocrhome.png",
+  image: "/qweillo_monocrhome.png",
   unread: false,
 };
 

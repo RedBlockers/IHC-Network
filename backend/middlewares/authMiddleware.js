@@ -3,17 +3,12 @@ const userModel = require("../models/userModel");
 const { logAPI } = require("../utils/helpers/logHelper");
 
 const authMiddleware = async (req, res, next) => {
+    const startTime = Date.now();
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
     if (!token) {
-        logAPI(
-            req.method,
-            req.path,
-            "Auth Middleware",
-            false,
-            "Token manquant"
-        );
+        logAPI(req.method, req.path, 401, startTime, false, "Token manquant");
         return res.status(401).json({ message: "Token manquant" });
     }
 
@@ -23,13 +18,7 @@ const authMiddleware = async (req, res, next) => {
         const user = await userModel.getUserById(decoded.userId);
 
         if (!user) {
-            logAPI(
-                req.method,
-                req.path,
-                "Auth Middleware",
-                false,
-                "Utilisateur non trouvé"
-            );
+            logAPI(req.method, req.path, 401, startTime, false, "Utilisateur non trouvé");
             return res.status(401).json({ message: "Utilisateur non trouvé" });
         }
 
@@ -39,13 +28,7 @@ const authMiddleware = async (req, res, next) => {
         );
 
         if (dbTime !== tokenTime) {
-            logAPI(
-                req.method,
-                req.path,
-                "Auth Middleware",
-                false,
-                "Session expirée (mot de passe changé)."
-            );
+            logAPI(req.method, req.path, 401, startTime, false, "Session expirée (mot de passe changé).");
             return res
                 .status(401)
                 .json({ message: "Session expirée (mot de passe changé)." });
@@ -54,13 +37,7 @@ const authMiddleware = async (req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
-        logAPI(
-            req.method,
-            req.path,
-            "Auth Middleware",
-            false,
-            "Token invalide"
-        );
+        logAPI(req.method, req.path, 401, startTime, false, "Token invalide");
         return res.status(401).json({ message: "Token invalide" });
     }
 };

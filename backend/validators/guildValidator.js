@@ -7,13 +7,9 @@ const createGuildSchema = z.object({
         .max(50, "Le nom de la guilde doit comporter au maximum 50 caractères"),
     guildDescription: z
         .string()
-        .max(
-            200,
-            "La description de la guilde doit comporter au maximum 200 caractères"
-        )
+        .max(200, "La description de la guilde doit comporter au maximum 200 caractères")
         .optional()
         .default("Aucune description"),
-    guildImage: z.string().optional().default("NoScord.jpg"),
 });
 
 module.exports = {

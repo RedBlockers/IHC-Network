@@ -18,6 +18,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     "Guild ou channel non trouvé"
@@ -34,7 +35,7 @@ module.exports = {
                     parseInt(limit),
                     parseInt(offset)
                 );
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res.status(200).json({
                 messages,
@@ -43,7 +44,7 @@ module.exports = {
                 offset: parseInt(offset),
             });
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err.message);
+            logAPI(req.method, req.path, 500, startTime, false, err.message);
 
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
@@ -69,12 +70,12 @@ module.exports = {
                 result.insertId
             );
             getIo().emit(`newMessage/${channelId}`, newMessage);
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             res.status(200).json({
                 newMessage,
             });
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err.message);
+            logAPI(req.method, req.path, 500, startTime, false, err.message);
             res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -90,7 +91,7 @@ module.exports = {
                     parseInt(limit),
                     parseInt(offset)
                 );
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res.status(200).json({
                 messages,
@@ -99,7 +100,7 @@ module.exports = {
                 offset: parseInt(offset),
             });
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err.message);
+            logAPI(req.method, req.path, 500, startTime, false, err.message);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },

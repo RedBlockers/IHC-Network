@@ -38,7 +38,9 @@
   color: var(--text-primary);
   padding: 24px;
   border-radius: 12px;
-  width: min(90%, 420px);
+  width: min(90%, 460px);
+  max-height: 90vh;
+  overflow-y: auto;
   animation: scaleIn 0.2s ease;
 }
 

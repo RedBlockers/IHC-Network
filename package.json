@@ -1,0 +1,12 @@
+{
+  "name": "qweillo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix ihcfrontend\"",
+    "start": "concurrently --names \"backend,frontend\" --prefix-colors \"blue,green\" \"npm run start --prefix backend\" \"npm run start --prefix ihcfrontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

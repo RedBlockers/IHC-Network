@@ -1,6 +1,5 @@
 const guildModel = require("../models/guildModel");
-const logger = require("../utils/logger");
-const { saveImage } = require("../services/fileServices");
+const { saveGuildIcon } = require("../services/fileServices");
 const channelModel = require("../models/channelModel");
 const crypto = require("crypto");
 const userModel = require("../models/userModel");
@@ -19,6 +18,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Guilde ${guildId} non trouvée`
@@ -28,10 +28,10 @@ module.exports = {
 
             const channel =
                 await channelModel.getFirstChannelByGuildId(guildId);
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json(channel);
         } catch (err) {
-            logger.error(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -41,13 +41,13 @@ module.exports = {
         try {
             const userId = req.user.userId;
             const guilds = await guildModel.getGuildsByUser(userId);
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res
                 .status(200)
                 .json(guilds.map((guild) => mappers.guildMapper(guild)));
         } catch (err) {
-            logger.error(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -63,6 +63,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Guilde ${guildId} non trouvée`
@@ -84,10 +85,10 @@ module.exports = {
                 mappers.channelMapper(channel, guildId)
             );
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json(guildMapped);
         } catch (err) {
-            logAPI(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -95,11 +96,16 @@ module.exports = {
     createGuild: async (req, res) => {
         const startTime = Date.now();
         try {
-            const { guildName, guildDescription, guildImage } = req.body;
+            const { guildName, guildDescription } = req.body;
+            const file = req.file;
 
-            console.log(guildName, guildDescription, guildImage);
-            if (guildImage != "NoScord.jpg") {
-                guildImage = await saveImage(guildImage, "guilds");
+            let guildImage = null;
+            if (file) {
+                guildImage = await saveGuildIcon(file);
+                if (!guildImage) {
+                    logAPI(req.method, req.path, 503, startTime, false, "Échec de l'upload de l'icône sur S3");
+                    return res.status(503).json({ error: "Le service de stockage est temporairement indisponible." });
+                }
             }
 
             const guild = await guildModel.createGuild(
@@ -115,13 +121,13 @@ module.exports = {
                 "Salon général",
                 guild.guildId
             );
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 201, startTime, true);
             return res.status(201).json({
                 success: "Guild created successfully",
                 guildId: guild.guildId,
             });
         } catch (err) {
-            logger.error(req.method, req.path, startTime, false, err.message);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -138,10 +144,10 @@ module.exports = {
                 UUID
             );
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 201, startTime, true);
             return res.status(201).json(UUID);
         } catch (err) {
-            logger.error(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },
@@ -155,6 +161,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Invitation ${inviteCode} invalide`
@@ -176,10 +183,10 @@ module.exports = {
                 emitToUser(member.userId, `guildJoined/${invite.guildId}`, {});
             });
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json(invite);
         } catch (err) {
-            logger.error(req.method, req.path, startTime, false, err);
+            logAPI(req.method, req.path, 500, startTime, false, err);
             return res.status(500).json({ error: "Erreur interne du serveur" });
         }
     },

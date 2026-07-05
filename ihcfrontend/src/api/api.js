@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+export const API_URL = "http://localhost:3000/api/v1";
 
 export async function api(path, options = {}, autoRedirect = true) {
   const token = localStorage.getItem("token");
@@ -14,7 +14,6 @@ export async function api(path, options = {}, autoRedirect = true) {
   });
 
   if (res.status === 401 && autoRedirect) {
-    // Token expiré → déconnexion automatique
     localStorage.removeItem("token");
     window.location.href = "/login";
     return;

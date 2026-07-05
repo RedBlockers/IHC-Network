@@ -10,11 +10,9 @@ const { saveAvatar, saveTempAvatar } = require("../services/fileServices");
 
 async function UpdateUsersFriendList(user1, user2) {
     let friends = await userModel.getFriends(user1.userId);
-    //io.emit(`user${user1.username}/updateFriendList`, friends);
     const user1SocketId = connectedUsers.get(String(user1.userId));
     getIo().to(user1SocketId).emit("updateFriendList", friends);
     friends = await userModel.getFriends(user2.userId);
-    //io.emit(`user${user2.userNickname}/updateFriendList`, friends);
     const user2SocketId = connectedUsers.get(String(user2.userId));
     getIo().to(user2SocketId).emit("updateFriendList", friends);
 }
@@ -26,13 +24,13 @@ module.exports = {
         const { handle, password, email, displayName, bio } = req.body;
         const file = req.file;
         try {
-            // Vérifier si l'utilisateur existe déjà
             const existingUser = await userModel.getUserByHandle(handle);
 
             if (existingUser) {
                 logAPI(
                     req.method,
                     req.path,
+                    409,
                     startTime,
                     false,
                     `Tentative d'inscription avec un nom d'utilisateur déjà existant: ${handle}`
@@ -47,6 +45,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    409,
                     startTime,
                     false,
                     `Tentative d'inscription avec un email déjà existant: ${email}`
@@ -59,11 +58,22 @@ module.exports = {
             let avatarUrl;
 
             if (file) {
-                const mime = file.mimetype;
-                const ext = mime.split("/")[1];
                 avatarUrl = await saveTempAvatar(file);
+                if (!avatarUrl) {
+                    logAPI(
+                        req.method,
+                        req.path,
+                        503,
+                        startTime,
+                        false,
+                        "Échec de l'upload de l'avatar sur S3"
+                    );
+                    return res.status(503).json({
+                        error: "Le service de stockage est temporairement indisponible. Veuillez réessayer plus tard.",
+                    });
+                }
             } else {
-                avatarUrl = "/assets/default-avatar.png"; // ton image par défaut dans /public
+                avatarUrl = "/assets/default-avatar.png";
             }
 
             const hashedPassword = await bcrypt.hash(password, 13);
@@ -82,7 +92,7 @@ module.exports = {
             const user = mappers.userPrivateMapper(result);
 
             avatarUrl = await saveAvatar(
-                avatarUrl.split("/ihcnetwork/")[1],
+                avatarUrl.split(`/${process.env.S3_BUCKET}/`)[1],
                 `users/${user.userId}/avatar/avatar.${file.mimetype.split("/")[1]}`
             );
 
@@ -90,7 +100,7 @@ module.exports = {
                 user.avatar = avatarUrl;
             }
             if (result) {
-                logAPI(req.method, req.path, startTime, true);
+                logAPI(req.method, req.path, 201, startTime, true);
                 return res.status(201).json({
                     message: "Utilisateur créé avec succès.",
                     user: user,
@@ -100,6 +110,7 @@ module.exports = {
             logAPI(
                 req.method,
                 req.path,
+                500,
                 startTime,
                 false,
                 `Erreur lors de la création de l'utilisateur: ${handle}`
@@ -108,7 +119,7 @@ module.exports = {
                 message: "Erreur lors de l'inscription.",
             });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de l'inscription.",
             });
@@ -156,11 +167,11 @@ module.exports = {
                     };
                 }
             }
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res.status(200).json(result);
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message:
                     "Erreur lors de la vérification de l'unicité du handle ou de l'email.",
@@ -178,6 +189,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    429,
                     startTime,
                     false,
                     `Compte temporairement bloqué après tentative de connexion suspecte pour l'utilisateur: ${handle} depuis l'IP: ${req.ip}`
@@ -195,6 +207,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    401,
                     startTime,
                     false,
                     `Tentative de connexion échouée pour l'utilisateur: ${handle} depuis l'IP: ${req.ip}`
@@ -208,14 +221,14 @@ module.exports = {
 
             const token = CreateToken(user.userId, user.passwordUpdatedAt);
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
 
             return res.status(200).json({
                 token,
                 user: mappers.userPrivateMapper(user),
             });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de la connexion.",
             });
@@ -225,9 +238,10 @@ module.exports = {
     getMe: async (req, res) => {
         const startTime = Date.now();
         try {
+            logAPI(req.method, req.path, 200, startTime, true);
             res.status(200).json({ user: mappers.userPrivateMapper(req.user) });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message:
                     "Erreur lors de la récupération des informations de l'utilisateur.",
@@ -246,6 +260,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Utilisateur introuvable pour la demande d'ami: ${friendHandle}`
@@ -255,7 +270,6 @@ module.exports = {
                 });
             }
 
-            // Vérifier si une demande d'ami existe déjà
             if (
                 await userModel.isAlreadyFriendOrPending(
                     user.userId,
@@ -265,6 +279,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    409,
                     startTime,
                     false,
                     `Demande d'ami déjà existante ou utilisateur déjà ami: ${friendHandle}`
@@ -275,7 +290,6 @@ module.exports = {
                 });
             }
 
-            // Ajouter la demande d'ami dans la base de données
             const resp = await userModel.addFriendRequest(
                 user.userId,
                 friend.userId
@@ -285,6 +299,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    500,
                     startTime,
                     false,
                     `Erreur lors de l'envoi de la demande d'ami à l'utilisateur: ${friendHandle}`
@@ -294,13 +309,13 @@ module.exports = {
                 });
             }
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json({
                 message: "Demande d'ami envoyée.",
                 friend: mappers.userPublicMapper(friend),
             });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de l'envoi de la demande d'ami.",
             });
@@ -311,10 +326,10 @@ module.exports = {
         const startTime = Date.now();
         try {
             const friends = await userModel.getFriends(req.user.userId);
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json({ friends: friends });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de la récupération de la liste des amis.",
             });
@@ -334,6 +349,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Utilisateur introuvable pour l'acceptation de la demande d'ami: ${friendId}`
@@ -355,6 +371,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Demande d'ami introuvable ou déjà acceptée pour l'utilisateur: ${friendId}`
@@ -376,13 +393,13 @@ module.exports = {
             await connection.commit();
             await UpdateUsersFriendList(user, friend);
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json({
                 message: "Demande d'ami acceptée.",
             });
         } catch (error) {
             await connection.rollback();
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de l'acceptation de la demande d'ami.",
             });
@@ -402,6 +419,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Utilisateur introuvable pour la suppression de l'ami: ${friendId}`
@@ -420,6 +438,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Aucun lien d'amitié ou de demande d'ami existant pour la suppression avec l'utilisateur: ${friend.handle}`
@@ -435,6 +454,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    500,
                     startTime,
                     false,
                     `Erreur lors de la suppression de l'ami: ${friend.handle}`
@@ -446,10 +466,10 @@ module.exports = {
 
             await UpdateUsersFriendList(user, friend);
 
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 204, startTime, true);
             return res.status(204).end();
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de la suppression de l'ami.",
             });
@@ -465,6 +485,7 @@ module.exports = {
                 logAPI(
                     req.method,
                     req.path,
+                    404,
                     startTime,
                     false,
                     `Utilisateur introuvable pour l'ID: ${userId}`
@@ -473,10 +494,10 @@ module.exports = {
                     .status(404)
                     .json({ message: "Utilisateur introuvable" });
             }
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json(mappers.userPublicMapper(user));
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message:
                     "Erreur lors de la récupération des informations de l'utilisateur",
@@ -490,10 +511,10 @@ module.exports = {
             const channels = await channelModel.getPrivateChannelsByUserId(
                 req.user.userId
             );
-            logAPI(req.method, req.path, startTime, true);
+            logAPI(req.method, req.path, 200, startTime, true);
             return res.status(200).json({ channels: channels });
         } catch (error) {
-            logAPI(req.method, req.path, startTime, false, error);
+            logAPI(req.method, req.path, 500, startTime, false, error);
             return res.status(500).json({
                 message: "Erreur lors de la récupération des canaux privés.",
             });
