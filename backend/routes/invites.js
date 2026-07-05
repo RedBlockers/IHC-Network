@@ -3,7 +3,7 @@ const guildController = require("../controllers/guildController");
 const auth = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.get("/:inviteCode", guildController.inviteByCode);
-router.post("/:guildId", auth, guildController.createInvite);
+// Rejoindre une guilde via un code d'invitation
+router.get("/:inviteCode", auth, guildController.inviteByCode);
 
 module.exports = router;

@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "test:unit": "jest",
+    "test:e2e": "cross-env NODE_ENV=test npm run db:seed && cross-env NODE_ENV=test node -r dotenv/config server.js dotenv_config_path=.env.test",
     "test": "cross-env NODE_ENV=test npm run db:seed && cross-env NODE_ENV=test node -r dotenv/config server.js dotenv_config_path=.env.test",
     "test:conserve": "cross-env NODE_ENV=test npm run db:seed:conserve && cross-env NODE_ENV=test node -r dotenv/config server.js dotenv_config_path=.env.test",
     "test:githubActions": "cross-env NODE_ENV=test npm run db:seed:githubActions && cross-env NODE_ENV=test node server.js",
@@ -22,6 +24,7 @@
     "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.1.1",
     "mysql2": "^3.11.3",
@@ -35,6 +38,8 @@
   "devDependencies": {
     "concurrently": "^9.1.2",
     "cross-env": "^10.1.0",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
   }
 }

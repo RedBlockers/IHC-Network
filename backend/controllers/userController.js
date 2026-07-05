@@ -91,14 +91,16 @@ module.exports = {
 
             const user = mappers.userPrivateMapper(result);
 
-            avatarUrl = await saveAvatar(
-                avatarUrl.split(`/${process.env.S3_BUCKET}/`)[1],
-                `users/${user.userId}/avatar/avatar.${file.mimetype.split("/")[1]}`
-            );
-
-            if (userModel.updateUserField(user.userId, "avatar", avatarUrl)) {
-                user.avatar = avatarUrl;
+            if (file) {
+                avatarUrl = await saveAvatar(
+                    avatarUrl.split(`/${process.env.S3_BUCKET}/`)[1],
+                    `users/${user.userId}/avatar/avatar.${file.mimetype.split("/")[1]}`
+                );
+                if (userModel.updateUserField(user.userId, "avatar", avatarUrl)) {
+                    user.avatar = avatarUrl;
+                }
             }
+
             if (result) {
                 logAPI(req.method, req.path, 201, startTime, true);
                 return res.status(201).json({

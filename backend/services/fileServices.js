@@ -11,7 +11,7 @@ const {
 
 async function saveTempAvatar(file) {
     try {
-        key = `temp/avatar/${crypto.randomUUID()}.${file.mimetype.split("/")[1]}`;
+        const key = `temp/avatar/${crypto.randomUUID()}.${file.mimetype.split("/")[1]}`;
 
         await s3.send(
             new PutObjectCommand({

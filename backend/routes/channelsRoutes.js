@@ -1,8 +1,8 @@
 const express = require("express");
-const channelsController = require("../controllers/channelController");
 
 const router = express.Router();
 
-router.post("/", channelsController.createChannel);
+// La création de channels est désormais sous /guilds/:guildId/channels
+// Ce router reste disponible pour des opérations futures sur un channel spécifique
 
 module.exports = router;
