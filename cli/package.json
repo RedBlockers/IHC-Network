@@ -1,0 +1,13 @@
+{
+  "name": "qweillo-cli",
+  "version": "2.0.0",
+  "description": "Client en ligne de commande qweillo : worktrees, pipelines, revues et terminal partagé",
+  "type": "module",
+  "bin": {
+    "qweillo": "./qweillo.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "license": "MIT"
+}

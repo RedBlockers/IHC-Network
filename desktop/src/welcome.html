@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+    <title>Vos instances · Qweillo</title>
+    <link rel="stylesheet" href="welcome.css">
+    <script src="welcome.js" defer></script>
+</head>
+<body>
+    <main>
+        <p class="brand">qweillo<span>.</span></p>
+        <h1>Vos communautés commencent ici.</h1>
+        <p class="intro">Ouvrez l’instance de votre choix, publique ou auto-hébergée. Vos comptes et vos conversations restent propres à chaque instance.</p>
+        <form id="connect">
+            <label for="address">Adresse de l’instance</label>
+            <input id="address" type="text" inputmode="url" autocomplete="url" placeholder="https://communaute.exemple.fr" required autofocus>
+            <button id="open" type="submit">Ouvrir l’instance</button>
+        </form>
+        <p id="error" role="alert" hidden></p>
+        <section id="history" hidden><h2>Vos instances</h2><div id="entries"></div></section>
+        <p class="hint">Pour un essai local : http://localhost:8080</p>
+    </main>
+</body>
+</html>

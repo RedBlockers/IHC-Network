@@ -1,0 +1,61 @@
+groups:
+  - name: qweillo-disponibilite
+    interval: 30s
+    rules:
+      - alert: ServiceInjoignable
+        expr: up{job="qweillo"} == 0
+        for: 2m
+        labels: { severite: critique }
+        annotations:
+          resume: "Une instance de l'API ne répond plus"
+          conduite: "Relancer l'instance seule (docker compose up -d api1), pas la pile entière."
+
+      - alert: ErreursServeur
+        expr: |
+          sum(rate(http_request_duration_seconds_count{status=~"5.."}[5m]))
+            / sum(rate(http_request_duration_seconds_count[5m])) > 0.05
+        for: 5m
+        labels: { severite: critique }
+        annotations:
+          resume: "Plus de 5 % des requêtes échouent en erreur serveur"
+          conduite: "Lire les journaux applicatifs d'abord. Si l'incident suit un déploiement, revenir à la version précédente (voir docs/operations.md)."
+
+      - alert: LatenceEcriture
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{method="POST"}[5m])) by (le)) > 1
+        for: 10m
+        labels: { severite: avertissement }
+        annotations:
+          resume: "Le p95 des écritures dépasse une seconde"
+          conduite: "Vérifier le disque (df -h) puis la charge MySQL."
+
+  - name: qweillo-ressources
+    interval: 1m
+    rules:
+      - alert: DisqueBientotPlein
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.15
+        for: 15m
+        labels: { severite: avertissement }
+        annotations:
+          resume: "Moins de 15 % d'espace disque disponible"
+          conduite: "Purger les anciennes sauvegardes et les envois orphelins."
+
+      - alert: SauvegardeAbsente
+        expr: time() - qweillo_backup_last_success_timestamp_seconds > 172800
+        for: 1h
+        labels: { severite: critique }
+        annotations:
+          resume: "Aucune sauvegarde réussie depuis plus de 48 heures"
+          conduite: "Lancer scripts/backup.sh puis scripts/restore-drill.sh sur le résultat."
+
+  - name: qweillo-abus
+    interval: 1m
+    rules:
+      - alert: LimitationDeDebitMassive
+        expr: sum(rate(http_request_duration_seconds_count{status="429"}[5m])) > 10
+        for: 10m
+        labels: { severite: avertissement }
+        annotations:
+          resume: "Plus de dix refus pour cadence excessive par seconde"
+          conduite: "Identifier si les refus visent un compte (client en boucle) ou une adresse partagée (plafond trop bas)."

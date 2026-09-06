@@ -1,0 +1,26 @@
+{
+	{$ACME_EMAIL_CONFIG}
+	admin off
+	servers {
+		protocols h1 h2 h3
+	}
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Permissions-Policy "camera=(self), microphone=(self), display-capture=(self), geolocation=()"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src https:; img-src 'self' data: blob: https:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' wss://{$APP_DOMAIN} wss://{$LIVEKIT_DOMAIN}"
+	}
+	reverse_proxy 127.0.0.1:{$WEB_PORT:8080}
+}
+
+{$LIVEKIT_DOMAIN} {
+	header -Server
+	reverse_proxy 127.0.0.1:7880
+}

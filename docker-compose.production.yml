@@ -1,0 +1,112 @@
+name: qweillo
+
+services:
+  data-init:
+    image: ${BACKEND_IMAGE:-qweillo-backend:latest}
+    build:
+      context: ./backend
+    user: "0:0"
+    restart: "no"
+    read_only: true
+    network_mode: none
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    command: ["sh", "-c", "mkdir -p /data/redis /data/caddy-data /data/caddy-config /data/control && chown 999:1000 /data/redis && chmod 700 /data/redis && chown 0:0 /data/caddy-data /data/caddy-config && chmod 700 /data/caddy-data /data/caddy-config"]
+    volumes:
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}:/data
+
+  mysql:
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    volumes: !override
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/mysql:/var/lib/mysql
+      - ./infra/mysql/init:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    depends_on:
+      data-init:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${REDIS_HOST_PORT:-6379}:6379"
+    networks: !override [app, data]
+    volumes: !override
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/redis:/data
+
+  api1:
+    environment:
+      TRUST_PROXY: "2"
+      LIVEKIT_INTERNAL_URL: ${LIVEKIT_INTERNAL_URL:-https://${LIVEKIT_DOMAIN}}
+    volumes: !override
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/uploads:/data/uploads
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/control:/data/control:ro
+
+  api2:
+    environment:
+      TRUST_PROXY: "2"
+      LIVEKIT_INTERNAL_URL: ${LIVEKIT_INTERNAL_URL:-https://${LIVEKIT_DOMAIN}}
+    volumes: !override
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/uploads:/data/uploads
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/control:/data/control:ro
+
+  uploads-init:
+    volumes: !override
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/uploads:/data/uploads
+
+  livekit:
+    image: livekit/livekit-server:v1.13.1@sha256:2c6869d2d5ff6c9c0166f47be1c92dad6928bfecfa5e4060a6ece48db8accfa3
+    restart: unless-stopped
+    network_mode: host
+    networks: !reset []
+    ports: !reset []
+    command: ["--config", "/etc/livekit/livekit.yaml", "--node-ip", "${LIVEKIT_NODE_IP:?définir LIVEKIT_NODE_IP}"]
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:?définir LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET:?définir LIVEKIT_API_SECRET}"
+    configs: !override
+      - source: livekit
+        target: /etc/livekit/livekit.yaml
+    depends_on:
+      redis:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    pids_limit: 512
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  edge:
+    image: caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?définir APP_DOMAIN}
+      LIVEKIT_DOMAIN: ${LIVEKIT_DOMAIN:?définir LIVEKIT_DOMAIN}
+      ACME_EMAIL_CONFIG: ${ACME_EMAIL:+email ${ACME_EMAIL}}
+      WEB_PORT: ${WEB_PORT:-8080}
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/caddy-data:/data
+      - ${QWEILLO_DATA_DIR:?définir QWEILLO_DATA_DIR}/caddy-config:/config
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    pids_limit: 128
+    depends_on:
+      web:
+        condition: service_started
+      livekit:
+        condition: service_started
+      data-init:
+        condition: service_completed_successfully
+
+configs:
+  livekit:
+    file: ./runtime/livekit.yaml

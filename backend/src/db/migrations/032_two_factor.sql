@@ -1,0 +1,20 @@
+CREATE TABLE user_totp (
+    userId     BIGINT UNSIGNED NOT NULL,
+    secret     VARCHAR(64) NOT NULL,
+    confirmedAt DATETIME NULL,
+    lastStep   BIGINT UNSIGNED NULL,
+    createdAt  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userId),
+    CONSTRAINT fk_totp_user FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE user_recovery_codes (
+    codeId    BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    userId    BIGINT UNSIGNED NOT NULL,
+    codeHash  VARCHAR(255) NOT NULL,
+    usedAt    DATETIME NULL,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (codeId),
+    KEY idx_recovery_user (userId, usedAt),
+    CONSTRAINT fk_recovery_user FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

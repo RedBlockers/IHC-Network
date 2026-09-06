@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.dtd/PropertyList-1.0.dtd">
+<!--
+  Droits demandés par l'application de bureau sur macOS.
+
+  Chacun est là pour une raison précise, et aucun n'est demandé « au cas où » :
+  une application qui réclame plus qu'elle n'utilise est refusée à la
+  notarisation, et surtout elle demande à l'utilisateur des autorisations qu'elle
+  n'a aucune raison d'obtenir.
+
+  Le microphone et la caméra servent au vocal et à la vidéo. La capture d'écran
+  sert au partage d'écran. Il n'y a rien d'autre : ni géolocalisation, ni
+  carnet d'adresses, ni accès complet au disque.
+
+  Les deux droits JIT sont exigés par le moteur JavaScript de Chromium sous
+  durcissement ; sans eux, l'application se lance et se fige.
+-->
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+    <key>com.apple.security.device.camera</key>
+    <true/>
+    <key>com.apple.security.network.client</key>
+    <true/>
+</dict>
+</plist>

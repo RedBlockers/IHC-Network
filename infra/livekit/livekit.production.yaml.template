@@ -1,0 +1,33 @@
+port: 7880
+bind_addresses:
+  - 0.0.0.0
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50100
+  use_external_ip: false
+  enable_loopback_candidate: false
+redis:
+  address: 127.0.0.1:${REDIS_HOST_PORT}
+room:
+  empty_timeout: 300
+  departure_timeout: 20
+  auto_create: true
+  enabled_codecs:
+    - mime: audio/opus
+    - mime: video/VP8
+    - mime: video/H264
+    - mime: video/VP9
+    - mime: video/AV1
+turn:
+  enabled: true
+  udp_port: 3478
+  relay_range_start: 50101
+  relay_range_end: 50200
+webhook:
+  api_key: ${LIVEKIT_API_KEY}
+  urls:
+    - http://127.0.0.1:${WEB_PORT}/api/v1/media/webhook
+logging:
+  level: info
+  json: true

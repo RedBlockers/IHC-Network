@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, dev-leka]
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:coverage
+      - name: Audit des dépendances (haute sévérité)
+        run: npm audit --omit=dev --audit-level=high
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  desktop:
+    name: Desktop
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+  installer:
+    name: Menu terminal
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: node --check scripts/setup.mjs
+      - run: node --check scripts/terminal.mjs
+      - name: Vérifier le menu au clavier sans Docker
+        run: python e2e/installer_terminal_flow.py
+
+  browser:
+    name: Parcours navigateur
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: ./scripts/setup.sh --yes
+      - run: python -m pip install -r e2e/requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: docker compose -p qweillo-e2e -f docker-compose.yml -f e2e/docker-compose.e2e.yml up -d --build --wait --wait-timeout 180
+      - name: Vérifier les parcours
+        env:
+          BASE_URL: http://127.0.0.1:18888
+        run: |
+          for flow in core_flow avatar_cropper_flow channel_permissions_flow roles_notifications_flow e2ee_two_browsers media_flow stage_flow account_security_flow settings_instances_flow guild_lifecycle_flow channel_types_flow attachment_composer_flow; do
+            python "e2e/$flow.py"
+          done
+      - name: Journaux en cas d’échec
+        if: failure()
+        run: docker compose -p qweillo-e2e -f docker-compose.yml -f e2e/docker-compose.e2e.yml logs --no-color --tail 100
+      - name: Arrêter la pile
+        if: always()
+        run: docker compose -p qweillo-e2e -f docker-compose.yml -f e2e/docker-compose.e2e.yml down

@@ -1,0 +1,40 @@
+x-e2e-api: &e2e-api
+  CORS_ORIGIN: http://127.0.0.1:${E2E_PORT:-18888}
+  PUBLIC_URL: http://127.0.0.1:${E2E_PORT:-18888}
+  LIVEKIT_URL: ws://127.0.0.1:27880
+  LIVEKIT_API_KEY: e2e-livekit-key
+  LIVEKIT_API_SECRET: e2e-livekit-secret-abcdefghijklmnopqrstuvwxyz-1234567890
+  SMTP_HOST: mailpit
+  SMTP_PORT: "1025"
+  MAIL_FROM: Qweillo <test@example.test>
+
+services:
+  api1:
+    environment:
+      <<: *e2e-api
+  api2:
+    environment:
+      <<: *e2e-api
+  web:
+    ports: !override
+      - "127.0.0.1:${E2E_PORT:-18888}:8080"
+  mailpit:
+    image: axllent/mailpit:v1.29.2
+    restart: "no"
+    networks: [app]
+    ports:
+      - "127.0.0.1:18025:8025"
+  livekit:
+    image: livekit/livekit-server:v1.13.1
+    command: ["--config", "/etc/livekit/e2e.yaml"]
+    configs: !reset []
+    restart: "no"
+    environment:
+      LIVEKIT_KEYS: "e2e-livekit-key: e2e-livekit-secret-abcdefghijklmnopqrstuvwxyz-1234567890"
+    volumes:
+      - ./e2e/livekit.yaml:/etc/livekit/e2e.yaml:ro
+    ports: !override
+      - "127.0.0.1:27880:7880"
+      - "127.0.0.1:27881:27881/tcp"
+      - "127.0.0.1:55100-55119:55100-55119/udp"
+    networks: [app, data]

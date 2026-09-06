@@ -1,0 +1,299 @@
+.avatar.has-decoration {
+    overflow: visible;
+    isolation: isolate;
+}
+.avatar.has-decoration::after {
+    content: none;
+}
+.avatar.has-decoration > .avatar-img,
+.avatar.has-decoration > .avatar-fallback {
+    border-radius: inherit;
+}
+.avatar-decoration {
+    position: absolute;
+    inset: -20%;
+    width: 140%;
+    height: 140%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+    contain: layout style;
+}
+.avatar.has-decoration > .presence-dot {
+    z-index: 2;
+}
+.avatar-decoration .deco-motion {
+    animation-play-state: paused;
+}
+.avatar-decoration[data-animating="true"] .deco-motion {
+    animation-play-state: running;
+}
+.deco-wreath,
+.deco-crown {
+    filter: drop-shadow(0 1px 0.7px rgb(12 22 18 / 0.3));
+}
+.deco-leaf-branch {
+    transform-origin: 46px 88px;
+    animation: laurel-sway 7s ease-in-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-leaf-branch.is-right {
+    animation-delay: calc(var(--deco-phase) - 2.4s);
+}
+.deco-crown {
+    transform-origin: 50px 28px;
+    animation: crown-poise 8s ease-in-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-crown-shine {
+    animation: crown-reflection 8s cubic-bezier(0.2, 0.65, 0.3, 1) infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-fire-left {
+    transform-origin: 26px 83px;
+    animation: fire-rise-left 2.7s ease-in-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-fire-right {
+    transform-origin: 74px 84px;
+    animation: fire-rise-right 3.3s ease-in-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-fire-base {
+    transform-origin: 50px 92px;
+    animation: fire-rise-left 3.7s ease-in-out infinite;
+    animation-delay: calc(var(--deco-phase) - 1s);
+}
+.deco-ember {
+    animation: ember-rise 4.8s ease-out infinite;
+    animation-delay: var(--ember-delay);
+}
+.deco-current {
+    animation: wave-current 8s linear infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-foam {
+    animation: wave-foam 4.5s ease-in-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-star {
+    animation: constellation-glint 5.8s ease-in-out infinite;
+    animation-delay: var(--star-delay);
+    transform-origin: 0 0;
+}
+.deco-star-trail {
+    animation: star-trail 9s ease-out infinite;
+    animation-delay: var(--deco-phase);
+}
+.deco-packet {
+    animation: circuit-signal 6.2s cubic-bezier(0.25, 0.5, 0.3, 1) infinite;
+    animation-delay: var(--packet-delay);
+}
+@keyframes laurel-sway {
+    0%,
+    100% {
+        transform: rotate(-0.9deg);
+    }
+    50% {
+        transform: rotate(1.3deg);
+    }
+}
+@keyframes crown-poise {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-0.8px);
+    }
+}
+@keyframes crown-reflection {
+    0%,
+    58% {
+        transform: translateX(0);
+        opacity: 0;
+    }
+    64% {
+        opacity: 0.6;
+    }
+    79%,
+    100% {
+        transform: translateX(115px);
+        opacity: 0;
+    }
+}
+@keyframes fire-rise-left {
+    0%,
+    100% {
+        transform: scale(0.98, 0.97) rotate(-1deg);
+    }
+    42% {
+        transform: scale(1.03, 1.06) rotate(1.3deg);
+    }
+    76% {
+        transform: scale(0.98, 1.02);
+    }
+}
+@keyframes fire-rise-right {
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+    35% {
+        transform: scale(0.97, 1.07) rotate(-1.2deg);
+    }
+    70% {
+        transform: scale(1.03, 0.97);
+    }
+}
+@keyframes ember-rise {
+    0% {
+        transform: translate(0, 8px) scale(0.65);
+        opacity: 0;
+    }
+    18% {
+        opacity: 0.85;
+    }
+    75% {
+        opacity: 0.45;
+    }
+    100% {
+        transform: translate(3px, -14px) scale(0.3);
+        opacity: 0;
+    }
+}
+@keyframes wave-current {
+    from {
+        stroke-dashoffset: 0;
+    }
+    to {
+        stroke-dashoffset: -100;
+    }
+}
+@keyframes wave-foam {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+@keyframes constellation-glint {
+    0%,
+    70%,
+    100% {
+        opacity: 0.65;
+        transform: scale(0.88);
+    }
+    82% {
+        opacity: 1;
+        transform: scale(1.12);
+    }
+}
+@keyframes star-trail {
+    0%,
+    72%,
+    100% {
+        opacity: 0;
+        transform: translate(0, 0);
+    }
+    77% {
+        opacity: 0.8;
+    }
+    87% {
+        opacity: 0;
+        transform: translate(5px, -5px);
+    }
+}
+@keyframes circuit-signal {
+    0%,
+    12% {
+        stroke-dashoffset: 12;
+        opacity: 0;
+    }
+    18% {
+        opacity: 1;
+    }
+    80% {
+        stroke-dashoffset: -100;
+        opacity: 1;
+    }
+    86%,
+    100% {
+        stroke-dashoffset: -110;
+        opacity: 0;
+    }
+}
+.decoration-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    gap: 12px;
+    max-width: 740px;
+    margin-top: 16px;
+}
+.decoration-option {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 18px;
+    padding: 24px 10px 14px;
+    min-width: 0;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition:
+        background 150ms,
+        border-color 150ms;
+}
+.decoration-option small {
+    font-size: 11px;
+    line-height: 1.4;
+}
+.decoration-option.is-on {
+    border-color: var(--accent-text);
+    background: var(--accent-ghost);
+}
+:root[data-theme="light"] .decoration-etoiles stop:first-child {
+    stop-color: #99764d;
+}
+:root[data-theme="light"] .decoration-etoiles stop:nth-child(2) {
+    stop-color: #9471c8;
+}
+:root[data-theme="light"] .decoration-etoiles stop:last-child {
+    stop-color: #674795;
+}
+:root[data-theme="light"] .decoration-etoiles .deco-star {
+    stroke: #8765b3;
+}
+[data-motion="reduced"] .avatar-decoration .deco-motion {
+    animation: none;
+}
+[data-motion="reduced"] .deco-ember,
+[data-motion="reduced"] .deco-crown-shine,
+[data-motion="reduced"] .deco-star-trail {
+    opacity: 0;
+}
+[data-motion="reduced"] .deco-packet {
+    stroke-dasharray: 7 110;
+    stroke-dashoffset: -42;
+}
+@media (prefers-reduced-motion: reduce) {
+    .avatar-decoration .deco-motion {
+        animation: none;
+    }
+    .deco-ember,
+    .deco-crown-shine,
+    .deco-star-trail {
+        opacity: 0;
+    }
+    .deco-packet {
+        stroke-dasharray: 7 110;
+        stroke-dashoffset: -42;
+    }
+}
+@media (max-width: 500px) {
+    .decoration-picker {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+}

@@ -1,0 +1,29 @@
+port: 7880
+bind_addresses:
+  - 0.0.0.0
+
+rtc:
+  tcp_port: 27881
+  port_range_start: 55100
+  port_range_end: 55119
+  use_external_ip: false
+
+redis:
+  address: redis:6379
+
+keys:
+  e2e-livekit-key: e2e-livekit-secret-abcdefghijklmnopqrstuvwxyz-1234567890
+
+room:
+  empty_timeout: 60
+  departure_timeout: 10
+  auto_create: true
+
+webhook:
+  api_key: e2e-livekit-key
+  urls:
+    - http://web:8080/api/v1/media/webhook
+
+logging:
+  level: warn
+  json: true

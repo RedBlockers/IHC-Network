@@ -1,0 +1,219 @@
+name: qweillo
+
+x-api-base: &api-base
+  build:
+    context: ./backend
+  image: ${BACKEND_IMAGE:-qweillo-backend:latest}
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,noexec,nosuid,nodev
+  security_opt:
+    - no-new-privileges:true
+  cap_drop: [ALL]
+  pids_limit: 256
+  environment: &api-env
+    NODE_ENV: production
+    INSTANCE_NAME: ${INSTANCE_NAME:-Qweillo}
+    PORT: "3000"
+    TRUST_PROXY: "1"
+    CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+    PUBLIC_URL: ${PUBLIC_URL:-}
+    SMTP_HOST: ${SMTP_HOST:-}
+    SMTP_PORT: ${SMTP_PORT:-587}
+    SMTP_USER: ${SMTP_USER:-}
+    SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+    MAIL_FROM: ${MAIL_FROM:-}
+    JWT_SECRET: ${JWT_SECRET:?définir JWT_SECRET (openssl rand -base64 48)}
+    ACCESS_TOKEN_TTL_SECONDS: ${ACCESS_TOKEN_TTL_SECONDS:-900}
+    SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-30}
+    ARGON2_MEMORY_KIB: ${ARGON2_MEMORY_KIB:-65536}
+    ARGON2_TIME_COST: ${ARGON2_TIME_COST:-3}
+    ARGON2_PARALLELISM: ${ARGON2_PARALLELISM:-1}
+    DB_HOST: mysql
+    DB_PORT: "3306"
+    DB_USER: qweillo
+    DB_PASSWORD: ${DB_APP_PASSWORD:?définir DB_APP_PASSWORD}
+    DB_DATABASE: qweillo
+    REDIS_URL: redis://redis:6379
+    S3_ENDPOINT: ${S3_ENDPOINT:-}
+    S3_BUCKET: ${S3_BUCKET:-}
+    S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+    S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+    S3_PUBLIC_URL: ${S3_PUBLIC_URL:-}
+    LOCAL_STORAGE_DIR: /data/uploads
+    STORAGE_PUBLIC_URL: /media
+    MAX_ATTACHMENT_BYTES: ${MAX_ATTACHMENT_BYTES:-2147483648}
+    UPLOAD_TMP_DIR: /data/uploads/.tmp
+    LIVEKIT_URL: ${LIVEKIT_URL:?définir LIVEKIT_URL (wss://media.votre-domaine)}
+    LIVEKIT_INTERNAL_URL: ${LIVEKIT_INTERNAL_URL:-http://livekit:7880}
+    LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:?définir LIVEKIT_API_KEY}
+    LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:?définir LIVEKIT_API_SECRET}
+    LIVEKIT_TOKEN_TTL_SECONDS: ${LIVEKIT_TOKEN_TTL_SECONDS:-180}
+    LIVEKIT_TURN_HOST: ${LIVEKIT_TURN_HOST:-}
+    LIVEKIT_TURN_PORT: ${LIVEKIT_TURN_PORT:-3478}
+    LOG_FORMAT: json
+    MAINTENANCE_FILE: /data/control/maintenance
+    VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+    VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+    VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+  depends_on:
+    mysql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+    uploads-init:
+      condition: service_completed_successfully
+  networks: [app, data]
+  volumes:
+    - uploads-data:/data/uploads
+    - ${QWEILLO_CONTROL_DIR:-./infra/control}:/data/control:ro
+
+services:
+  livekit:
+    image: livekit/livekit-server:v1.13.1@sha256:2c6869d2d5ff6c9c0166f47be1c92dad6928bfecfa5e4060a6ece48db8accfa3
+    restart: unless-stopped
+    command: ["--config", "/etc/livekit/livekit.yaml", "--node-ip", "127.0.0.1"]
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:?définir LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET:?définir LIVEKIT_API_SECRET}"
+    configs:
+      - source: livekit-local
+        target: /etc/livekit/livekit.yaml
+    ports:
+      - "127.0.0.1:7880:7880"
+      - "127.0.0.1:7881:7881/tcp"
+      - "127.0.0.1:50000-50019:50000-50019/udp"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [app, data]
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 256
+
+  uploads-init:
+    build:
+      context: ./backend
+    image: ${BACKEND_IMAGE:-qweillo-backend:latest}
+    restart: "no"
+    user: "0:0"
+    read_only: true
+    network_mode: none
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    pids_limit: 32
+    command: ["sh", "-c", "mkdir -p /data/uploads && chown -R 1000:1000 /data/uploads && chmod -R u=rwX,g=rX,o= /data/uploads"]
+    volumes:
+      - uploads-data:/data/uploads
+
+  mysql:
+    image: mysql:8.0.39@sha256:ccb8f749bb5e59f9f8f03bf7282c7ef27a93a1814a24f0a8a926fb4e19b7fb97
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?définir DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: qweillo
+      MYSQL_USER: qweillo
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD:?définir DB_APP_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --skip-name-resolve
+      - --local-infile=0
+      - --secure-file-priv=NULL
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./infra/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [data]
+
+  redis:
+    image: redis:7.4-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    user: "999:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 128
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [data]
+
+  migrate:
+    <<: *api-base
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: ["node", "src/db/migrate.js", "up"]
+    environment:
+      <<: *api-env
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:?définir DB_ROOT_PASSWORD}
+
+  api1:
+    <<: *api-base
+    environment:
+      <<: *api-env
+      NODE_ID: "1"
+
+  api2:
+    <<: *api-base
+    environment:
+      <<: *api-env
+      NODE_ID: "2"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL-}
+        VITE_SOCKET_URL: ${PUBLIC_SOCKET_URL-}
+    image: ${WEB_IMAGE:-qweillo-web:latest}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    pids_limit: 128
+    ports:
+      - "${BIND_IP:-0.0.0.0}:${WEB_PORT:-8080}:8080"
+    depends_on: [api1, api2]
+    networks: [app]
+
+networks:
+  app:
+    driver: bridge
+  data:
+    driver: bridge
+    internal: true
+
+volumes:
+  mysql-data:
+  redis-data:
+  uploads-data:
+
+configs:
+  livekit-local:
+    file: ./runtime/livekit-local.yaml

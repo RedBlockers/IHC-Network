@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+project_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$project_dir"
+for argument do
+    if [ "$argument" = "--help" ]; then
+        cat <<'EOF'
+Usage : ./qweillo [--yes] [--name Nom] [--url URL]
+Sans argument : assistant interactif au clavier. --yes : valeurs locales par défaut.
+Actions : --action start|status|backup|stop
+Pour Internet : --url https://chat.exemple.fr --media-domain media.exemple.fr
+Avec un proxy existant : ajouter --external-proxy.
+EOF
+        exit 0
+    fi
+done
+if ! command -v docker >/dev/null 2>&1 || ! docker compose version >/dev/null 2>&1; then
+    echo "Installez Docker Desktop (Windows/macOS) ou Docker Engine avec Compose v2 (Linux), puis relancez ./qweillo." >&2
+    exit 1
+fi
+if ! docker info >/dev/null 2>&1; then
+    echo "Démarrez Docker, puis relancez ./qweillo." >&2
+    exit 1
+fi
+./scripts/setup.sh "$@"
+exec ./scripts/run-stack.sh

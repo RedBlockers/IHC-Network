@@ -1,0 +1,273 @@
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+}
+.auth-text-link {
+    color: var(--accent-text);
+    font-size: var(--t-sm);
+    text-align: left;
+    text-underline-offset: 4px;
+}
+.auth-text-link:hover {
+    text-decoration: underline;
+}
+.recovery-success {
+    display: grid;
+    gap: 24px;
+    color: var(--success);
+}
+.recovery-page .onboarding-head p {
+    font-size: 15px;
+    line-height: 1.65;
+}
+.auth-identity {
+    display: flex;
+    gap: var(--s-4);
+    align-items: flex-start;
+}
+.auth-identity-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    min-width: 0;
+}
+.auth-error {
+    padding: var(--s-3) var(--s-4);
+    background: var(--danger-soft);
+    border: 1px solid color-mix(in oklab, var(--danger), transparent 55%);
+    border-radius: var(--r-sm);
+    color: var(--danger);
+    font-size: var(--t-sm);
+    font-weight: 560;
+}
+.auth-switch {
+    text-align: center;
+    color: var(--tx-3);
+    font-size: var(--t-sm);
+}
+.auth-switch a {
+    color: var(--accent);
+    font-weight: 640;
+}
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.avatar-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    flex: none;
+}
+.avatar-picker-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    border-radius: var(--r-full);
+}
+.avatar-picker-img,
+.avatar-picker-fallback {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--r-full);
+    object-fit: cover;
+}
+.avatar-picker-fallback {
+    display: grid;
+    place-items: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--on-accent);
+    background: var(--accent-bg);
+}
+.avatar-picker-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--r-full);
+    box-shadow: inset 0 0 0 2px var(--line-2);
+    transition: box-shadow var(--dur) var(--ease);
+}
+.avatar-picker-btn:hover::after {
+    box-shadow: inset 0 0 0 2px var(--accent);
+}
+.avatar-picker-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-full);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 1rem;
+    box-shadow: 0 0 0 3px var(--chat);
+}
+.avatar-picker-hint,
+.avatar-picker-error {
+    font-size: var(--t-2xs);
+    color: var(--tx-4);
+}
+.avatar-picker-error {
+    color: var(--danger);
+}
+
+.onboarding-page {
+    height: 100%;
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+}
+.onboarding-topbar {
+    width: min(1160px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: var(--t-xs);
+}
+.onboarding-shell {
+    width: min(560px, calc(100% - 32px));
+    max-width: 560px;
+    align-self: center;
+    overflow: hidden;
+    justify-self: center;
+    margin: 0 0 72px;
+    overflow: hidden;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-xl);
+    box-shadow: var(--elev-4);
+}
+.onboarding-progress {
+    height: 4px;
+    background: var(--bg-surface);
+}
+.onboarding-progress-value {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-bg), var(--accent-text));
+    transition: width var(--dur) var(--ease);
+}
+.onboarding-content {
+    padding: 36px 30px 30px;
+}
+.onboarding-step {
+    margin-bottom: 12px;
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: var(--t-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.onboarding-head {
+    margin-bottom: 24px;
+}
+.onboarding-head h1 {
+    font-family: var(--font-display);
+    font-size: var(--t-lg);
+    letter-spacing: -0.025em;
+}
+.onboarding-head p {
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: var(--t-sm);
+    line-height: 1.5;
+}
+.onboarding-form {
+    gap: 16px;
+}
+.onboarding-note {
+    padding: 12px 15px;
+    color: var(--info);
+    background: color-mix(in oklab, var(--info), transparent 93%);
+    border: 1px solid color-mix(in oklab, var(--info), transparent 70%);
+    border-radius: var(--r-md);
+    font-size: var(--t-xs);
+    line-height: 1.55;
+}
+.onboarding-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-lg);
+}
+.onboarding-avatar-row > div > strong,
+.onboarding-avatar-row > div > span {
+    display: block;
+}
+.onboarding-avatar-row > div > strong {
+    font-size: var(--t-sm);
+}
+.onboarding-avatar-row > div > span {
+    margin-top: 4px;
+    color: var(--text-secondary);
+    font-size: var(--t-2xs);
+}
+.onboarding-avatar-row .avatar-picker-hint {
+    display: none;
+}
+.onboarding-actions {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+}
+.onboarding-actions .btn-accent {
+    width: 100%;
+}
+.onboarding-content > .auth-switch {
+    margin-top: 22px;
+}
+
+@media (max-width: 620px) {
+    .onboarding-topbar {
+        width: calc(100% - 32px);
+        padding: 20px 0;
+    }
+    .onboarding-topbar > span {
+        display: none;
+    }
+    .onboarding-shell {
+        align-self: start;
+        margin: 12px 0 32px;
+    }
+    .onboarding-content {
+        padding: 28px 20px 24px;
+    }
+    .onboarding-avatar-row {
+        align-items: flex-start;
+    }
+}
+.auth-separator {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin: var(--s-4) 0;
+    color: var(--tx-4);
+    font-size: var(--t-xs);
+}
+.auth-separator::before,
+.auth-separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+}

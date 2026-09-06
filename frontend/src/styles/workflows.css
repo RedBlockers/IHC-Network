@@ -1,0 +1,1058 @@
+.workflow-board {
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+    padding: 28px 32px;
+}
+.workflow-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+.workflow-heading h2 {
+    font: 650 24px/1.25 var(--font-display);
+    letter-spacing: -0.025em;
+    margin: 0 0 8px;
+}
+.workflow-heading p,
+.workflow-empty p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 65ch;
+}
+.workflow-heading > .btn {
+    flex-shrink: 0;
+}
+.workflow-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.workflow-toolbar > .field {
+    width: min(320px, 100%);
+}
+.workflow-toolbar > span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.workflow-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.workflow-checkbox input {
+    accent-color: var(--accent-bg);
+    width: 16px;
+    height: 16px;
+}
+.workflow-empty {
+    display: grid;
+    place-content: center;
+    justify-items: start;
+    min-height: 260px;
+    padding: 40px;
+    gap: 14px;
+}
+.workflow-empty > svg {
+    color: var(--accent-text);
+}
+.workflow-empty h3 {
+    font: 600 20px/1.3 var(--font-display);
+    margin: 0;
+}
+.board-state {
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+.board-state .btn {
+    margin-top: 12px;
+}
+.workflow-form {
+    display: grid;
+    gap: 20px;
+}
+.workflow-form > p,
+.workflow-form small {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+.workflow-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.workflow-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.workflow-actions > span {
+    margin-right: auto;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+.workflow-notice {
+    color: var(--accent-text);
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px 0;
+}
+.workflow-status {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    color: var(--accent-text);
+    font-size: 12px;
+}
+.ticket-workspace,
+.forum-workspace {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+    min-height: 420px;
+    border-top: 1px solid var(--border-subtle);
+}
+.ticket-queue,
+.forum-index {
+    padding: 24px 24px 24px 0;
+    min-width: 0;
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.ticket-board .ticket-list,
+.forum-topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+}
+.ticket-board .ticket-list > li {
+    padding: 0;
+    border: 0;
+    display: block;
+}
+.ticket-row,
+.forum-topics button {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+    padding: 16px;
+    text-align: left;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    transition:
+        background 150ms,
+        border-color 150ms;
+}
+.ticket-row:hover,
+.forum-topics button:hover {
+    background: var(--bg-surface);
+}
+.ticket-row.is-selected,
+.forum-topics button.is-selected {
+    background: var(--accent-ghost);
+    border-color: var(--accent-text);
+}
+.ticket-row strong,
+.forum-topics strong {
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+.ticket-row time,
+.ticket-row small,
+.forum-topics button > span,
+.forum-topics small {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.ticket-row-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+.ticket-conversation,
+.forum-conversation {
+    min-width: 0;
+    padding: 24px 0 24px 28px;
+}
+.ticket-detail-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+.ticket-detail-heading h3,
+.forum-topic-head h3 {
+    font: 650 22px/1.35 var(--font-display);
+    margin: 4px 0 8px;
+    overflow-wrap: anywhere;
+}
+.ticket-detail-heading p {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+.ticket-reference {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+.ticket-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.ticket-controls .field {
+    flex: 1;
+    min-width: 160px;
+}
+.ticket-messages,
+.thread-messages {
+    display: grid;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 28px 0;
+}
+.ticket-messages li,
+.thread-messages li {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.65;
+}
+.ticket-messages li > div,
+.thread-messages li > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.ticket-messages header,
+.thread-messages header {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 4px;
+    margin-bottom: 8px;
+}
+.ticket-messages time,
+.thread-messages time,
+.thread-messages header > span {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+.ticket-messages p,
+.thread-messages p {
+    margin: 6px 0;
+}
+.ticket-messages li.is-internal {
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: 12px;
+}
+.ticket-note-label {
+    color: var(--text-secondary);
+    width: 100%;
+    font-size: 11px;
+    font-weight: 650;
+}
+.ticket-reply,
+.thread-reply {
+    display: grid;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+}
+.ticket-reply .segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-self: start;
+}
+.ticket-reply.is-internal .field-textarea {
+    background: var(--bg-surface);
+    border-style: dashed;
+}
+.ticket-back,
+.forum-back {
+    display: none;
+}
+.task-board.workflow-board {
+    display: block;
+}
+.task-board .task-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+.task-board .task-column {
+    padding: 0;
+    border: none;
+    background: none;
+    min-width: 0;
+}
+.task-column h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 14px;
+}
+.task-column h3 span {
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+.task-column ul {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 0;
+    list-style: none;
+}
+.task-board .task-column li {
+    padding: 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-surface);
+    display: grid;
+    gap: 16px;
+}
+.task-open {
+    display: block;
+    text-align: left;
+    width: 100%;
+    padding: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+.task-open:disabled {
+    opacity: 1;
+    cursor: default;
+}
+.task-card-body p {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 12px 0;
+}
+.task-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.task-meta time {
+    flex-basis: 100%;
+    color: var(--text-muted);
+}
+.task-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.task-actions .btn {
+    padding: 6px 8px;
+    font-size: 11px;
+    min-height: 32px;
+}
+.task-empty {
+    padding: 20px 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.event-board .event-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+.event-board .event-list .event-entry {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 28px;
+    padding: 28px 0;
+    border: 0;
+    border-top: 1px solid var(--border-subtle);
+    border-radius: 0;
+    background: none;
+}
+.event-date {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 2px;
+    padding-top: 4px;
+    color: var(--text-primary);
+}
+.event-date strong {
+    font: 550 36px/1 var(--font-display);
+    font-variant-numeric: tabular-nums;
+}
+.event-date span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.event-content {
+    min-width: 0;
+}
+.event-head {
+    gap: 20px;
+}
+.event-head strong {
+    font-size: 18px;
+    line-height: 1.4;
+}
+.event-head small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: 8px;
+}
+.event-location {
+    display: block;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+}
+.event-description {
+    white-space: pre-wrap;
+    line-height: 1.65;
+    font-size: 14px;
+    margin: 18px 0;
+    max-width: 68ch;
+}
+.event-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+.event-actions .btn {
+    font-size: 12px;
+}
+.event-foot {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.event-responses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.event-responses button {
+    min-height: 36px;
+}
+.workflow-documents {
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    overflow: auto;
+}
+.workflow-documents .doc-outline {
+    padding: 28px 24px;
+    border-right: 1px solid var(--border-subtle);
+    background: var(--bg-sunken);
+}
+.doc-outline h2 {
+    font: 600 18px/1.4 var(--font-display);
+    margin-bottom: 24px;
+}
+.doc-outline ul {
+    margin: 20px 0;
+}
+.doc-outline .field-label {
+    font-size: 11px;
+}
+.workflow-documents .doc-page {
+    min-width: 0;
+    padding: 32px 40px;
+    overflow: visible;
+}
+.doc-head h2 {
+    font: 650 28px/1.3 var(--font-display);
+    overflow-wrap: anywhere;
+}
+.doc-head > p {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+.document-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+.doc-content {
+    max-width: 72ch;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+.doc-content pre {
+    white-space: pre-wrap;
+}
+.document-history > h3 {
+    margin: 24px 0 10px;
+}
+.document-history > p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.document-history ol {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+.document-history li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 0;
+}
+.document-revision {
+    display: grid;
+    gap: 6px;
+    text-align: left;
+    color: var(--text-primary);
+}
+.document-revision span {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+.document-revision.is-selected strong {
+    color: var(--accent-text);
+}
+.doc-editor .doc-body {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.75;
+    resize: vertical;
+    min-height: 250px;
+}
+.forum-board.is-embedded {
+    padding: 0;
+}
+.forum-board.is-embedded .forum-workspace {
+    display: block;
+    border: none;
+}
+.forum-board.is-embedded .forum-conversation {
+    padding: 0;
+}
+.forum-topic-head {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.forum-topic-head .workflow-toolbar {
+    margin: 16px 0 0;
+}
+.thread-message-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.thread-message-actions .btn {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+.modal-thread {
+    width: min(840px, calc(100vw - 48px));
+    max-height: calc(100dvh - 64px);
+}
+.channel-mode-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.channel-mode-action p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+.gated-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+.gated-shell > .chat {
+    flex: 1;
+    min-height: 0;
+}
+.gate-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 8px 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.gate-request {
+    max-width: 640px;
+    margin: auto;
+    width: 100%;
+}
+.gate-request form {
+    width: 100%;
+}
+.gate-requests {
+    list-style: none;
+    padding: 0;
+    margin-top: 24px;
+    display: grid;
+    gap: 24px;
+}
+.gate-requests li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.gate-requests li > div {
+    min-width: 0;
+    flex: 1;
+}
+.gate-requests p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 8px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.gate-requests span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.gate-requests .gate-actions {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.channel-details {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.channel-details summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.channel-details form {
+    padding-top: 20px;
+}
+.channel-details[open] {
+    max-height: 55dvh;
+    overflow-y: auto;
+}
+.channel-spoiler {
+    margin: 6px 0;
+}
+.channel-spoiler > button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 8px 12px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+}
+.channel-spoiler.is-revealed > button {
+    margin-bottom: 10px;
+    background: none;
+    color: var(--text-muted);
+    padding: 0;
+}
+@media (max-width: 1100px) {
+    .workflow-board {
+        padding: 24px;
+    }
+    .ticket-workspace,
+    .forum-workspace {
+        grid-template-columns: 240px minmax(0, 1fr);
+    }
+    .task-board .task-columns {
+        gap: 16px;
+    }
+    .workflow-documents {
+        grid-template-columns: 210px minmax(0, 1fr);
+    }
+    .workflow-documents .doc-page {
+        padding: 24px;
+    }
+}
+@media (max-width: 760px) {
+    .workflow-board {
+        padding: 20px 16px;
+    }
+    .workflow-heading {
+        flex-direction: column;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .workflow-heading h2 {
+        font-size: 22px;
+    }
+    .workflow-heading > .btn {
+        min-height: 42px;
+    }
+    .workflow-toolbar {
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .workflow-toolbar > .field {
+        width: 100%;
+    }
+    .workflow-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .workflow-empty {
+        padding: 28px 16px;
+    }
+    .ticket-workspace,
+    .forum-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .ticket-queue,
+    .forum-index {
+        border: none;
+        padding: 20px 0;
+    }
+    .ticket-conversation,
+    .forum-conversation {
+        padding: 20px 0;
+    }
+    .ticket-board:not(.has-selection) .ticket-conversation,
+    .forum-board:not(.has-selection):not(.is-embedded) .forum-conversation {
+        display: none;
+    }
+    .ticket-board.has-selection .ticket-queue,
+    .forum-board.has-selection .forum-index {
+        display: none;
+    }
+    .ticket-back,
+    .forum-back {
+        display: flex;
+        flex-basis: 100%;
+        margin-bottom: 12px;
+        padding-left: 0;
+    }
+    .ticket-detail-heading h3,
+    .forum-topic-head h3 {
+        font-size: 20px;
+    }
+    .ticket-controls {
+        align-items: stretch;
+    }
+    .ticket-controls .field {
+        min-width: 120px;
+    }
+    .ticket-messages li,
+    .thread-messages li {
+        gap: 10px;
+    }
+    .task-board .task-columns {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    .task-column ul {
+        gap: 12px;
+    }
+    .task-actions .btn {
+        min-height: 38px;
+        font-size: 12px;
+    }
+    .event-board .event-list .event-entry {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 16px;
+        padding: 24px 0;
+    }
+    .event-date strong {
+        font-size: 28px;
+    }
+    .event-head {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .event-responses {
+        margin-top: 8px;
+    }
+    .event-responses button {
+        min-height: 40px;
+    }
+    .workflow-documents {
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+    }
+    .workflow-documents .doc-outline {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 20px 16px;
+        flex: none;
+    }
+    .doc-outline ul {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        margin: 14px 0;
+    }
+    .doc-outline li {
+        flex: 0 0 auto;
+        max-width: 80%;
+    }
+    .workflow-documents .doc-page {
+        padding: 24px 16px;
+        flex: none;
+    }
+    .doc-head h2 {
+        font-size: 24px;
+    }
+    .document-history li {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .document-actions .btn {
+        min-height: 38px;
+    }
+    .modal-thread {
+        width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+    }
+    .gate-toolbar {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 8px 16px;
+    }
+    .gate-requests li {
+        flex-wrap: wrap;
+    }
+    .gate-requests .gate-actions {
+        margin-left: 44px;
+        flex-basis: 100%;
+        flex-direction: row;
+    }
+}
+.gallery-open {
+    width: 100%;
+    padding: 0;
+    display: block;
+}
+.gallery-open img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+.gallery-item figcaption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+}
+.gallery-item figcaption > span {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+.gallery-item strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+.gallery-item small {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+.modal-gallery {
+    width: min(1000px, calc(100vw - 32px));
+}
+.gallery-preview {
+    display: grid;
+    place-items: center;
+    min-height: 180px;
+    background: var(--bg-sunken);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.gallery-preview img {
+    max-width: 100%;
+    max-height: 65dvh;
+    object-fit: contain;
+}
+.gallery-preview-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 20px;
+}
+.gallery-preview-actions > span {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+.channel-lifetime {
+    margin: 0;
+    padding: 10px 24px;
+    color: var(--text-secondary);
+    background: var(--bg-sunken);
+    font-size: 12px;
+}
+.incident-pins {
+    display: grid;
+    gap: 8px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.incident-pins button {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    text-align: left;
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.incident-pins svg {
+    flex-shrink: 0;
+    color: var(--accent-text);
+}
+.ticket-priority {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+.ticket-priority.is-high,
+.ticket-priority.is-urgent {
+    color: var(--danger-text);
+    font-weight: 600;
+}
+.chat {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+}
+.chat > .chat-head,
+.chat > .typing,
+.chat > .composer,
+.chat > .channel-mode-action,
+.chat > .channel-lifetime,
+.chat > .incident-pins {
+    flex-shrink: 0;
+}
+.chat > .msgs,
+.chat > .worktree-split {
+    flex: 1;
+    min-height: 0;
+}
+.chat > .worktree-split {
+    overflow: auto;
+    max-height: none;
+}
+.chat.has-side {
+    display: flex;
+    padding-right: 320px;
+}
+.chat.has-side > .side-panel {
+    position: absolute;
+    width: 320px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+@media (max-width: 760px) {
+    .chat.has-side {
+        padding-right: 0;
+    }
+    .chat.has-side > .side-panel {
+        width: min(100%, 360px);
+        z-index: 12;
+        box-shadow: -16px 0 48px rgb(0 0 0 / 0.18);
+    }
+}
+.stage-speakers {
+    display: grid;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-subtle);
+}
+.stage-speakers h3 {
+    font-size: 14px;
+}
+.stage-speakers > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+.stage-speakers span {
+    display: grid;
+    gap: 4px;
+}
+.stage-speakers strong {
+    font-size: 13px;
+}
+.stage-speakers small {
+    font-size: 11px;
+    color: var(--text-muted);
+}

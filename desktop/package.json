@@ -1,0 +1,99 @@
+{
+  "name": "qweillo-desktop",
+  "version": "2.0.0",
+  "private": true,
+  "author": {
+    "name": "Qweillo",
+    "email": "contact@qweillo.fr"
+  },
+  "description": "Application de bureau qweillo",
+  "main": "src/main.cjs",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "build:windows": "node scripts/write-runtime-config.mjs && electron-builder --win nsis --x64",
+    "start": "node node_modules/electron/install.js && electron .",
+    "build:linux": "node scripts/write-runtime-config.mjs && electron-builder --linux AppImage deb --x64",
+    "build:mac": "node scripts/write-runtime-config.mjs && electron-builder --mac dmg --universal"
+  },
+  "devDependencies": {
+    "electron": "43.4.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "fr.qweillo.desktop",
+    "productName": "qweillo",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "runtime-config.json",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "qweillo-Setup-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Network;InstantMessaging",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "qweillo-${version}-${arch}.${ext}",
+      "synopsis": "Communautés, salons et vocal",
+      "maintainer": "Qweillo <contact@qweillo.fr>",
+      "desktop": {
+        "entry": {
+          "StartupWMClass": "qweillo"
+        }
+      },
+      "syncDesktopName": true
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.social-networking",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "artifactName": "qweillo-${version}.${ext}",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    }
+  },
+  "homepage": "https://qweillo.fr",
+  "desktopName": "qweillo.desktop"
+}
